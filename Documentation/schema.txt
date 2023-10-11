@@ -1,0 +1,53 @@
+// DBML to be used with https://dbdiagram.io/d
+
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+Table Employee {
+  id guid [pk, unique, not null]
+  managerId guid
+  firstName string
+  lastName string
+  username string [not null]
+  password string [not null]
+  email string [not null]
+  phone int
+}
+Table Availability {
+  empId guid [not null, ref: > Employee.id]
+  dayOfWeek int [not null]
+  startTime dateTime [not null]
+  endTime dateTime [not null]
+}
+Table Position {
+  id guid [pk, unique, not null]
+  title string [not null]
+}
+Table Training {
+  empId guid [not null, ref: > Employee.id]
+  positionId guid [not null, ref: - Position.id]
+}
+Table Manager {
+  empId guid [not null, ref: - Employee.id]
+  id guid [pk, unique, not null, ref: < Employee.managerId]
+}
+Table Schedule {
+  id guid [pk, unique, not null]
+}
+Table Shift {
+  id guid [pk, unique, not null]
+  scheduleId guid [not null, ref: > Schedule.id]
+  empId guid [not null, ref: > Employee.id]
+  templateId guid [not null, ref: > ShiftTemplate.id]
+  date dateTime
+}
+Table ShiftTemplate {
+  id guid [pk, unique, not null]
+  dayOfWeek int [not null]
+  startTime dateTime [not null]
+  endTime dateTime [not null]
+  positionId guid [not null, ref: > Position.id]
+}
+// Table ScheduleTemplate {
+//   id guid [pk, unique, not null]
+//   shiftTemplateId guid [ref: < ShiftTemplate.id]
+// }
