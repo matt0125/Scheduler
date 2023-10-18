@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const employeeController = require('./EmployeeController'); // Importing the employee controller
 const shiftTemplateController = require('./ShiftTemplateController');
+const shiftController = require('./ShiftController');
 const { create } = require('domain');
 
 const app = express();
@@ -33,6 +34,7 @@ app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
+app.post('/api/shifts', shiftController.createShift);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
