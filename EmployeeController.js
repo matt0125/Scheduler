@@ -113,3 +113,38 @@ exports.registerEmployee = async (req, res) => {
   }
 };
 
+exports.loginEmployee = async (req, res) => {
+  try {
+    const {
+      username,
+      password
+    } = req.body
+
+    if (!username || !password) {
+      return res.status(400).json({ message: 'Please enter both a username and password' });
+    }
+
+    const user = await Employee.findOne({ username: { $regex: new RegExp(username, 'i') } });
+
+    // console.log(user)
+    // console.log(username)
+
+    // change error messages to be more vague later
+    // need to hash password (bcrypt?)
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid username' });
+    }
+
+    if (user.password !== password)
+    {
+      return res.status(401).json({ message: 'Invalid password' });
+    }
+
+    return res.json({ message: 'Login successful' });
+  }
+
+  catch (err) {
+    res.status(500).json({ message: 'Error authenticating user', err});
+    console.error("There was an error logging in", err);
+  }
+};

@@ -30,6 +30,7 @@ app.get('/', (req, res) => {
 
 // API Endpoints
 app.post('/api/register', employeeController.registerEmployee);
+app.post('/api/login', employeeController.loginEmployee);
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
 
