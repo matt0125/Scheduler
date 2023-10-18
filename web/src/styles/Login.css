@@ -1,0 +1,25 @@
+body {
+    background-color: #EDE7E3; /* Set the background color for the entire page */
+    margin: 0; /* Remove default margin */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+      sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+  }
+
+  .loginTitle
+  {
+    color: #49423E;
+    text-align: center;
+    font-family: Katibeh;
+    font-size: 80px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    width: 302px;
+    height: 102px;
+    flex-shrink: 0;
+  }
+  
