@@ -7,7 +7,7 @@ const shiftTemplateController = require('./ShiftTemplateController');
 const { create } = require('domain');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Connect to MongoDB Atlas
 console.log('Connecting to MongoDB...');
