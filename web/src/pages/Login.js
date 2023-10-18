@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+
 import '../styles/Login.css'; // Correct import path
 
 const Login = () => {
@@ -54,7 +56,7 @@ const Login = () => {
           </div>
           <button type="submit">Login</button>
           <div className="signup-link">
-          Don’t have an account? <button>Sign up</button>
+            Don’t have an account? <Link to="/Register">Sign up</Link>
           </div>
         </form>
       </div>
