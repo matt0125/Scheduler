@@ -28,6 +28,7 @@ app.get('/', (req, res) => {
 
 // API Endpoints
 app.post('/api/register', employeeController.registerEmployee);
+app.post('/api/login', employeeController.loginEmployee);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
