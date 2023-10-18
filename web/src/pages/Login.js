@@ -27,34 +27,41 @@ const Login = () => {
   };
 
   return (
-    <form className='login-form' onSubmit={handleLogin}>
-      <div>
-        <h1 className='loginTitle'>Login</h1>
+    <div className="page-container">
+      <div className="login-container">
+        <form className='login-form' onSubmit={handleLogin}>
+          <div className='AppName'>
+            <h1> Sched</h1>
+          </div>
+          <div>
+            <h1 className='loginTitle'>Login</h1>
+          </div>
+          <div>
+            <label>Username:</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)} // Update the username state on input change
+            />
+          </div>
+          <div>
+            <label>Password:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} // Update the password state on input change
+            />
+          </div>
+          <button type="submit">Login</button>
+          <div className="signup-link">
+          Don’t have an account? <button>Sign up</button>
+          </div>
+        </form>
       </div>
-      <div>
-        <label>Username:</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)} // Update the username state on input change
-        />
-      </div>
-      <div>
-        <label>Password:</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)} // Update the password state on input change
-        />
-      </div>
-      <button type="submit">
-        Login
-      </button>
-    </form>
+      <footer className="footer">
+      </footer>
+    </div>
   );
 };
 
 export default Login;
-
-
-
