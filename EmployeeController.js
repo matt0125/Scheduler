@@ -121,10 +121,13 @@ exports.loginEmployee = async (req, res) => {
     } = req.body
 
     if (!username || !password) {
-      return res.status(400).json({ message: 'Please enter a username and password' });
+      return res.status(400).json({ message: 'Please enter both a username and password' });
     }
 
-    const user = await Employee.findOne({ username });
+    const user = await Employee.findOne({ username: { $regex: new RegExp(username, 'i') } });
+
+    // console.log(user)
+    // console.log(username)
 
     // change error messages to be more vague later
     // need to hash password (bcrypt?)
