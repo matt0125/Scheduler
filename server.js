@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const employeeController = require('./EmployeeController'); // Importing the employee controller
+const shiftTemplateController = require('./ShiftTemplateController');
+const { create } = require('domain');
 
 const app = express();
 const port = 3000;
@@ -28,6 +30,8 @@ app.get('/', (req, res) => {
 
 // API Endpoints
 app.post('/api/register', employeeController.registerEmployee);
+app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
+app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
