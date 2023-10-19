@@ -1,0 +1,31 @@
+const Shift = require('../models/Shift');
+
+exports.createShift = async (req, res) => {
+  try {
+    const { _id, date, empId, templateId } = req.body;
+    
+    // Create a new shift
+    const newShift = new Shift({
+      date,
+      empId,
+      templateId
+    });
+    
+    // Save to the database
+    await newShift.save();
+    
+    res.status(201).json(newShift);
+  } catch (error) {
+    res.status(400).json({ message: 'Failed to create shift', error });
+  }
+};
+
+exports.deleteShift = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Shift.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Shift deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ message: 'Failed to delete shift', error });
+  }
+};

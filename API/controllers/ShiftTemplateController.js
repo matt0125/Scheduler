@@ -1,15 +1,4 @@
-const mongoose = require('mongoose');
-
-const shiftTemplateSchema = new mongoose.Schema({
-  _id: String,
-  dayOfWeek: String,
-  startTime: String,
-  endTime: String,
-  positionId: String,
-  templateId: String
-});
-
-const ShiftTemplate = mongoose.model('ShiftTemplate', shiftTemplateSchema, 'ShiftTemplate');
+const ShiftTemplate = require('../models/ShiftTemplate');
 
 exports.createShiftTemplate = async (req, res) => {
   try {
