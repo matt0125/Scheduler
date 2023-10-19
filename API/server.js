@@ -2,9 +2,9 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const employeeController = require('./EmployeeController'); // Importing the employee controller
-const shiftTemplateController = require('./ShiftTemplateController');
-const shiftController = require('./ShiftController');
+const employeeController = require('./controllers/EmployeeController'); // Importing the employee controller
+const shiftTemplateController = require('./controllers/ShiftTemplateController');
+const shiftController = require('./controllers/ShiftController');
 const { create } = require('domain');
 
 const app = express();
