@@ -5,121 +5,286 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a blue toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: LoginPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool _obscureText = true;
 
-  void _incrementCounter() {
+  void _login() {
+    String username = usernameController.text;
+    String password = passwordController.text;
+    // You can add your authentication logic here to validate the username and password.
+    // For a simple example, we'll just print them to the console.
+    print('Username: $username');
+    print('Password: $password');
+  }
+
+  void _togglePasswordVisibility() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _obscureText = !_obscureText;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      backgroundColor: const Color(0xFFEDE7E3), // Change the background color here
+      body: SingleChildScrollView(
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'HELLOOOOO:',
+          children: [
+            // Upper third with a white background
+            Container(
+              color: Colors.white,
+              height: MediaQuery.of(context).size.height / 4, // Divide the screen into three parts
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Padding(
+              padding: const EdgeInsets.all(115),
+              child: Column(
+                children: [
+                  Sched(), // Add the "Sched" text
+                  const SizedBox(height: 20.0),
+                  BubbleText(
+                    labelText: 'Email (or username)',
+                    controller: usernameController,
+                  ),
+                  const SizedBox(height: 10.0),
+                  BubbleText(
+                    labelText: 'Password',
+                    controller: passwordController,
+                    obscureText: _obscureText, // Use the obscureText value
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Color(0xFF49423E),
+                      ),
+                      onPressed: _togglePasswordVisibility,
+                    ),
+                  ),
+                  const SizedBox(height: 40.0),
+                  ElevatedButton(
+                    onPressed: _login,
+                    style: ButtonStyle(
+                      backgroundColor:
+                      MaterialStateProperty.all<Color>(const Color(0xFFB1947B)),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(60),
+                        ),
+                      ),
+                    ),
+                    child: const SizedBox(
+                      width: 250,
+                      height: 50,
+                      child: Center(
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                            fontFamily: 'Katibeh',
+                            fontSize: 25,
+                            color: Colors.black,
+                            height: 2.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  const LogInText(),
+                  const NoAccountText(),
+                  const SignUpButton(),
+                  const Sched(),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class BubbleText extends StatelessWidget {
+  final String labelText;
+  final TextEditingController controller;
+  final bool obscureText;
+  final Widget? suffixIcon;
+
+  const BubbleText({
+    required this.labelText,
+    required this.controller,
+    this.obscureText = false,
+    this.suffixIcon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              labelText,
+              style: const TextStyle(
+                fontFamily: 'Katibeh',
+                fontSize: 25,
+                color: Color(0xFF49423E),
+              ),
+            ),
+          ],
+        ),
+        BubbleContainer(
+          controller: controller,
+          obscureText: obscureText,
+          suffixIcon: suffixIcon,
+        ),
+      ],
+    );
+  }
+}
+
+class BubbleContainer extends StatelessWidget {
+  final TextEditingController controller;
+  final bool obscureText;
+  final Widget? suffixIcon;
+
+  const BubbleContainer({
+    required this.controller,
+    required this.obscureText,
+    this.suffixIcon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 275,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(60),
+        color: const Color(0xFFCDBFB6),
+        border: Border.all(color: Colors.black, width: 2.0),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 1.0),
+            blurRadius: 5.0,
+            spreadRadius: 1.0,
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+          hintStyle: const TextStyle(
+            fontFamily: 'Katibeh',
+            color: Color(0xFF49423E),
+          ),
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          suffixIcon: suffixIcon,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
+class LogInText extends StatelessWidget {
+  const LogInText({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Log-in',
+      style: TextStyle(
+        fontFamily: 'Katibeh',
+        fontSize: 80.0,
+        fontWeight: FontWeight.w400,
+        height: -7.5,
+        color: Color(0xFF49423E),
+      ),
+    );
+  }
+}
+
+class NoAccountText extends StatelessWidget {
+  const NoAccountText({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      "Don't have an Account?",
+      style: TextStyle(
+        fontFamily: 'Katibeh',
+        fontSize: 17.0,
+        fontWeight: FontWeight.w400,
+        height: -0.10,
+        color: Color(0xFF49423E),
+      ),
+    );
+  }
+}
+
+class Sched extends StatelessWidget {
+  const Sched({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      "Sched",
+      style: TextStyle(
+        fontFamily: 'Katibeh',
+        fontSize: 93,
+        fontWeight: FontWeight.w400,
+        height: -11.5,
+        color: Color(0xFF49423E),
+      ),
+    );
+  }
+}
+
+class SignUpButton extends StatelessWidget {
+  const SignUpButton({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        // Add your sign-up action here
+      },
+      child: const Text(
+        'Sign Up Here',
+        style: TextStyle(
+          fontFamily: 'Katibeh',
+          fontSize: 17.0,
+          fontWeight: FontWeight.w400,
+          color: Color(0xFF3995F6),
+          height: -1,
+          decoration: TextDecoration.underline,
+        ),
+      ),
     );
   }
 }
