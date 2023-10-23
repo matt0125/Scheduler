@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'loginpage.dart'; // Import the LoginPage from loginpage.dart
 import 'signup.dart'; // Import the SignUpPage from signup.dart
+import 'dashboard.dart'; // Import the DashboardPage from dashboard.dart
 
 void main() {
   runApp(const MyApp());

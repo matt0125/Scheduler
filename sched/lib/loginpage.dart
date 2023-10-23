@@ -1,6 +1,7 @@
 // loginpage.dart
 import 'package:flutter/material.dart';
 import 'package:sched/signup.dart';
+import 'dashboard.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -15,13 +16,21 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
 
   void _login() {
-    String username = usernameController.text;
-    String password = passwordController.text;
-    // You can add your authentication logic here to validate the username and password.
-    // For a simple example, we'll just print them to the console.
-    print('Username: $username');
-    print('Password: $password');
+    final String username = usernameController.text;
+    final String password = passwordController.text;
+
+    if (username == 'test' && password == 'test') {
+      // Replace the navigation logic here to go to the dashboard page upon successful login.
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardPage()),
+      );
+    } else {
+      // Handle authentication failure (e.g., show an error message).
+      print('Authentication failed. Please use username and password "test".');
+    }
   }
+
 
   void _togglePasswordVisibility() {
     setState(() {
