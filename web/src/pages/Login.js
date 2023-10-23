@@ -34,13 +34,16 @@ const Login = () => {
 
     // Call the backend API to authenticate the user
     // TODO: Replace this with a real API call
-    const response = await fetch("http://large.poosd-project.com/api/api/login", {
+    // TODO: Replace this with a real API call
+    const response = await fetch("http://large.poosd-project.com/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ username: 'john_doe', password: 'SecurePassword123' }),
+      mode: 'no-cors',
     });
+
 
     console.log(JSON.stringify({ username, password }))
     console.log(response.status)
