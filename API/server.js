@@ -12,6 +12,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
+app.options('*', cors());
 
 // Connect to MongoDB Atlas
 console.log('Connecting to MongoDB...');
