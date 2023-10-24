@@ -41,7 +41,6 @@ const Login = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ username: 'john_doe', password: 'SecurePassword123' }),
-      mode: 'no-cors',
     });
 
 
