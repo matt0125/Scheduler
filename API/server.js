@@ -11,8 +11,7 @@ const { create } = require('domain');
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
-app.options('*', cors());
+app.use(cors({ origin: '*' }));
 
 // Connect to MongoDB Atlas
 console.log('Connecting to MongoDB...');
