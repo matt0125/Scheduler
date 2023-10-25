@@ -9,12 +9,12 @@ const Register = () => {
     firstName: '',
     lastName: '',
     phone: '',
-    empId: '',
-    positionId: '',
-    title: '',
-    dayAvail: '',
-    endAvail: '',
-    startAvail: '',
+    empId: 'NULL',
+    positionId: 'NULL',
+    title: 'NULL',
+    dayAvail: 'NULL',
+    endAvail: 'NULL',
+    startAvail: 'NULL',
     managerIdent: false
   });
 
@@ -45,12 +45,6 @@ const Register = () => {
       <input type="text" name="firstName" placeholder="First Name" onChange={handleChange} />
       <input type="text" name="lastName" placeholder="Last Name" onChange={handleChange} />
       <input type="text" name="phone" placeholder="Phone" onChange={handleChange} />
-      <input type="text" name="empId" placeholder="Employee ID" onChange={handleChange} />
-      <input type="text" name="positionId" placeholder="Position ID" onChange={handleChange} />
-      <input type="text" name="title" placeholder="Title" onChange={handleChange} />
-      <input type="text" name="dayAvail" placeholder="Day Availability" onChange={handleChange} />
-      <input type="text" name="endAvail" placeholder="End Availability" onChange={handleChange} />
-      <input type="text" name="startAvail" placeholder="Start Availability" onChange={handleChange} />
       <input type="checkbox" name="managerIdent" onChange={(e) => handleChange({ target: { name: 'managerIdent', value: e.target.checked } })} />
       <button type="submit">Register</button>
     </form>
