@@ -1,67 +1,87 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Register from "./Register";
 
-import '../styles/Login.css'; // Correct import path
 
 const Login = () => {
-  // Define state variables for username and password
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [usernameError, setUsernameError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const navigate = useNavigate();
 
-  // Define the login handler function
-  const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+  // Validate the username and password
+  const validateForm = () => {
+    let errors = {};
+    if (!username) {
+      setUsernameError("Username is required");
+    }
+    if (!password) {
+      setPasswordError("Password is required");
+    }
+    return errors;
+  };
 
-    try {
-      // Send a POST request to the login API endpoint
-      const response = await axios.post('http://localhost:5000/api/login', {
-        username, // Use the current value of username state
-        password, // Use the current value of password state
-      });
+  // Handle the login form submission
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-      // Show a success message with the response data
-      alert(response.data);
-    } catch (error) {
-      // If an error occurs, show an error message
-      alert('Invalid credentials');
+    // Validate the form
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setUsernameError(errors.username);
+      setPasswordError(errors.password);
+      return;
+    }
+
+    // Call the backend API to authenticate the user
+    // TODO: Replace this with a real API call
+    // TODO: Replace this with a real API call
+    const response = await fetch("http://large.poosd-project.com/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: username, password: password }),
+    });
+
+
+    console.log(JSON.stringify({ username, password }))
+    console.log(response.status)
+
+    // Check the response status code
+    if (response.status === 200) {
+      // Login successful
+      alert("Logged in");
+    } else {
+      // Login failed
+      alert("Invalid username or password");
     }
   };
 
   return (
-    <div className="page-container">
-      <div className="login-container">
-        <form className='login-form' onSubmit={handleLogin}>
-          <div className='AppName'>
-            <h1> Sched</h1>
-          </div>
-          <div>
-            <h1 className='loginTitle'>Login</h1>
-          </div>
-          <div>
-            <label>Username:</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)} // Update the username state on input change
-            />
-          </div>
-          <div>
-            <label>Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)} // Update the password state on input change
-            />
-          </div>
-          <button type="submit">Login</button>
-          <div className="signup-link">
-            Don’t have an account? <Link to="/Register">Sign up</Link>
-          </div>
-        </form>
-      </div>
-      <footer className="footer">
-      </footer>
+    <div className="login-page">
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Login</button>
+        <button type="button" onClick={() => navigate("/register")}>
+          Sign up
+        </button>
+      </form>
     </div>
   );
 };
