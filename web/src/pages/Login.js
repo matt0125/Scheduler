@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Register from "./Register";
+
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -40,7 +42,7 @@ const Login = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username: 'john_doe', password: 'SecurePassword123' }),
+      body: JSON.stringify({ username: username, password: password }),
     });
 
 
@@ -76,6 +78,9 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button type="submit">Login</button>
+        <button type="button" onClick={() => navigate("/register")}>
+          Sign up
+        </button>
       </form>
     </div>
   );

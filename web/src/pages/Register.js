@@ -16,10 +16,29 @@ const Register = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log(formData);
+  
+    // Create a FormData object to store the form data
+    const formData = new FormData();
+    for (const key in formData) {
+      formData.append(key, formData[key]);
+    }
+  
+    // Send a POST request to the registration API endpoint
+    const response = await fetch("/api/register", {
+      method: "POST",
+      body: formData,
+    });
+  
+    // Check the response status code
+    if (response.status === 200) {
+      // Registration successful
+      alert("Registration successful!");
+    } else {
+      // Registration failed
+      alert("Registration failed. Please try again.");
+    }
   };
 
   return (
