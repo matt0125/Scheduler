@@ -39,6 +39,8 @@ app.post('/api/login', employeeController.loginEmployee);
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
 app.post('/api/shifts', shiftController.createShift);
+app.get('/api/shifts/:id', shiftController.getShift);
+app.put('/api/shifts/:id', shiftController.editShift);
 app.delete('/api/shifts/:id', shiftController.deleteShift);
 
 app.listen(port, () => {
