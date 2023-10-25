@@ -1,5 +1,6 @@
 // main.dart
 import 'package:flutter/material.dart';
+import 'package:sched/tabs.dart';
 import 'loginpage.dart'; // Import the LoginPage from loginpage.dart
 import 'signup.dart'; // Import the SignUpPage from signup.dart
 import 'dashboard.dart'; // Import the DashboardPage from dashboard.dart
@@ -14,9 +15,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: '/',
+      initialRoute: '/login',
       routes: {
-        '/': (context) => const LoginPage(), // Set the LoginPage as the initial route
+        '/': (context) => TabsPage(),
+        '/login': (context) => const LoginPage(), // Set the LoginPage as the initial route
         '/signup': (context) => const SignUpPage(), // Define a named route for the SignUpPage
       },
     );

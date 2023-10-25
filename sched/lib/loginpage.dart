@@ -21,9 +21,10 @@ class _LoginPageState extends State<LoginPage> {
 
     if (username == 'test' && password == 'test') {
       // Replace the navigation logic here to go to the dashboard page upon successful login.
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DashboardPage()),
+      Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/',
+          ModalRoute.withName('/')
       );
     } else {
       // Handle authentication failure (e.g., show an error message).
@@ -216,9 +217,9 @@ class LogInText extends StatelessWidget {
       'Log-in',
       style: TextStyle(
         fontFamily: 'Katibeh',
-        fontSize: 80.0,
+        fontSize: 74.0,
         fontWeight: FontWeight.w400,
-        height: -7.5,
+        height: -9,
         color: Color(0xFF49423E),
       ),
     );
@@ -268,9 +269,10 @@ class SignUpButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        Navigator.push(
+        Navigator.pushNamedAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const SignUpPage()),
+          '/signup',
+          ModalRoute.withName('/')
         );
       },
       child: const Text(
