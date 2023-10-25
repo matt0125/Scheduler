@@ -39,9 +39,12 @@ exports.getShift = async (req, res) => {
 
 exports.editShift = async (req, res) => {
   try {
+    console.log('Editing shift...');
+    console.log('Request body:', req.body);
     const { id } = req.params;
     const { date, empId, templateId } = req.body;
 
+    console.log('Shift ID:', id);
     // Update shift by ID
     const updatedShift = await Shift.findByIdAndUpdate(
       id,
