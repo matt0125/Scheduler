@@ -99,8 +99,7 @@ exports.loginEmployee = async (req, res) => {
       return res.status(401).json({ message: 'Invalid username' });
     }
 
-    if (user.password !== password)
-    {
+    if (user.password !== password) {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
@@ -108,8 +107,8 @@ exports.loginEmployee = async (req, res) => {
   }
 
   catch (error) {
-    res.status(500).json({ message: 'Error authenticating user', error});
-    console.error("There was an error logging in", error);
+    res.status(500).json({ message: 'Error authenticating user', error });
+    console.error("There was an error logging in", error );
   }
 };
 
@@ -119,7 +118,6 @@ exports.getEmployee = async (req, res) => {
 
     const employee = await Employee.findById(id);
 
-    // employee object not found - username or empid not in database
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found'});
     }

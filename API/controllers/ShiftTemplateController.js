@@ -38,7 +38,7 @@ exports.getShiftTemplate = async (req, res) => {
 
   catch (error) {
     res.status(500).json({ message: 'Error fetching shift template', error: error });
-    console.error('There was an error fetching shift template', err);
+    console.error('There was an error fetching shift template', error );
   }
 }
 
@@ -66,8 +66,8 @@ exports.editShiftTemplate = async (req, res) => {
   }
 
   catch(error) {
-    res.status(500).json({ message: 'Failed to edit shift', error});
-    console.error('There was an error editing shift template', error);
+    res.status(500).json({ message: 'Failed to edit shift', error });
+    console.error('There was an error editing shift template', error );
   }
 }
 
