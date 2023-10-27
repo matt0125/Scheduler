@@ -34,10 +34,19 @@ app.get('/', (req, res) => {
 });
 
 // API Endpoints
+
+// employee
 app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
+app.get('/api/employee/:id', employeeController.getEmployee);
+
+// shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
+app.get('/api/shift-templates/:id', shiftTemplateController.getShiftTemplate);
+app.put('/api/shift-templates/:id', shiftTemplateController.editShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
+
+// shifts
 app.post('/api/shifts', shiftController.createShift);
 app.get('/api/shifts/:id', shiftController.getShift);
 app.put('/api/shifts/:id', shiftController.editShift);

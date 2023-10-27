@@ -1,6 +1,5 @@
 const Employee = require('../models/Employee');
 
-
 Employee.syncIndexes().then(() => {
   console.log('Indexes have been synchronized');
 }).catch(err => {
@@ -18,8 +17,6 @@ Employee.collection.dropIndex('_id_', function(err, result) {
     console.log('Index dropped:', result);
   }
 });
-
-
 
 exports.registerEmployee = async (req, res) => {
   try {
@@ -110,9 +107,28 @@ exports.loginEmployee = async (req, res) => {
     return res.json({ message: 'Login successful' });
   }
 
-  catch (err) {
-    res.status(500).json({ message: 'Error authenticating user', err});
-    console.error("There was an error logging in", err);
+  catch (error) {
+    res.status(500).json({ message: 'Error authenticating user', error});
+    console.error("There was an error logging in", error);
   }
 };
 
+exports.getEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const employee = await Employee.findById(id);
+
+    // employee object not found - username or empid not in database
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found'});
+    }
+
+    res.status(200).json(employee);
+  }
+
+  catch (error) {
+    res.status(500).json({ message: 'Error fetching employee', error: error });
+    console.error('There was an error when fetching an employee', error );
+  }
+}
