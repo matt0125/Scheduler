@@ -90,8 +90,8 @@ exports.loginEmployee = async (req, res) => {
 
     const user = await Employee.findOne({ username: { $regex: new RegExp(username, 'i') } });
 
-    // console.log(user)
-    // console.log(username)
+    console.log(user)
+    console.log(username)
 
     // change error messages to be more vague later
     // need to hash password (bcrypt?)
@@ -117,6 +117,16 @@ exports.getEmployee = async (req, res) => {
     const { id } = req.params;
 
     const employee = await Employee.findById(id);
+
+    const mongoose = require('mongoose');
+    const validObjectId = mongoose.Types.ObjectId.isValid(id);
+
+    if (!validObjectId) {
+      return res.status(400).json({ message: 'Invalid employee ID format' });
+    }
+
+    console.log(id);
+    console.log(employee); 
 
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found'});
