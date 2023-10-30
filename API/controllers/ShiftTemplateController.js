@@ -29,6 +29,9 @@ exports.getShiftTemplate = async (req, res) => {
 
     const shiftTemplate = await ShiftTemplate.findById(id);
 
+    console.log(id);
+    console.log(shiftTemplate);
+
     if (!shiftTemplate) {
       return res.status(404).json({ message: 'Shift template not found'});
     }
@@ -75,6 +78,8 @@ exports.deleteShiftTemplate = async (req, res) => {
   try {
     const { id } = req.params;
 
+    console.log(id);
+    
     await ShiftTemplate.findByIdAndDelete(id);
 
     res.status(200).json({ message: 'Shift template deleted successfully' });
