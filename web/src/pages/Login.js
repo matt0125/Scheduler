@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Register from "./Register";
-
+import "../styles/Login.css";
+import { Container, Row, Col } from "react-bootstrap";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -36,7 +37,6 @@ const Login = () => {
 
     // Call the backend API to authenticate the user
     // TODO: Replace this with a real API call
-    // TODO: Replace this with a real API call
     const response = await fetch("http://large.poosd-project.com/api/login", {
       method: "POST",
       headers: {
@@ -45,9 +45,8 @@ const Login = () => {
       body: JSON.stringify({ username: username, password: password }),
     });
 
-
-    console.log(JSON.stringify({ username, password }))
-    console.log(response.status)
+    console.log(JSON.stringify({ username, password }));
+    console.log(response.status);
 
     // Check the response status code
     if (response.status === 200) {
@@ -60,29 +59,39 @@ const Login = () => {
   };
 
   return (
-    <div className="login-page">
-      <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Login</button>
-        <button type="button" onClick={() => navigate("/register")}>
-          Sign up
-        </button>
-      </form>
-    </div>
+      <Container>
+        <Row>
+          <Col>
+            <form onSubmit={handleSubmit}>
+              <div className="login-box">
+                <h1 class="font-family-katibeh">Login</h1>
+                <h2 class="username">Email(or username)</h2>
+                <input
+                  type="text"
+                  name="username"
+                  placeholder=""
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+                <h2 class="password">Password</h2>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder=""
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button type="submit">Login</button>
+                <button type="button" onClick={() => navigate("/register")}>
+                  Sign up
+                </button>
+              </div>
+            </form>
+          </Col>
+        </Row>
+        <footer style={{ backgroundColor: "#B1947B;" }}>
+        </footer>
+      </Container>
   );
 };
 
