@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const employeeController = require('./controllers/EmployeeController'); // Importing the employee controller
 const shiftTemplateController = require('./controllers/ShiftTemplateController');
 const shiftController = require('./controllers/ShiftController');
@@ -9,6 +10,9 @@ const { create } = require('domain');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+app.use(cors());
+app.options('*', cors());
 
 // Connect to MongoDB Atlas
 console.log('Connecting to MongoDB...');
@@ -30,11 +34,22 @@ app.get('/', (req, res) => {
 });
 
 // API Endpoints
+
+// employee
 app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
+app.get('/api/employee/:id', employeeController.getEmployee);
+
+// shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
+app.get('/api/shift-templates/:id', shiftTemplateController.getShiftTemplate);
+app.put('/api/shift-templates/:id', shiftTemplateController.editShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
+
+// shifts
 app.post('/api/shifts', shiftController.createShift);
+app.get('/api/shifts/:id', shiftController.getShift);
+app.put('/api/shifts/:id', shiftController.editShift);
 app.delete('/api/shifts/:id', shiftController.deleteShift);
 
 app.listen(port, () => {
