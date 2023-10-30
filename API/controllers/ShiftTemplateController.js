@@ -2,6 +2,8 @@ const ShiftTemplate = require('../models/ShiftTemplate');
 
 exports.createShiftTemplate = async (req, res) => {
   try {
+    console.log("creating shift template...");
+
     const { _id, dayOfWeek, startTime, endTime, positionId, templateId } = req.body;
     
     // Create a new shift template
@@ -11,11 +13,12 @@ exports.createShiftTemplate = async (req, res) => {
       startTime,
       endTime,
       positionId,
-      templateId
     });
     
     // Save to the database
     await newShiftTemplate.save();
+    
+    console.log('new shift template created: ', newShiftTemplate);
     
     res.status(201).json(newShiftTemplate);
   } catch (error) {
@@ -25,12 +28,14 @@ exports.createShiftTemplate = async (req, res) => {
 
 exports.getShiftTemplate = async (req, res) => {
   try {
+    console.log("fetching shift template...");
+
     const { id } = req.params;
 
     const shiftTemplate = await ShiftTemplate.findById(id);
 
-    console.log(id);
-    console.log(shiftTemplate);
+    console.log('id: ', id);
+    console.log('shiftTemplate: ', shiftTemplate);
 
     if (!shiftTemplate) {
       return res.status(404).json({ message: 'Shift template not found'});
@@ -47,13 +52,13 @@ exports.getShiftTemplate = async (req, res) => {
 
 exports.editShiftTemplate = async (req, res) => {
   try {
-    console.log('Editing shift template...');
-    console.log('Request body:', req.body);
+    console.log('editing shift template...');
+    console.log('request body:', req.body);
 
     const { id } = req.params;
     const { dayOfWeek, startTime, endTime, positionId, templateId } = req.body;
 
-    console.log('Shift template id:', id);
+    console.log('shift template id:', id);
 
     const updatedShiftTemplate = await ShiftTemplate.findByIdAndUpdate(
       id,
@@ -76,9 +81,11 @@ exports.editShiftTemplate = async (req, res) => {
 
 exports.deleteShiftTemplate = async (req, res) => {
   try {
+    console.log("deleting shift template...");
+
     const { id } = req.params;
 
-    console.log(id);
+    console.log('shift template deleted: ', id);
     
     await ShiftTemplate.findByIdAndDelete(id);
 

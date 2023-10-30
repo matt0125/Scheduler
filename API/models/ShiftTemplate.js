@@ -5,7 +5,6 @@ const shiftTemplateSchema = new mongoose.Schema({
   startTime: String,
   endTime: String,
   positionId: String,
-  templateId: String
 });
 
 module.exports = mongoose.model('ShiftTemplate', shiftTemplateSchema, 'ShiftTemplate');

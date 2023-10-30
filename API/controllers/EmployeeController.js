@@ -114,19 +114,14 @@ exports.loginEmployee = async (req, res) => {
 
 exports.getEmployee = async (req, res) => {
   try {
+    console.log("fetching employeee...");
+
     const { id } = req.params;
 
     const employee = await Employee.findById(id);
 
-    const mongoose = require('mongoose');
-    const validObjectId = mongoose.Types.ObjectId.isValid(id);
-
-    if (!validObjectId) {
-      return res.status(400).json({ message: 'Invalid employee ID format' });
-    }
-
-    console.log(id);
-    console.log(employee); 
+    console.log('id: ', id);
+    console.log('employee: ', employee); 
 
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found'});
