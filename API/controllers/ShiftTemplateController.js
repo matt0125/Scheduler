@@ -19,7 +19,7 @@ exports.createShiftTemplate = async (req, res) => {
     await newShiftTemplate.save();
     
     console.log('new shift template created: ', newShiftTemplate);
-    
+
     res.status(201).json(newShiftTemplate);
   } catch (error) {
     res.status(400).json({ message: 'Failed to create shift template', error });
@@ -56,13 +56,13 @@ exports.editShiftTemplate = async (req, res) => {
     console.log('request body:', req.body);
 
     const { id } = req.params;
-    const { dayOfWeek, startTime, endTime, positionId, templateId } = req.body;
+    const { dayOfWeek, startTime, endTime, positionId } = req.body;
 
     console.log('shift template id:', id);
 
     const updatedShiftTemplate = await ShiftTemplate.findByIdAndUpdate(
       id,
-      { dayOfWeek, startTime, endTime, positionId, templateId },
+      { dayOfWeek, startTime, endTime, positionId },
       { new: true }
     );
 
