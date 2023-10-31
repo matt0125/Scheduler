@@ -25,17 +25,26 @@ class _TabsPageState extends State<TabsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+      // You can add your logic here to prevent going back
+      // For example, show a confirmation dialog.
+      // Return true to allow back navigation, return false to prevent it.
+      return false;
+    },
+    child:Scaffold(
       body: IndexedStack(
         index: _currentIndex,
         children: _tabs,
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
+        showSelectedLabels: true, // Hide labels for selected items
+        showUnselectedLabels: false, // Hide labels for unselected items
         onTap: _onTabTapped,
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
+            icon: Icon(Icons.calendar_month),
             label: 'Dashboard',
           ),
           BottomNavigationBarItem(
@@ -48,6 +57,7 @@ class _TabsPageState extends State<TabsPage> {
           ),
         ],
       ),
+    ),
     );
   }
 }

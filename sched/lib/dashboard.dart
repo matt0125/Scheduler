@@ -21,6 +21,7 @@ class _DashboardPageState extends State<DashboardPage> {
       key: _scaffoldKey, // Assign the GlobalKey to the Scaffold
       appBar: AppBar(
         title: const Text('Dashboard'),
+        automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Column(

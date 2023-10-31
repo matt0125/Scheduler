@@ -41,7 +41,14 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+        onWillPop: () async {
+      // You can add your logic here to prevent going back
+      // For example, show a confirmation dialog.
+      // Return true to allow back navigation, return false to prevent it.
+      return false;
+    },
+    child: Scaffold(
       backgroundColor: const Color(0xFFEDE7E3), // Change the background color here
       body: SingleChildScrollView(
         child: Stack(
@@ -118,6 +125,7 @@ class _LoginPageState extends State<LoginPage> {
           ],
         )
       ),
+    ),
     );
   }
 }

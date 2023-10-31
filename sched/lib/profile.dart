@@ -32,6 +32,7 @@ class _ProfileTabState extends State<ProfileTab>
     return Scaffold(
       appBar: AppBar(
         title: Text('My Profile'),
+        automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.logout), // Exit icon for logout
