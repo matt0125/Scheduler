@@ -1,6 +1,7 @@
 // loginpage.dart
 import 'package:flutter/material.dart';
 import 'package:sched/signup.dart';
+import 'package:sched/Services/APIService.dart';
 import 'dashboard.dart';
 
 class LoginPage extends StatefulWidget {
@@ -15,11 +16,15 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true;
 
-  void _login() {
+  final apiService = APIService();
+
+  Future<void> _login() async {
     final String username = usernameController.text;
     final String password = passwordController.text;
+    final reponse = await apiService.login(username, password);
 
-    if (username == 'test' && password == 'test') {
+    if (reponse) {
+      print('Username: $username and password: $password.');
       // Replace the navigation logic here to go to the dashboard page upon successful login.
       Navigator.pushNamedAndRemoveUntil(
           context,
@@ -28,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
       );
     } else {
       // Handle authentication failure (e.g., show an error message).
-      print('Authentication failed. Please use username and password "test".');
+      print('Failed: username: $username and password: $password.');
     }
   }
 
