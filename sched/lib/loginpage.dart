@@ -1,8 +1,8 @@
 // loginpage.dart
 import 'package:flutter/material.dart';
 import 'package:sched/signup.dart';
-import 'package:sched/Services/APIService.dart';
 import 'dashboard.dart';
+import 'package:sched/Services/APIService.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -21,9 +21,9 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     final String username = usernameController.text;
     final String password = passwordController.text;
-    final reponse = await apiService.login(username, password);
+    final response = await apiService.login(username, password);
 
-    if (reponse) {
+    if (response) {
       print('Username: $username and password: $password.');
       // Replace the navigation logic here to go to the dashboard page upon successful login.
       Navigator.pushNamedAndRemoveUntil(
