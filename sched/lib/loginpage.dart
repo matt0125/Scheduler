@@ -44,19 +44,22 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFEDE7E3), // Change the background color here
       body: SingleChildScrollView(
-        child: Column(
+        child: Stack(
+          children: [
+          Container(
+          color: Colors.white,
+          height: MediaQuery.of(context).size.height / 4, // Divide the screen into three parts
+        ),
+        Column(
           children: [
             // Upper third with a white background
-            Container(
-              color: Colors.white,
-              height: MediaQuery.of(context).size.height / 4, // Divide the screen into three parts
-            ),
             Padding(
               padding: const EdgeInsets.all(115),
               child: Column(
                 children: [
                   Sched(), // Add the "Sched" text
                   const SizedBox(height: 20.0),
+                  const LogInText(),
                   BubbleText(
                     labelText: 'Email (or username)',
                     controller: usernameController,
@@ -105,15 +108,15 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 16.0),
-                  const LogInText(),
                   const NoAccountText(),
                   SignUpButton(),
-                  const Sched(),
                 ],
               ),
             ),
           ],
         ),
+          ],
+        )
       ),
     );
   }
@@ -219,7 +222,6 @@ class LogInText extends StatelessWidget {
         fontFamily: 'Katibeh',
         fontSize: 74.0,
         fontWeight: FontWeight.w400,
-        height: -9,
         color: Color(0xFF49423E),
       ),
     );
@@ -255,7 +257,6 @@ class Sched extends StatelessWidget {
         fontFamily: 'Katibeh',
         fontSize: 93,
         fontWeight: FontWeight.w400,
-        height: -11.5,
         color: Color(0xFF49423E),
       ),
     );
