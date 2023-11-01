@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Register from "./Register";
 import "../styles/Login.css";
 import { Container, Row, Col } from "react-bootstrap";
+import vector from "../images/Group.png";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -60,8 +61,11 @@ const Login = () => {
 
   return (
       <Container>
-        <Row>
-          <Col>
+        <Row className="row"> 
+          <Col className="column">
+            <img src={vector} className="business-photo" alt="business image"/>
+          </Col>
+          <Col className="column">
             <form onSubmit={handleSubmit}>
               <div className="login-box">
                 <h1 class="font-family-katibeh">Login</h1>
