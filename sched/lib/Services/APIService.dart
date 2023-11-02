@@ -43,4 +43,24 @@ class APIService {
     }
   }
 
+  Future<bool> register(   String firstName, String lastName, String email, String phone, String username, String password,  ) async {
+    final data = {
+      'firstName': firstName,
+      'lastName': lastName,
+      'email': email,
+      'phone': phone,
+      'username': username,
+      'password': password,
+
+    };
+
+    final responseData = await postToEndpoint(data, 'register');
+
+    if (responseData['message'] == 'Account created!') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 }

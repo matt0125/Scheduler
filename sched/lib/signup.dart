@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:sched/Services/APIService.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -9,19 +10,29 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final TextEditingController usernameController = TextEditingController();
+
+
+
+
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+
   bool _obscureText = true;
 
-  void _signUp() {
-    final String username = usernameController.text;
+  final apiService = APIService();
+
+  Future<void> _signUp() async {
     final String firstName = firstNameController.text;
     final String lastName = lastNameController.text;
     final String email = emailController.text;
+    final String phoneNumber = phoneNumberController.text;
+    final String username = usernameController.text;
     final String password = passwordController.text;
+    final response = await apiService.register(firstName, lastName, email, phoneNumber, username, password);
 
     // Implement your sign-up logic here
     // You can use username and password for registration
@@ -31,10 +42,10 @@ class _SignUpPageState extends State<SignUpPage> {
     // DONT FORGET: Email confirmation
 
     // Replace the navigation logic here to go to the dashboard page upon successful registration.
-    Navigator.pushReplacementNamed(
-      context,
-      '/',
-    );
+    // Navigator.pushReplacementNamed(
+    //   context,
+    //   '/',
+    // );
   }
 
   void _togglePasswordVisibility() {
@@ -79,6 +90,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       BubbleText(
                         labelText: 'Email',
                         controller: emailController,
+                      ),
+                      const SizedBox(height: 10.0),
+                      BubbleText(
+                        labelText: 'Phone number',
+                        controller: phoneNumberController,
                       ),
                       const SizedBox(height: 10.0),
                       BubbleText(
