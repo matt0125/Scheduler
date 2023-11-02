@@ -105,7 +105,7 @@ exports.loginEmployee = async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-    return res.json({ message: 'Login successful' });
+    return res.json({ message: 'Login successful', id: user._id });
   }
 
   catch (error) {
