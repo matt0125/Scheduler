@@ -33,11 +33,12 @@ exports.registerEmployee = async (req, res) => {
       dayAvail,
       endAvail,
       startAvail,
-      managerIdent
+      managerIdent,
+      managedBy
     } = req.body;
 
     // Validations
-    if (!username || !password || !email || !firstName || !lastName || !phone || !empId || !positionId || !title || !dayAvail || !endAvail || !startAvail) {
+    if (!username || !password || !email) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -59,7 +60,8 @@ exports.registerEmployee = async (req, res) => {
       dayAvail,
       endAvail,
       startAvail,
-      managerIdent
+      managerIdent,
+      managedBy
     });
 
     const savedEmployee = await newEmployee.save();
