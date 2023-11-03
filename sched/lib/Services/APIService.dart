@@ -21,10 +21,10 @@ class APIService {
       },
       body: json.encode(data),
     );
-    if (response.statusCode == 200) {
+    try {
       return json.decode(response.body);
-    } else {
-      throw Exception('Failed to post data to $endpoint');
+    } catch (e) {
+      throw Exception('Failed to decode response for $endpoint: $e');
     }
   }
 
@@ -43,7 +43,7 @@ class APIService {
     }
   }
 
-  Future<bool> register(   String firstName, String lastName, String email, String phone, String username, String password,  ) async {
+  Future<Response> register(   String firstName, String lastName, String email, String phone, String username, String password ) async {
     final data = {
       'firstName': firstName,
       'lastName': lastName,
@@ -51,16 +51,23 @@ class APIService {
       'phone': phone,
       'username': username,
       'password': password,
-
     };
 
     final responseData = await postToEndpoint(data, 'register');
 
-    if (responseData['message'] == 'Account created!') {
-      return true;
-    } else {
-      return false;
-    }
+    return Response(message: responseData['message'],
+        empId: (responseData['message'] == "Employee registered successfully")
+            ? responseData['employeeId']
+            : null);
   }
+}
 
+class Response {
+  final String message;
+  final String? empId;
+
+  Response({
+    required this.message,
+    this.empId,
+  });
 }

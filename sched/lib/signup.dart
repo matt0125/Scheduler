@@ -34,10 +34,14 @@ class _SignUpPageState extends State<SignUpPage> {
     final String password = passwordController.text;
     final response = await apiService.register(firstName, lastName, email, phoneNumber, username, password);
 
-    // Implement your sign-up logic here
-    // You can use username and password for registration
-
-    // API call here
+    if(response.empId == null)
+      {
+        // Display error
+        Popup(
+          title: 'Error',
+          message: response.message,
+        ).show(context);
+      }
 
     // DONT FORGET: Email confirmation
 
@@ -330,6 +334,37 @@ class LoginButton extends StatelessWidget {
           decoration: TextDecoration.underline,
         ),
       ),
+    );
+  }
+}
+
+
+
+
+
+class Popup {
+  final String title;
+  final String message;
+
+  Popup({required this.title, required this.message});
+
+  void show(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
