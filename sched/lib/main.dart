@@ -29,6 +29,14 @@ class MyApp extends StatelessWidget {
       }
 
     return MaterialApp(
+      theme: ThemeData(
+        appBarTheme: AppBarTheme(
+        color: const Color(0xFFEDE7E3),
+          titleTextStyle: TextStyle(
+            color: Color(0xFF6d6a68),
+            fontSize: 20,
+          ),
+        )),
       initialRoute: initRoute,
       routes: {
         '/': (context) => TabsPage(),

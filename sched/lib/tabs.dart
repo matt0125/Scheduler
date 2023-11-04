@@ -41,6 +41,13 @@ class _TabsPageState extends State<TabsPage> {
         currentIndex: _currentIndex,
         showSelectedLabels: true, // Hide labels for selected items
         showUnselectedLabels: false, // Hide labels for unselected items
+
+        backgroundColor: Color(0xFFEDE7E3),
+        selectedItemColor: Color(0xFF6d6a68),
+        unselectedItemColor: Color(0xFF6d6a68),
+        // Color(0xFFEDE7E3)
+
+
         onTap: _onTabTapped,
         items: [
           BottomNavigationBarItem(

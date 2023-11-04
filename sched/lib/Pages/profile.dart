@@ -37,6 +37,7 @@ class _ProfileTabState extends State<ProfileTab>
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.logout), // Exit icon for logout
+            color: Color(0xFF6d6a68),
             onPressed: () {
               DataService.clearEmpId();
               Navigator.pushReplacementNamed(
