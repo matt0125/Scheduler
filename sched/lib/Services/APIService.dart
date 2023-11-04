@@ -28,7 +28,7 @@ class APIService {
     }
   }
 
-  Future<bool> login(String username, String password) async {
+  Future<Response> login(String username, String password) async {
     final data = {
       'username': username,
       'password': password,
@@ -36,11 +36,10 @@ class APIService {
 
     final responseData = await postToEndpoint(data, 'login');
 
-    if (responseData['message'] == 'Login successful') {
-      return true;
-    } else {
-      return false;
-    }
+    return Response(message: responseData['message'],
+        empId: (responseData['message'] == 'Login successful')
+            ? responseData['id']
+            : null);
   }
 
   Future<Response> register(   String firstName, String lastName, String email, String phone, String username, String password ) async {

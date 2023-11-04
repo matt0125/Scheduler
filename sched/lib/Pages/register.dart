@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:sched/Services/APIService.dart';
+import 'package:sched/Services/DataService.dart';
+import 'package:sched/Widgets/popup.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -32,6 +34,7 @@ class _SignUpPageState extends State<SignUpPage> {
     final String phoneNumber = phoneNumberController.text;
     final String username = usernameController.text;
     final String password = passwordController.text;
+
     final response = await apiService.register(firstName, lastName, email, phoneNumber, username, password);
 
     if(response.empId == null)
@@ -42,14 +45,20 @@ class _SignUpPageState extends State<SignUpPage> {
           message: response.message,
         ).show(context);
       }
+    else
+      {
+        DataService.writeEmpId(response.empId);
+
+        Navigator.pushReplacementNamed(
+          context,
+          '/welcome',
+        );
+      }
 
     // DONT FORGET: Email confirmation
 
     // Replace the navigation logic here to go to the dashboard page upon successful registration.
-    // Navigator.pushReplacementNamed(
-    //   context,
-    //   '/',
-    // );
+
   }
 
   void _togglePasswordVisibility() {
@@ -334,37 +343,6 @@ class LoginButton extends StatelessWidget {
           decoration: TextDecoration.underline,
         ),
       ),
-    );
-  }
-}
-
-
-
-
-
-class Popup {
-  final String title;
-  final String message;
-
-  Popup({required this.title, required this.message});
-
-  void show(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

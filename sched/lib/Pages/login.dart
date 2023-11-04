@@ -1,8 +1,8 @@
-// loginpage.dart
+// login.dart
 import 'package:flutter/material.dart';
-import 'package:sched/signup.dart';
-import 'dashboard.dart';
 import 'package:sched/Services/APIService.dart';
+import 'package:sched/Services/DataService.dart';
+import 'package:sched/Widgets/popup.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -16,24 +16,31 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   bool _obscureText = true;
 
+  final data = DataService();
   final apiService = APIService();
+
 
   Future<void> _login() async {
     final String username = usernameController.text;
     final String password = passwordController.text;
     final response = await apiService.login(username, password);
 
-    if (response) {
-      print('Username: $username and password: $password.');
-      // Replace the navigation logic here to go to the dashboard page upon successful login.
-      Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/',
-          ModalRoute.withName('/')
+    if(response.empId == null)
+    {
+      // Display error
+      Popup(
+        title: 'Error',
+        message: response.message,
+      ).show(context);
+    }
+    else
+    {
+      DataService.writeEmpId(response.empId);
+
+      Navigator.pushReplacementNamed(
+        context,
+        '/',
       );
-    } else {
-      // Handle authentication failure (e.g., show an error message).
-      print('Failed: username: $username and password: $password.');
     }
   }
 
@@ -73,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 20.0),
                   const LogInText(),
                   BubbleText(
-                    labelText: 'Email (or username)',
+                    labelText: 'Username',
                     controller: usernameController,
                   ),
                   const SizedBox(height: 10.0),

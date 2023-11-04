@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sched/Services/DataService.dart';
+
 
 class ProfileTab extends StatefulWidget {
   @override
@@ -9,7 +11,6 @@ class _ProfileTabState extends State<ProfileTab>
     with AutomaticKeepAliveClientMixin<ProfileTab> {
   @override
   bool get wantKeepAlive => true;
-
   int counter = 0;
 
   void incrementCounter() {
@@ -37,7 +38,7 @@ class _ProfileTabState extends State<ProfileTab>
           IconButton(
             icon: const Icon(Icons.logout), // Exit icon for logout
             onPressed: () {
-              // Navigate back to the LoginPage
+              DataService.clearEmpId();
               Navigator.pushReplacementNamed(
                 context,
                 '/login',

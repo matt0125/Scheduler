@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dashboard.dart';
-import 'team.dart';
-import 'profile.dart';
+import 'Pages/dashboard.dart';
+import 'Pages/team.dart';
+import 'Pages/profile.dart';
 
 class TabsPage extends StatefulWidget {
   @override

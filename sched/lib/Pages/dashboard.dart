@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'calendar_widget.dart';
-import 'loginpage.dart';
+import '../Widgets/calendar_widget.dart';
 
 class DashboardPage extends StatefulWidget {
   DashboardPage() : super();
