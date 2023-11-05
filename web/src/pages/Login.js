@@ -4,6 +4,8 @@ import Register from "./Register";
 import "../styles/Login.css";
 import { Container, Row, Col } from "react-bootstrap";
 import vector from "../images/Group.png";
+import emailIcon from "../images/email.png";
+import passIcon from "../images/password.png";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -70,6 +72,9 @@ const Login = () => {
               <div className="login-box">
                 <h1 class="font-family-katibeh">Login</h1>
                 <h2 class="username">Email(or username)</h2>
+                <div className="email-icon">
+                  <img src={emailIcon} alt="email icon"></img>
+                </div>
                 <input
                   type="text"
                   name="username"
@@ -78,6 +83,9 @@ const Login = () => {
                   onChange={(e) => setUsername(e.target.value)}
                 />
                 <h2 class="password">Password</h2>
+                <div classname="password-icon">
+                  <img src={passIcon} alt="password icon"></img>
+                </div>
                 <input
                   type="password"
                   name="password"
@@ -93,8 +101,6 @@ const Login = () => {
             </form>
           </Col>
         </Row>
-        <footer style={{ backgroundColor: "#B1947B;" }}>
-        </footer>
       </Container>
   );
 };
