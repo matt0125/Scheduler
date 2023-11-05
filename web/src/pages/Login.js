@@ -72,27 +72,30 @@ const Login = () => {
               <div className="login-box">
                 <h1 class="font-family-katibeh">Login</h1>
                 <h2 class="username">Email(or username)</h2>
-                <div className="email-icon">
-                  <img src={emailIcon} alt="email icon"></img>
+                <div class="username-input-group">
+                  <img src={emailIcon} alt="email icon" />
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder=""
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
                 </div>
-                <input
-                  type="text"
-                  name="username"
-                  placeholder=""
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
                 <h2 class="password">Password</h2>
-                <div classname="password-icon">
+                <div class="password-input-group">
                   <img src={passIcon} alt="password icon"></img>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder=""
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder=""
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                  
+                
+                
                 <button type="submit">Login</button>
                 <button type="button" onClick={() => navigate("/register")}>
                   Sign up

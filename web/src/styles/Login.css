@@ -87,23 +87,63 @@ h1 {
   font-size: 20px;
 }
 
-.email-icon img{
-  position: absolute;
-  z-index: 1;
-  width: 4%;
-  height: 7%;
-  flex-shrink: 0;
-  right: 61%;
-  top: 42.5%;
+
+
+.username-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
-.password-icon img{
+.username-input-group img {
   position: absolute;
-  z-index: 1;
-  width: 35px;
-  height: 36px;
-  flex-shrink: 0;
-
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
 }
+
+.username-input-group input {
+  padding-left: 40px;
+}
+
+.username-input-group img {
+  z-index: 1;
+}
+
+.username-input-group input {
+  z-index: 0;
+}
+
+
+
+.password-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-group img {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+}
+
+.password-input-group input {
+  padding-left: 40px;
+}
+
+.password-input-group img {
+  z-index: 1;
+}
+
+.password-input-group input {
+  z-index: 0;
+}
+
 
 
