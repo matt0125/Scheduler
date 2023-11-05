@@ -77,15 +77,26 @@ exports.getShiftByDate = async (req, res) => {
   try {
     console.log('Fetching for shifts by date...');
 
-    const { date } = req.params;
+    // const unixTimestamp = -61851600000000;
+    // const isoDate = new Date(unixTimestamp).toISOString();
+    // console.log(isoDate);
 
-    const shifts = await Shift.find({ date: new Date(date) });
+    const { date } = req.params;
+    
+    const selectedDate = new Date(date);
+    const nextDate = new Date(date);
+
+    nextDate.setDate(selectedDate.getDate() + 1);
+
+    const shifts = await Shift.find({
+      date: { $gte: selectedDate, $lt: nextDate },
+    });
 
     if (!shifts || shifts.length === 0) {
       return res.status(404).json({ message: 'No shifts found for the specified date' });
     }
 
-    res.status(200).shifts;
+    res.status(200).json(shifts);
   }
 
   catch (error) {
@@ -102,7 +113,7 @@ exports.getShiftByEmpId = async (req, res) => {
 
     const shifts = await Shift.find({ empId });
 
-    if (shifts.length === 0) {
+    if (!shifts || shifts.length === 0) {
       return res.status(404).json({ message: 'No shifts found for the specified employee ID' });
     }
 
