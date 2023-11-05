@@ -61,11 +61,12 @@ const Login = () => {
     }
   };
 
+  let url = "/register";
   return (
       <Container>
         <Row className="row"> 
           <Col className="column">
-            <img src={vector} className="business-photo" alt="business image"/>
+            <img src={vector} className="business-photo" alt="business vector"/>
           </Col>
           <Col className="column">
             <form onSubmit={handleSubmit}>
@@ -93,13 +94,9 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                  
-                
-                
-                <button type="submit">Login</button>
-                <button type="button" onClick={() => navigate("/register")}>
-                  Sign up
-                </button>
+                <button type="submit" className="submit-button">Login</button>
+                <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>
+                <p className="login-register-p">Don't have an account  <a href={url} className="login-register-url">sign up</a></p>
               </div>
             </form>
           </Col>
