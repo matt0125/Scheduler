@@ -46,6 +46,9 @@ app.get('/api/shifts/:id', shiftController.getShift);
 app.put('/api/shifts/:id', shiftController.editShift);
 app.delete('/api/shifts/:id', shiftController.deleteShift);
 
+app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
+app.get('/api/shifts/empid/:empId', shiftController.getShiftByEmpId);
+
 // shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
 app.get('/api/shift-templates/:id', shiftTemplateController.getShiftTemplate);
