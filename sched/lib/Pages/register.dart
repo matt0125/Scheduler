@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:sched/Services/APIService.dart';
 import 'package:sched/Services/DataService.dart';
@@ -12,10 +11,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-
-
-
-
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -27,26 +22,57 @@ class _SignUpPageState extends State<SignUpPage> {
 
   final apiService = APIService();
 
+  Map<String, bool> fieldValidation = {
+    'firstName': true,
+    'lastName': true,
+    'email': true,
+    'phoneNumber': true,
+    'username': true,
+    'password': true,
+  };
+
   Future<void> _signUp() async {
-    final String firstName = firstNameController.text;
-    final String lastName = lastNameController.text;
-    final String email = emailController.text;
-    final String phoneNumber = phoneNumberController.text;
-    final String username = usernameController.text;
-    final String password = passwordController.text;
+    setState(() {
+      // Validate each field and update the validation state.
+      fieldValidation['firstName'] = firstNameController.text.isNotEmpty;
+      fieldValidation['lastName'] = lastNameController.text.isNotEmpty;
+      fieldValidation['email'] = emailController.text.isNotEmpty;
+      fieldValidation['phoneNumber'] = phoneNumberController.text.isNotEmpty;
+      fieldValidation['username'] = usernameController.text.isNotEmpty;
+      fieldValidation['password'] = passwordController.text.isNotEmpty;
+    });
 
-    final response = await apiService.register(firstName, lastName, email, phoneNumber, username, password);
+    // Check if any field is not filled out.
+    if (fieldValidation.containsValue(false)) {
+      // Display an error message or take action as needed.
+      Popup(
+        title: 'Error',
+        message: 'Please fill out all fields.',
+      ).show(context);
+    } else {
+      final String firstName = firstNameController.text;
+      final String lastName = lastNameController.text;
+      final String email = emailController.text;
+      final String phoneNumber = phoneNumberController.text;
+      final String username = usernameController.text;
+      final String password = passwordController.text;
 
-    if(response.empId == null)
-      {
+      final response = await apiService.register(
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        username,
+        password,
+      );
+
+      if (response.empId == null) {
         // Display error
         Popup(
           title: 'Error',
           message: response.message,
         ).show(context);
-      }
-    else
-      {
+      } else {
         DataService.writeEmpId(response.empId);
 
         Navigator.pushReplacementNamed(
@@ -54,11 +80,7 @@ class _SignUpPageState extends State<SignUpPage> {
           '/welcome',
         );
       }
-
-    // DONT FORGET: Email confirmation
-
-    // Replace the navigation logic here to go to the dashboard page upon successful registration.
-
+    }
   }
 
   void _togglePasswordVisibility() {
@@ -70,71 +92,71 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEDE7E3), // Change the background color here
+      backgroundColor: const Color(0xFFEDE7E3),
       body: SingleChildScrollView(
         child: Stack(
           children: [
             Container(
               color: Colors.white,
-              height: MediaQuery.of(context).size.height / 4, // Divide the screen into three parts
+              height: MediaQuery.of(context).size.height / 4,
             ),
             Column(
               children: [
-                // Upper third with a white background
-
                 Padding(
                   padding: const EdgeInsets.all(115),
                   child: Column(
                     children: [
-                      // Sched(), // Add the "Sched" text
                       const SizedBox(height: 25.0),
                       const SignUpText(),
                       const SizedBox(height: 20.0),
                       BubbleText(
                         labelText: 'First Name',
                         controller: firstNameController,
+                        isError: !fieldValidation['firstName']!,
                       ),
                       const SizedBox(height: 10.0),
                       BubbleText(
                         labelText: 'Last Name',
                         controller: lastNameController,
+                        isError: !fieldValidation['lastName']!,
                       ),
                       const SizedBox(height: 10.0),
                       BubbleText(
                         labelText: 'Email',
                         controller: emailController,
+                        isError: !fieldValidation['email']!,
                       ),
                       const SizedBox(height: 10.0),
                       BubbleText(
                         labelText: 'Phone number',
                         controller: phoneNumberController,
+                        isError: !fieldValidation['phoneNumber']!,
                       ),
                       const SizedBox(height: 10.0),
                       BubbleText(
                         labelText: 'Username',
                         controller: usernameController,
+                        isError: !fieldValidation['username']!,
                       ),
                       const SizedBox(height: 10.0),
                       BubbleText(
                         labelText: 'Password',
                         controller: passwordController,
-                        obscureText: _obscureText, // Use the obscureText value
+                        obscureText: _obscureText,
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureText
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                            _obscureText ? Icons.visibility : Icons.visibility_off,
                             color: Color(0xFF49423E),
                           ),
                           onPressed: _togglePasswordVisibility,
                         ),
+                        isError: !fieldValidation['password']!,
                       ),
                       const SizedBox(height: 40.0),
                       ElevatedButton(
                         onPressed: _signUp,
                         style: ButtonStyle(
-                          backgroundColor:
-                          MaterialStateProperty.all<Color>(const Color(0xFFB1947B)),
+                          backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFB1947B)),
                           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(60),
@@ -157,7 +179,6 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                         ),
                       ),
-                      // const SizedBox(height: 16.0),
                       const SizedBox(height: 20.0),
                       const AccountText(),
                       LoginButton(),
@@ -167,11 +188,13 @@ class _SignUpPageState extends State<SignUpPage> {
               ],
             ),
           ],
-        )
+        ),
       ),
     );
   }
 }
+
+
 
 
 
@@ -216,12 +239,14 @@ class BubbleText extends StatelessWidget {
   final TextEditingController controller;
   final bool obscureText;
   final Widget? suffixIcon;
+  final bool isError; // Add a new property to determine if the field is incomplete
 
   const BubbleText({
     required this.labelText,
     required this.controller,
     this.obscureText = false,
     this.suffixIcon,
+    this.isError = false, // Initialize the isError property with false
   });
 
   @override
@@ -245,6 +270,7 @@ class BubbleText extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           suffixIcon: suffixIcon,
+          isError: isError, // Pass the isError property to BubbleContainer
         ),
       ],
     );
@@ -255,11 +281,13 @@ class BubbleContainer extends StatelessWidget {
   final TextEditingController controller;
   final bool obscureText;
   final Widget? suffixIcon;
+  final bool isError; // Add a new property to determine if the field is incomplete
 
   const BubbleContainer({
     required this.controller,
     required this.obscureText,
     this.suffixIcon,
+    this.isError = false, // Initialize the isError property with false
   });
 
   @override
@@ -269,7 +297,10 @@ class BubbleContainer extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(60),
         color: const Color(0xFFCDBFB6),
-        border: Border.all(color: Colors.black, width: 2.0),
+        border: Border.all(
+          color: isError ? Colors.red : Colors.black, // Change border color if isError is true
+          width: 2.0,
+        ),
         boxShadow: const [
           BoxShadow(
             color: Colors.black,
