@@ -4,29 +4,49 @@ const ShiftTemplate = require('../models/ShiftTemplate');
 
 exports.createShift = async (req, res) => {
   console.log('Creating shift...');
+  console.log('Type of Employee in controller:', typeof Employee);
   try {
     console.log('Creating shift...');
     const { date, empId, templateId } = req.body;
+
+    if (!date || !empId || !templateId) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    // Validate date format and check if it's a valid date
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
+      return res.status(400).json({ message: 'Invalid date format' });
+    }
+
     const [month, day, year] = date.split('-').map(d => parseInt(d, 10));
-    // Adjusting for the year format, assuming it's a 2-digit year.
-    const fullYear = 2000 + year;
-    const shiftDate = new Date(fullYear, month - 1, day);
+
+    if (isNaN(month) || month < 1 || month > 12 ||
+        isNaN(day) || day < 1 || day > 31 ||
+        isNaN(year) || year < 1000 || year > 9999) {
+      return res.status(400).json({ message: 'Invalid date' });
+    }
+
+    // Construct a date object and validate it
+    const shiftDate = new Date(year, month - 1, day);
+    if (!(shiftDate instanceof Date && !isNaN(shiftDate))) {
+      return res.status(400).json({ message: 'Invalid date' });
+    }
+
     const dayOfWeek = shiftDate.getDay();
 
-    // Find the employee and the template
+    // Find the employee and the template and validate them
     const employee = await Employee.findById(empId).populate('positions');
-    const template = await ShiftTemplate.findById(templateId);
-
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
-
+    
+    const template = await ShiftTemplate.findById(templateId);
     if (!template) {
       return res.status(404).json({ message: 'Shift template not found' });
     }
 
     // Check if employee has the position required by the template
-    const positionMatch = employee.positions.some(position => position._id.toString() === template.positionId);
+    const positionMatch = employee.positions.some(position => position._id.toString() === template.positionId.toString());
     if (!positionMatch) {
       return res.status(400).json({ message: 'Employee does not hold the required position for this shift' });
     }
@@ -51,9 +71,6 @@ exports.createShift = async (req, res) => {
       const isAvailable = dayOfWeekMatch && startTimeMatch && endTimeMatch;
       console.log('Is available?', isAvailable);
 
-      console.log(`Checking availability for dayOfWeek: ${avail.dayOfWeek} with template dayOfWeek: ${dayOfWeek}`);
-      console.log(`Day of week match? ${avail.dayOfWeek === template.dayOfWeek}`);
-
 
 
       return isAvailable;
@@ -77,7 +94,7 @@ exports.createShift = async (req, res) => {
     res.status(201).json(newShift);
   } catch (error) {
     console.log('Error creating shift:', error)
-    res.status(400).json({ message: 'Failed to create shift mwahahah', error });
+    res.status(400).json({ message: 'Failed to create shift', error });
   }
 };
 

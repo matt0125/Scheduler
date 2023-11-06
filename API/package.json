@@ -2,7 +2,8 @@
     "name": "your-app",
     "version": "1.0.0",
     "scripts": {
-        "start": "nodemon ./server.js"
+        "start": "nodemon ./server.js",
+        "test": "mocha 'test/**/*.js'"
     },
     "dependencies": {
         "bcrypt": "^5.1.1",
@@ -12,6 +13,9 @@
         "mongoose": "^7.6.3"
     },
     "devDependencies": {
-        "nodemon": "^2.0.15"
+        "chai": "^4.3.10",
+        "mocha": "^10.2.0",
+        "nodemon": "^2.0.15",
+        "sinon": "^17.0.1"
     }
 }
