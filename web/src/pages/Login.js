@@ -7,6 +7,7 @@ import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import logo from "../images/branding.png";
+//import MediaQuery from 'react-responsive'
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -61,7 +62,7 @@ const Login = () => {
       alert("Invalid username or password");
     }
   };
-
+  
   let url = "/register";
   return (
       <Container>
