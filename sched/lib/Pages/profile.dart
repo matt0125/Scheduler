@@ -1,31 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:sched/Services/DataService.dart';
-
+import 'availability.dart';
 
 class ProfileTab extends StatefulWidget {
   @override
   _ProfileTabState createState() => _ProfileTabState();
 }
 
-class _ProfileTabState extends State<ProfileTab>
-    with AutomaticKeepAliveClientMixin<ProfileTab> {
+class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMixin<ProfileTab> {
   @override
   bool get wantKeepAlive => true;
-  int counter = 0;
-
-  void incrementCounter() {
-    setState(() {
-      counter++;
-    });
-  }
-
-  void decrementCounter() {
-    setState(() {
-      if (counter > 0) {
-        counter--;
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,33 +33,67 @@ class _ProfileTabState extends State<ProfileTab>
         ],
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Profile Tab Content',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Counter: $counter',
-              style: TextStyle(fontSize: 18),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  onPressed: incrementCounter,
-                  child: Text('Increase'),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 10), // Adjust the left padding as needed
+          child: Stack(
+            children: <Widget>[
+              Positioned(
+                top: 0,
+                left: 0,
+                child: Container(
+                  width: 100, // Adjust the size as needed
+                  height: 100, // Adjust the size as needed
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFF49423E), // Background color for the profile picture
+                  ),
+                  child: Icon(
+                    Icons.person, // Replace with your profile picture
+                    size: 60, // Adjust the size as needed
+                    color: Colors.white,
+                  ),
                 ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: decrementCounter,
-                  child: Text('Decrease'),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 120), // Adjust the top padding as needed
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AvailabilityScreen()), // Replace with your AvailabilityScreen widget
+                        );
+                      },
+                      child: Text('Availability'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFB1947B),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Add functionality for "Time-off" button here
+                      },
+                      child: Text('Time-off'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFB1947B), // Background color for the "Settings" button
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Add functionality for "Settings" button here
+                      },
+                      child: Text('Profile Settings'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFB1947B), // Background color for the "Settings" button
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

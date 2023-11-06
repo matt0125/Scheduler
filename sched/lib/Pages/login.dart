@@ -1,4 +1,3 @@
-// login.dart
 import 'package:flutter/material.dart';
 import 'package:sched/Services/APIService.dart';
 import 'package:sched/Services/DataService.dart';
@@ -19,22 +18,18 @@ class _LoginPageState extends State<LoginPage> {
   final data = DataService();
   final apiService = APIService();
 
-
   Future<void> _login() async {
     final String username = usernameController.text;
     final String password = passwordController.text;
     final response = await apiService.login(username, password);
 
-    if(response.empId == null)
-    {
+    if (response.empId == null) {
       // Display error
       Popup(
         title: 'Error',
         message: response.message,
       ).show(context);
-    }
-    else
-    {
+    } else {
       DataService.writeEmpId(response.empId);
 
       Navigator.pushReplacementNamed(
@@ -43,7 +38,6 @@ class _LoginPageState extends State<LoginPage> {
       );
     }
   }
-
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -54,90 +48,91 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-        onWillPop: () async {
-      // You can add your logic here to prevent going back
-      // For example, show a confirmation dialog.
-      // Return true to allow back navigation, return false to prevent it.
-      return false;
-    },
-    child: Scaffold(
-      backgroundColor: const Color(0xFFEDE7E3), // Change the background color here
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-          Container(
-          color: Colors.white,
-          height: MediaQuery.of(context).size.height / 4, // Divide the screen into three parts
-        ),
-        Column(
-          children: [
-            // Upper third with a white background
-            Padding(
-              padding: const EdgeInsets.all(115),
-              child: Column(
+      onWillPop: () async {
+        // You can add your logic here to prevent going back
+        // For example, show a confirmation dialog.
+        // Return true to allow back navigation, return false to prevent it.
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFEDE7E3), // Change the background color here
+        body: SingleChildScrollView(
+          child: Stack(
+            children: [
+              Container(
+                color: Colors.white,
+                height: MediaQuery.of(context).size.height / 4, // Divide the screen into three parts
+              ),
+              Column(
                 children: [
-                  Sched(), // Add the "Sched" text
-                  const SizedBox(height: 20.0),
-                  const LogInText(),
-                  BubbleText(
-                    labelText: 'Username',
-                    controller: usernameController,
-                  ),
-                  const SizedBox(height: 10.0),
-                  BubbleText(
-                    labelText: 'Password',
-                    controller: passwordController,
-                    obscureText: _obscureText, // Use the obscureText value
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureText
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Color(0xFF49423E),
-                      ),
-                      onPressed: _togglePasswordVisibility,
-                    ),
-                  ),
-                  const SizedBox(height: 40.0),
-                  ElevatedButton(
-                    onPressed: _login,
-                    style: ButtonStyle(
-                      backgroundColor:
-                      MaterialStateProperty.all<Color>(const Color(0xFFB1947B)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(60),
+                  // Upper third with a white background
+                  Padding(
+                    padding: const EdgeInsets.all(115),
+                    child: Column(
+                      children: [
+                        Sched(), // Add the "Sched" text
+                        SchedLogoImage(), // Add the "Sched" logo image
+                        const SizedBox(height: 20.0),
+                        const LogInText(),
+                        BubbleText(
+                          labelText: 'Username',
+                          controller: usernameController,
                         ),
-                      ),
-                    ),
-                    child: const SizedBox(
-                      width: 250,
-                      height: 50,
-                      child: Center(
-                        child: Text(
-                          'Login',
-                          style: TextStyle(
-                            fontFamily: 'Katibeh',
-                            fontSize: 25,
-                            color: Colors.black,
-                            height: 2.5,
+                        const SizedBox(height: 10.0),
+                        BubbleText(
+                          labelText: 'Password',
+                          controller: passwordController,
+                          obscureText: _obscureText, // Use the obscureText value
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Color(0xFF49423E),
+                            ),
+                            onPressed: _togglePasswordVisibility,
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 40.0),
+                        ElevatedButton(
+                          onPressed: _login,
+                          style: ButtonStyle(
+                            backgroundColor:
+                            MaterialStateProperty.all<Color>(const Color(0xFFB1947B)),
+                            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(60),
+                              ),
+                            ),
+                          ),
+                          child: const SizedBox(
+                            width: 250,
+                            height: 50,
+                            child: Center(
+                              child: Text(
+                                'Login',
+                                style: TextStyle(
+                                  fontFamily: 'Katibeh',
+                                  fontSize: 25,
+                                  color: Colors.black,
+                                  height: 2.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16.0),
+                        const NoAccountText(),
+                        SignUpButton(),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16.0),
-                  const NoAccountText(),
-                  SignUpButton(),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-          ],
-        )
       ),
-    ),
     );
   }
 }
@@ -171,6 +166,7 @@ class BubbleText extends StatelessWidget {
               ),
             ),
           ],
+
         ),
         BubbleContainer(
           controller: controller,
@@ -274,6 +270,7 @@ class Sched extends StatelessWidget {
     return const Text(
       "Sched",
       style: TextStyle(
+        height: .25,
         fontFamily: 'Katibeh',
         fontSize: 93,
         fontWeight: FontWeight.w400,
@@ -291,9 +288,9 @@ class SignUpButton extends StatelessWidget {
     return TextButton(
       onPressed: () {
         Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/signup',
-          ModalRoute.withName('/')
+            context,
+            '/signup',
+            ModalRoute.withName('/')
         );
       },
       child: const Text(
@@ -307,6 +304,27 @@ class SignUpButton extends StatelessWidget {
           decoration: TextDecoration.underline,
         ),
       ),
+    );
+  }
+}
+
+class SchedLogoImage extends StatelessWidget {
+  const SchedLogoImage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 150,  // Set the desired width
+      height: 150, // Set the desired height
+      child: Padding(
+        padding: const EdgeInsets.only(top: 0), // Adjust the top padding as needed
+        // Align the image to the top center
+        child: Image.asset(
+          'assets/icon/Sched logo.png',
+          fit: BoxFit.contain, // You can adjust BoxFit to your needs
+        ),
+      ),
+
     );
   }
 }

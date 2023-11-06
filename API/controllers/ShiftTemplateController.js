@@ -2,7 +2,7 @@ const ShiftTemplate = require('../models/ShiftTemplate');
 
 exports.createShiftTemplate = async (req, res) => {
   try {
-    console.log("creating shift template...");
+    console.log("Creating shift template...");
 
     const { _id, dayOfWeek, startTime, endTime, positionId, templateId } = req.body;
     
@@ -18,7 +18,7 @@ exports.createShiftTemplate = async (req, res) => {
     // Save to the database
     await newShiftTemplate.save();
     
-    console.log('new shift template created: ', newShiftTemplate);
+    console.log('New shift template created: ', newShiftTemplate);
 
     res.status(201).json(newShiftTemplate);
   } catch (error) {
@@ -28,7 +28,7 @@ exports.createShiftTemplate = async (req, res) => {
 
 exports.getShiftTemplate = async (req, res) => {
   try {
-    console.log("fetching shift template...");
+    console.log("Fetching shift template...");
 
     const { id } = req.params;
 
@@ -52,13 +52,13 @@ exports.getShiftTemplate = async (req, res) => {
 
 exports.editShiftTemplate = async (req, res) => {
   try {
-    console.log('editing shift template...');
-    console.log('request body:', req.body);
+    console.log('Editing shift template...');
+    console.log('Request body:', req.body);
 
     const { id } = req.params;
     const { dayOfWeek, startTime, endTime, positionId } = req.body;
 
-    console.log('shift template id:', id);
+    console.log('Shift template id:', id);
 
     const updatedShiftTemplate = await ShiftTemplate.findByIdAndUpdate(
       id,
@@ -81,11 +81,11 @@ exports.editShiftTemplate = async (req, res) => {
 
 exports.deleteShiftTemplate = async (req, res) => {
   try {
-    console.log("deleting shift template...");
+    console.log("Deleting shift template...");
 
     const { id } = req.params;
 
-    console.log('shift template deleted: ', id);
+    console.log('Shift template deleted: ', id);
     
     await ShiftTemplate.findByIdAndDelete(id);
 

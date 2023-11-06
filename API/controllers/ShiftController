@@ -119,6 +119,7 @@ exports.editShift = async (req, res) => {
   try {
     console.log('Editing shift...');
     console.log('Request body:', req.body);
+
     const { id } = req.params;
     const { date, empId, templateId } = req.body;
 
@@ -154,3 +155,56 @@ function convertTimeToMinutes(time) {
   const [hours, minutes] = time.split(":").map(Number);
   return hours * 60 + minutes;
 }
+
+exports.getShiftByDate = async (req, res) => {
+  try {
+    console.log('Fetching for shifts by date...');
+
+    // const unixTimestamp = -61851600000000;
+    // const isoDate = new Date(unixTimestamp).toISOString();
+    // console.log(isoDate);
+
+    const { date } = req.params;
+    
+    const selectedDate = new Date(date);
+    const nextDate = new Date(date);
+
+    nextDate.setDate(selectedDate.getDate() + 1);
+
+    const shifts = await Shift.find({
+      date: { $gte: selectedDate, $lt: nextDate },
+    });
+
+    if (!shifts || shifts.length === 0) {
+      return res.status(404).json({ message: 'No shifts found for the specified date' });
+    }
+
+    res.status(200).json(shifts);
+  }
+
+  catch (error) {
+    res.status(500).json({ message: 'Error fetching for shifts by date', error});
+    console.error('There was an error fetching for shifts by date', error); 
+  }
+}
+
+exports.getShiftByEmpId = async (req, res) => {
+  try {
+    console.log('Fetching for shifts by employee ID...');
+    
+    const { empId } = req.params;
+
+    const shifts = await Shift.find({ empId });
+
+    if (!shifts || shifts.length === 0) {
+      return res.status(404).json({ message: 'No shifts found for the specified employee ID' });
+    }
+
+    res.status(200).json(shifts);
+  } 
+  
+  catch (error) {
+    res.status(500).json({ message: 'Error fetching shifts by employee ID', error });
+    console.error('There was an error fetching shifts by employee ID', error);
+  }
+};

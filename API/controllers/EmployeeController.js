@@ -116,7 +116,7 @@ exports.loginEmployee = async (req, res) => {
 
 exports.getEmployee = async (req, res) => {
   try {
-    console.log("fetching employeee...");
+    console.log("Fetching employeee...");
 
     const { id } = req.params;
 
@@ -134,6 +134,6 @@ exports.getEmployee = async (req, res) => {
 
   catch (error) {
     res.status(500).json({ message: 'Error fetching employee', error: error });
-    console.error('There was an error when fetching an employee', error );
+    console.error('There was an error fetching an employee', error );
   }
 }
