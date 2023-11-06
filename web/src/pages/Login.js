@@ -78,7 +78,7 @@ const Login = () => {
           <Col className="column">
             <img src={vector} className="business-photo" alt="business vector"/>
           </Col>
-          <Col className="column">
+          <Col className="main-column">
             <form onSubmit={handleSubmit}>
               <div className="login-box">
                 <h1 class="font-family-katibeh">Login</h1>
