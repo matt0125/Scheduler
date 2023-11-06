@@ -26,10 +26,19 @@ h1 {
 
 .column{
   flex: 50%;
-  margin-top: 5%;
+  margin-top: 2%;
   align-self: center;
   place-items: center;
   
+}
+
+.logo{
+  width: 50%;
+}
+
+.title{
+  padding-left: 7%;
+  padding-right: 60%;
 }
 
 .business-photo {
@@ -39,6 +48,7 @@ h1 {
   align-self: center;
   place-items: center;
 }
+
 .login-box {
   background-color: E7D8CC;
   padding: 10%;
@@ -118,7 +128,7 @@ h1 {
 }
 .username-input-group img {
   position: absolute;
-  left: 20px;
+  left: 10px;
   top: 50%;
   transform: translateY(-50%);
   width: 20px;
@@ -187,7 +197,6 @@ h1 {
     align-self: center;
     place-items: center;
   }
-  
 }
 
 

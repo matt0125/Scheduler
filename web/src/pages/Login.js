@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import Register from "./Register";
 import "../styles/Login.css";
 import { Container, Row, Col } from "react-bootstrap";
-import vector from "../images/Group.png";
+import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
+import logo from "../images/branding.png";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -64,6 +65,14 @@ const Login = () => {
   let url = "/register";
   return (
       <Container>
+        <Row>
+          <Col>
+            <img src={logo} alt="sched logo" className="logo"></img>
+          </Col>
+          <Col className="title">
+            <h1>Name of WebApp</h1>
+          </Col>
+        </Row>
         <Row className="row"> 
           <Col className="column">
             <img src={vector} className="business-photo" alt="business vector"/>
