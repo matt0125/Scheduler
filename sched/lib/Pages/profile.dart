@@ -12,24 +12,24 @@ class ProfileTab extends StatefulWidget {
 class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMixin<ProfileTab> {
   @override
   bool get wantKeepAlive => true;
-  DateTime selectedDate = DateTime.now(); // Initialize with a default value
-  String buttonText = "Time-off"; // Initialize the button text
+  // DateTime selectedDate = DateTime.now(); // Initialize with a default value
+  // String buttonText = "Time-off"; // Initialize the button text
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate, // Use the selectedDate as the initial date
-      firstDate: DateTime(2023), // Set your desired minimum date
-      lastDate: DateTime(2024), // Set your desired maximum date
-    );
-
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        buttonText = 'Selected Date: ${selectedDate.toLocal()}';
-      });
-    }
-  }
+  // Future<void> _selectDate(BuildContext context) async {
+  //   final DateTime? picked = await showDatePicker(
+  //     context: context,
+  //     initialDate: selectedDate, // Use the selectedDate as the initial date
+  //     firstDate: DateTime(2023), // Set your desired minimum date
+  //     lastDate: DateTime(2024), // Set your desired maximum date
+  //   );
+  //
+  //   if (picked != null && picked != selectedDate) {
+  //     setState(() {
+  //       selectedDate = picked;
+  //       buttonText = 'Selected Date: ${selectedDate.toLocal()}';
+  //     });
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,19 +94,16 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        _selectDate(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => TimeOffScreen()), // Navigate to TimeOffScreen
+                        );
                       },
+                      child: Text('Time-off'),
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white, backgroundColor: Color(0xFFB1947B), // Text color for the "Time-off" button
-                        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 40), // Set width and height
-                      ),
-                      child: Text(
-                        buttonText,
-                        //style: TextStyle(fontSize: 20), // Add the font size
+                        backgroundColor: Color(0xFFB1947B), // Background color for the "Time-off" button
                       ),
                     ),
-
-
 
                     ElevatedButton(
                       onPressed: () {
