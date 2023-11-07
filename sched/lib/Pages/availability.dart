@@ -8,8 +8,6 @@ class AvailabilityScreen extends StatelessWidget {
         title: Text(
           'Select your availability',
           style: TextStyle(
-            fontFamily: 'Katibeh',
-            fontSize: 30,
             color: Color(0xFF49423E),
           ),
         ),
