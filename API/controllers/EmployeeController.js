@@ -176,3 +176,86 @@ exports.createAvailability = async (req, res) => {
     console.error("There was an error:", err);
   }
 };
+
+// Update an employee's availability
+exports.updateAvailability = async (req, res) => {
+  try {
+    const { employeeId, availabilityId } = req.params; // You'll need to pass the specific availability ID
+    const { dayOfWeek, startTime, endTime } = req.body;
+    console.log('employeeId:', employeeId);
+    console.log('availabilityId:', availabilityId);
+
+    // Find the employee and update the specific availability entry
+    const updatedEmployee = await Employee.findOneAndUpdate(
+      { "_id": employeeId, "availability._id": availabilityId },
+      {
+        $set: {
+          "availability.$.dayOfWeek": dayOfWeek,
+          "availability.$.startTime": startTime,
+          "availability.$.endTime": endTime
+        }
+      },
+      { new: true }
+    );
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ message: 'Employee or availability not found' });
+    }
+
+    res.status(200).json({
+      message: 'Availability updated successfully',
+      availability: updatedEmployee.availability
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating availability', err });
+    console.error("There was an error:", err);
+  }
+};
+
+// Delete an employee's availability
+exports.deleteAvailability = async (req, res) => {
+  try {
+    const { employeeId, availabilityId } = req.params;
+
+    const updatedEmployee = await Employee.findByIdAndUpdate(
+      employeeId,
+      {
+        $pull: {
+          availability: { _id: availabilityId } // Remove the availability with the given ID
+        }
+      },
+      { new: true }
+    );
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ message: 'Employee or availability not found' });
+    }
+
+    res.status(200).json({
+      message: 'Availability deleted successfully',
+      availability: updatedEmployee.availability
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting availability', err });
+    console.error("There was an error:", err);
+  }
+};
+
+// Get an employee's availabilities
+exports.getAvailabilities = async (req, res) => {
+  try {
+    const { employeeId } = req.params;
+
+    const employee = await Employee.findById(employeeId, 'availability');
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found'});
+    }
+
+    res.status(200).json(employee.availability);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching availabilities', error });
+    console.error('There was an error fetching availabilities', error );
+  }
+};
+

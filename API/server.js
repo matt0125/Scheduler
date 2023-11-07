@@ -57,6 +57,9 @@ app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTempla
 
 // availabilities
 app.post('/api/employee/:employeeId/availability', employeeController.createAvailability);
+app.put('/api/employee/:employeeId/availability/:availabilityId', employeeController.updateAvailability);
+app.delete('/api/employee/:employeeId/availability/:availabilityId', employeeController.deleteAvailability);
+app.get('/api/employee/:employeeId/availabilities', employeeController.getAvailabilities);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
