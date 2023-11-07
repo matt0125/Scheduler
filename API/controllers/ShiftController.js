@@ -89,7 +89,7 @@ exports.createShift = async (req, res) => {
     });
     
     // Save to the database
-    await newShift.save().populate('templateId');
+    await newShift.save();
     
     res.status(201).json(newShift);
   } catch (error) {
@@ -212,50 +212,52 @@ exports.getShiftByEmpId = async (req, res) => {
 };
 
 
-// exports.getShiftByEmpId = async (req, res) => {
-//   try {
-//     console.log('Fetching for shifts by employee ID and date...');
+exports.getShiftByEmpIdAndDate = async (req, res) => {
+  try {
+    console.log('Fetching for shifts by employee ID and date...');
     
-//     const { startDate, endDate, empId } = req.body;
+    const { startDate, endDate, empId } = req.body;
 
     
-//     // Validate date format and check if it's a valid date
-//     if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
-//       return res.status(400).json({ message: 'Invalid date format' });
-//     }
+    // Validate date format and check if it's a valid date
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
+      return res.status(400).json({ message: 'Invalid date format' });
+    }
 
-//     const [month, day, year] = date.split('-').map(d => parseInt(d, 10));
+    const [month, day, year] = date.split('-').map(d => parseInt(d, 10));
 
-//     if (isNaN(month) || month < 1 || month > 12 ||
-//         isNaN(day) || day < 1 || day > 31 ||
-//         isNaN(year) || year < 1000 || year > 9999) {
-//       return res.status(400).json({ message: 'Invalid date' });
-//     }
+    if (isNaN(month) || month < 1 || month > 12 ||
+        isNaN(day) || day < 1 || day > 31 ||
+        isNaN(year) || year < 1000 || year > 9999) {
+      return res.status(400).json({ message: 'Invalid date' });
+    }
 
-//     // Construct a date object and validate it
-//     const shiftDate = new Date(year, month - 1, day);
-//     if (!(shiftDate instanceof Date && !isNaN(shiftDate))) {
-//       return res.status(400).json({ message: 'Invalid date' });
-//     }
-
-
+    // Construct a date object and validate it
+    const shiftDate = new Date(year, month - 1, day);
+    if (!(shiftDate instanceof Date && !isNaN(shiftDate))) {
+      return res.status(400).json({ message: 'Invalid date' });
+    }
 
 
+    const shifts = await Shift.find({
+      empId,
+      date: {
+        $gte: startDate,
+        $lte: endDate,
+      },
+    }).populate('empId templateId');
 
+    if (!shifts || shifts.length === 0) {
+      return res.status(404).json({ message: 'No shifts found for the specified employee ID' });
+    }
 
-//     const shifts = await Shift.find({ empId });
-
-//     if (!shifts || shifts.length === 0) {
-//       return res.status(404).json({ message: 'No shifts found for the specified employee ID' });
-//     }
-
-//     res.status(200).json(shifts);
-//   } 
+    res.status(200).json(shifts);
+  } 
   
-//   catch (error) {
-//     res.status(500).json({ message: 'Error fetching shifts by employee ID', error });
-//     console.error('There was an error fetching shifts by employee ID', error);
-//   }
-// };
+  catch (error) {
+    res.status(500).json({ message: 'Error fetching shifts by employee ID', error });
+    console.error('There was an error fetching shifts by employee ID', error);
+  }
+};
 
 
