@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 // Define the schema for the 'Position' collection
 const positionSchema = new mongoose.Schema({
+  _id: Schema.Type.ObjectId,
   name: {
     type: String,
     required: true // if 'name' is always required, otherwise remove this line

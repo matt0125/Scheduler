@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 // Define the schema for the 'Shift' collection
 const shiftSchema = new mongoose.Schema({
+  _id: Schema.Type.ObjectId,
   date: Date,
   empId: {
     type: Schema.Types.ObjectId,
