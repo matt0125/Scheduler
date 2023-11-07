@@ -28,11 +28,12 @@ class _DashboardPageState extends State<DashboardPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            DaySelector(),
+            DaySelector(pageController: _pageController),
             SizedBox(height: 20),
             // Use a Container with a specified height
             Container(
               height: MediaQuery.of(context).size.height * 0.3, // Adjust the fraction as needed
+              // width: MediaQuery.of(context).size.width * 0.85,
               child: PageView(
                 controller: _pageController,
                 scrollDirection: Axis.horizontal,
@@ -43,53 +44,44 @@ class _DashboardPageState extends State<DashboardPage> {
                 },
                 children: <Widget>[
                   ScheduleCard(
-                    date: 'November 6, 2023',
+                    date: 'November 5, 2023',
                     startTime: '10:00 AM',
                     endTime: '12:00 PM',
-                    positionTitle: 'Meeting with Client 1',
+                    positionTitle: 'Host',
                   ),
                   ScheduleCard(
-                    date: 'November 7, 2023',
-                    startTime: '2:00 PM',
+                    date: 'November 6, 2023',
+                    startTime: '12:00 AM',
                     endTime: '4:00 PM',
-                    positionTitle: 'Conference Call 2',
+                    positionTitle: 'Busser',
                   ),
                   ScheduleCard(),
                   ScheduleCard(
-                    date: 'November 7, 2023',
+                    date: 'November 8, 2023',
                     startTime: '2:00 PM',
                     endTime: '4:00 PM',
-                    positionTitle: 'Conference Call 3',
+                    positionTitle: 'Host',
                   ),
                   ScheduleCard(
-                    date: 'November 7, 2023',
+                    date: 'November 9, 2023',
                     startTime: '2:00 PM',
                     endTime: '4:00 PM',
-                    positionTitle: 'Conference Call 4',
+                    positionTitle: 'Server',
                   ),
                   ScheduleCard(
-                    date: 'November 7, 2023',
+                    date: 'November 10, 2023',
                     startTime: '2:00 PM',
                     endTime: '4:00 PM',
-                    positionTitle: 'Conference Call 5',
+                    positionTitle: 'Carry Out',
                   ),
                   ScheduleCard(
-                    date: 'November 7, 2023',
+                    date: 'November 11, 2023',
                     startTime: '2:00 PM',
                     endTime: '4:00 PM',
                     positionTitle: 'Conference Call 6',
                   ),
-                  // Add more ScheduleCard widgets for the remaining days
                 ],
               ),
-            ),
-            // Use a button to scroll to a specific item
-            ElevatedButton(
-              onPressed: () {
-                // Example: Scroll to item at index 2 (0-based index)
-                _pageController.animateToPage(2, duration: Duration(milliseconds: 300), curve: Curves.ease);
-              },
-              child: Text('Go to Item 2'),
             ),
           ],
         ),
@@ -97,40 +89,32 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 }
+class DaySelector extends StatefulWidget {
+  final PageController pageController;
 
-class DaySelector extends StatelessWidget {
+  DaySelector({required this.pageController});
+
   @override
-  Widget build(BuildContext context) {
-    DateTime today = DateTime.now();
-    int currentDay = today.weekday; // 1 for Monday, 7 for Sunday
+  _DaySelectorState createState() => _DaySelectorState();
+}
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        for (int i = 0; i <= 6; i++) // Loop from Sunday (7) to Saturday (1)
-          ElevatedButton(
-            onPressed: () {
-              // Implement your button logic here
-            },
+class _DaySelectorState extends State<DaySelector> {
+  int selectedDayIndex = DateTime.now().weekday - 1;
 
-            style: ButtonStyle(
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0), // Adjust the value for roundness
-                ),
-              ),
-              minimumSize: MaterialStateProperty.all(
-                Size(MediaQuery.of(context).size.width / 14, 80), // Set the button width to screen width / 7
-              ),
-              backgroundColor: MaterialStateProperty.all(
-                i == currentDay ? Colors.blue : Colors.grey, // Highlight today's day
-              ),
-            ),
-            child: Text(getDayName(i, today.day)),
-          ),
-      ],
-    );
+  List<int> getDatesForWeek() {
+    final now = DateTime.now();
+    final dayIndex = now.weekday;
+    final currentDay = now.day;
+
+    final List<int> datesForWeek = List.generate(7, (index) {
+      final daysDifference = dayIndex - index;
+      final date = currentDay - daysDifference;
+      return date;
+    });
+
+    return datesForWeek;
   }
+
 
   String getDayName(int dayIndex, int day) {
     switch (dayIndex) {
@@ -151,5 +135,42 @@ class DaySelector extends StatelessWidget {
       default:
         return '';
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final datesForWeek = getDatesForWeek();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        for (int i = 0; i <= 6; i++)
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                selectedDayIndex = i;
+              });
+              widget.pageController.animateToPage(i, duration: Duration(milliseconds: 300), curve: Curves.ease);
+            },
+            style: ButtonStyle(
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+              ),
+              minimumSize: MaterialStateProperty.all(
+                Size(MediaQuery.of(context).size.width / 14, 80),
+              ),
+              backgroundColor: MaterialStateProperty.all( Color(0xFFEDE7E3) ),
+            ),
+            child: Text(
+                getDayName(i, datesForWeek[i]),
+              style: TextStyle(
+                color: Color(0xFF6d6a68),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+      ],
+    );
   }
 }
