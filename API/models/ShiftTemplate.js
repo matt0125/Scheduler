@@ -6,7 +6,10 @@ const shiftTemplateSchema = new mongoose.Schema({
   dayOfWeek: Number,
   startTime: String,
   endTime: String,
-  positionId: Schema.Types.ObjectId,
+  positionId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Position'
+  }
 });
 
 module.exports = mongoose.model('ShiftTemplate', shiftTemplateSchema, 'ShiftTemplate');
