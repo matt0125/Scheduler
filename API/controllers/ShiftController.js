@@ -1,6 +1,7 @@
 const Shift = require('../models/Shift');
 const Employee = require('../models/Employee');
 const ShiftTemplate = require('../models/ShiftTemplate');
+const Position  = require('../models/Position ');
 
 exports.createShift = async (req, res) => {
   console.log('Creating shift...');
@@ -255,7 +256,7 @@ exports.getShiftByEmpIdAndDate = async (req, res) => {
       path: 'templateId',
       populate: {
         path: 'positionId',
-        model: 'Position',
+        model: Position,
       },
     });
 
