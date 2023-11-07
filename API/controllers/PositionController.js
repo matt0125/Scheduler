@@ -1,4 +1,4 @@
-const Position = require('./Position'); // Assuming your Position model is in the same directory
+const Position = require('../models/Position'); // Assuming your Position model is in the same directory
 
 const PositionController = {
   // Create a new Position
