@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Position = require('./Position');
 
 // Availability subdocument schema
 const AvailabilitySchema = new Schema({
