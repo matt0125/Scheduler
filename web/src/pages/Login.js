@@ -64,6 +64,7 @@ const Login = () => {
   };
   
   let url = "/register";
+  let url2 = "/dashboard";
   return (
       <Container>
         <Row>
@@ -104,7 +105,7 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <button type="submit" className="submit-button">Login</button>
+                <button onClick={ () => window.location.href = "/dashboard"  } type="submit" className="submit-button">Login</button>
                 <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>
                 <p className="login-register-p">Don't have an account  <a href={url} className="login-register-url">sign up</a></p>
               </div>
