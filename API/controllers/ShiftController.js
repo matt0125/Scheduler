@@ -256,7 +256,7 @@ exports.getShiftByEmpIdAndDate = async (req, res) => {
   } 
   
   catch (error) {
-    res.status(500).json({ message: 'Error fetching shifts by employee ID ' + error });
+    res.status(500).json({ message: 'Error fetching shifts by employee ID', error: error });
     console.error('There was an error fetching shifts by employee ID', error);
   }
 };
