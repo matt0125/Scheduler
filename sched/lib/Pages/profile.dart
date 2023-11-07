@@ -3,7 +3,6 @@ import 'package:sched/Services/DataService.dart';
 import 'availability.dart';
 import 'timeoff.dart';
 
-
 class ProfileTab extends StatefulWidget {
   @override
   _ProfileTabState createState() => _ProfileTabState();
@@ -12,24 +11,13 @@ class ProfileTab extends StatefulWidget {
 class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMixin<ProfileTab> {
   @override
   bool get wantKeepAlive => true;
-  // DateTime selectedDate = DateTime.now(); // Initialize with a default value
-  // String buttonText = "Time-off"; // Initialize the button text
 
-  // Future<void> _selectDate(BuildContext context) async {
-  //   final DateTime? picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: selectedDate, // Use the selectedDate as the initial date
-  //     firstDate: DateTime(2023), // Set your desired minimum date
-  //     lastDate: DateTime(2024), // Set your desired maximum date
-  //   );
-  //
-  //   if (picked != null && picked != selectedDate) {
-  //     setState(() {
-  //       selectedDate = picked;
-  //       buttonText = 'Selected Date: ${selectedDate.toLocal()}';
-  //     });
-  //   }
-  // }
+  // Define text controllers for the password fields.
+  final TextEditingController currentPasswordController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmNewPasswordController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +28,7 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.logout), // Exit icon for logout
+            icon: const Icon(Icons.logout),
             color: Color(0xFF6d6a68),
             onPressed: () {
               DataService.clearEmpId();
@@ -54,37 +42,36 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 10), // Adjust the left padding as needed
+          padding: const EdgeInsets.only(left: 20, top: 10),
           child: Stack(
             children: <Widget>[
               Positioned(
                 top: 0,
                 left: 0,
                 child: Container(
-                  width: 100, // Adjust the size as needed
-                  height: 100, // Adjust the size as needed
+                  width: 100,
+                  height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Color(0xFF49423E), // Background color for the profile picture
+                    color: Color(0xFF49423E),
                   ),
                   child: Icon(
-                    Icons.person, // Replace with your profile picture
-                    size: 60, // Adjust the size as needed
+                    Icons.person,
+                    size: 60,
                     color: Colors.white,
                   ),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 120), // Adjust the top padding as needed
+                padding: const EdgeInsets.only(top: 120),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => AvailabilityScreen()), // Replace with your AvailabilityScreen widget
+                          MaterialPageRoute(builder: (context) => AvailabilityScreen()),
                         );
                       },
                       child: Text('Availability'),
@@ -96,22 +83,21 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => TimeOffScreen()), // Navigate to TimeOffScreen
+                          MaterialPageRoute(builder: (context) => TimeOffScreen()),
                         );
                       },
                       child: Text('Time-off'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFB1947B), // Background color for the "Time-off" button
+                        backgroundColor: Color(0xFFB1947B),
                       ),
                     ),
-
                     ElevatedButton(
                       onPressed: () {
-                        // Add functionality for "Settings" button here
+                        _showPasswordUpdateDialog(context);
                       },
-                      child: Text('Profile Settings'),
+                      child: Text('Update Password'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFB1947B), // Background color for the "Settings" button
+                        backgroundColor: Color(0xFFB1947B),
                       ),
                     ),
                   ],
@@ -123,6 +109,86 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
       ),
     );
   }
+
+  void _showPasswordUpdateDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Update Password'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              _buildPasswordTextField(
+                controller: currentPasswordController,
+                labelText: 'Current Password',
+              ),
+              _buildPasswordTextField(
+                controller: newPasswordController,
+                labelText: 'New Password',
+              ),
+              _buildPasswordTextField(
+                controller: confirmNewPasswordController,
+                labelText: 'Confirm New Password',
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Implement password update logic here.
+                String currentPassword = currentPasswordController.text;
+                String newPassword = newPasswordController.text;
+                String confirmNewPassword = confirmNewPasswordController.text;
+
+                if (newPassword == confirmNewPassword) {
+                  // Passwords match, update the password.
+                  // You can add further validation and update logic here.
+
+                  // Show a success message.
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Password updated successfully'),
+                  ));
+                } else {
+                  // Passwords do not match, show an error message.
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Passwords do not match'),
+                  ));
+                }
+
+                Navigator.of(context).pop();
+              },
+              child: Text('Update'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildPasswordTextField({
+    required TextEditingController controller,
+    required String labelText,
+  }) {
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: labelText,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    currentPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmNewPasswordController.dispose();
+    super.dispose();
+  }
 }
-
-
