@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 // Define the schema for the 'Shift' collection
-const shiftSchema = new mongoose.Schema({
-  _id: Schema.Type.ObjectId,
+const shiftSchema = new Schema({
+  _id: Schema.Types.ObjectId,
   date: Date,
   empId: {
     type: Schema.Types.ObjectId,
