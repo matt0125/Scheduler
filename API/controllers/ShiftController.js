@@ -166,6 +166,8 @@ exports.getShiftByDate = async (req, res) => {
 
     const { date } = req.params;
     
+    console.log(date);
+    
     const selectedDate = new Date(date);
     const nextDate = new Date(date);
 
