@@ -252,12 +252,12 @@ exports.getShiftByEmpIdAndDate = async (req, res) => {
         $lte: endDate,
       },
     }).populate('templateId')
-    .populate({
-      path: 'templateId',
-      populate: {
-        path: 'positionId',
-      },
-    })
+  .populate({
+    path: 'templateId',
+    populate: {
+      path: 'positionId',
+    },
+  });
 
     if (!shifts || shifts.length === 0) {
       return res.status(404).json({ message: 'No shifts found for the specified employee ID' });
