@@ -218,24 +218,30 @@ exports.getShiftByEmpIdAndDate = async (req, res) => {
     
     const { startDate, endDate, empId } = req.body;
 
-    
-    // Validate date format and check if it's a valid date
-    if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
-      return res.status(400).json({ message: 'Invalid date format' });
-    }
-
-    const [month, day, year] = date.split('-').map(d => parseInt(d, 10));
-
-    if (isNaN(month) || month < 1 || month > 12 ||
-        isNaN(day) || day < 1 || day > 31 ||
-        isNaN(year) || year < 1000 || year > 9999) {
-      return res.status(400).json({ message: 'Invalid date' });
-    }
-
-    // Construct a date object and validate it
-    const shiftDate = new Date(year, month - 1, day);
-    if (!(shiftDate instanceof Date && !isNaN(shiftDate))) {
-      return res.status(400).json({ message: 'Invalid date' });
+    for(i = 0; i < 2; i++)
+    {
+      if (i == 0)
+        date = startDate;
+      else
+        date = endDate;
+      // Validate date format and check if it's a valid date
+      if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
+        return res.status(400).json({ message: 'Invalid date format' });
+      }
+  
+      const [month, day, year] = date.split('-').map(d => parseInt(d, 10));
+  
+      if (isNaN(month) || month < 1 || month > 12 ||
+          isNaN(day) || day < 1 || day > 31 ||
+          isNaN(year) || year < 1000 || year > 9999) {
+        return res.status(400).json({ message: 'Invalid date' });
+      }
+  
+      // Construct a date object and validate it
+      const shiftDate = new Date(year, month - 1, day);
+      if (!(shiftDate instanceof Date && !isNaN(shiftDate))) {
+        return res.status(400).json({ message: 'Invalid date' });
+      }
     }
 
 
