@@ -137,3 +137,42 @@ exports.getEmployee = async (req, res) => {
     console.error('There was an error fetching an employee', error );
   }
 }
+
+// Availabilities are stored as an array of objects in the Employee model
+
+exports.createAvailability = async (req, res) => {
+  try {
+    const { employeeId } = req.params; // Get the employee ID from the request parameters
+    const { dayOfWeek, startTime, endTime } = req.body; // Get the availability details from the request body
+
+    // Check for required availability details
+    if (dayOfWeek === undefined || startTime === undefined || endTime === undefined) {
+      return res.status(400).json({ message: 'All fields are required for creating availability' });
+    }
+
+    // Find the employee by ID and add the new availability to the array
+    const updatedEmployee = await Employee.findByIdAndUpdate(
+      employeeId,
+      {
+        $push: {
+          availability: { dayOfWeek, startTime, endTime } // Push the new availability object into the availability array
+        }
+      },
+      { new: true, runValidators: true } // Return the updated document and run validators defined in the schema
+    );
+
+    // Check if the update was successful
+    if (!updatedEmployee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Send the updated availability array back to the client
+    res.status(200).json({
+      message: 'Availability added successfully',
+      availability: updatedEmployee.availability
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Error creating availability', err });
+    console.error("There was an error:", err);
+  }
+};
