@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Define the schema for the 'Position' collection
 const positionSchema = new mongoose.Schema({
-  _id: Schema.Type.ObjectId,
+  _id: Schema.Types.ObjectId,
   name: {
     type: String,
     required: true // if 'name' is always required, otherwise remove this line
