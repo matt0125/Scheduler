@@ -90,6 +90,7 @@ class APIService {
     {
       shifts.add(Shift(
           date: Shift.formatDate(item['date']),
+          unformattedDate: Shift.formatDate2(item['date']),
           startTime: item['templateId']['startTime'],
           endTime: item['templateId']['endTime'],
           positionTitle: item['templateId']['positionId']['name']

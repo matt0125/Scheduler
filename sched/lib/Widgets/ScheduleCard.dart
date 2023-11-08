@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ScheduleCard extends StatelessWidget {
   final String? date;
+  final String? unformattedDate;
   final String? startTime;
   final String? endTime;
   final String? positionTitle;
@@ -10,6 +11,7 @@ class ScheduleCard extends StatelessWidget {
 
   ScheduleCard({
     this.date,
+    this.unformattedDate,
     this.startTime,
     this.endTime,
     this.positionTitle,

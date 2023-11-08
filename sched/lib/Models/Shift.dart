@@ -1,11 +1,13 @@
 class Shift {
   final String? date;
+  final String? unformattedDate;
   final String? startTime;
   final String? endTime;
   final String? positionTitle;
 
   Shift({
     this.date,
+    this.unformattedDate,
     this.startTime,
     this.endTime,
     this.positionTitle,
@@ -32,6 +34,12 @@ class Shift {
   static String formatDate(String dateString) {
     DateTime date = DateTime.parse(dateString);
     String formattedDate = "${_getMonthName(date.month)} ${date.day}, ${date.year}";
+    return formattedDate;
+  }
+
+  static String formatDate2(String dateString) {
+    DateTime date = DateTime.parse(dateString);
+    String formattedDate = "${(date.month).toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}-${date.year}";
     return formattedDate;
   }
 
