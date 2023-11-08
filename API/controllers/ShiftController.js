@@ -262,7 +262,7 @@ exports.getShiftByEmpIdAndDate = async (req, res) => {
       return res.status(404).json({ message: 'No shifts found for the specified employee ID' });
     }
 
-    res.status(200).json(shifts);
+    res.status(200).json({shifts: shifts});
   } 
   
   catch (error) {
