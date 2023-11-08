@@ -76,7 +76,7 @@ exports.createShift = async (req, res) => {
       return isAvailable;
     });
     
-    return res.status(400).json({ message: employee.availability.length.toString() });
+    return res.status(400).json({ message: employee.availability[0].toString() });
 
     if (!isAvailable) {
       return res.status(400).json({ message: 'Employee is not available at this time' });
