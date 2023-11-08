@@ -31,11 +31,7 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
             icon: const Icon(Icons.logout),
             color: Color(0xFF6d6a68),
             onPressed: () {
-              DataService.clearEmpId();
-              Navigator.pushReplacementNamed(
-                context,
-                '/login',
-              );
+              showLogoutConfirmationDialog(context);
             },
           ),
         ],
@@ -51,14 +47,9 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
                 child: Container(
                   width: 100,
                   height: 100,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Color(0xFF49423E),
-                  ),
-                  child: Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Colors.white,
+                  child: Image.asset(
+                    'assets/icon/Sched logo.png',
+                    fit: BoxFit.contain, // You can adjust BoxFit to your needs
                   ),
                 ),
               ),
@@ -107,6 +98,37 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
           ),
         ),
       ),
+    );
+  }
+
+  void showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Leaving so soon?'),
+          content: Text('Are you sure you want to log out?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Perform logout here
+                DataService.clearEmpId();
+                Navigator.pushReplacementNamed(
+                  context,
+                  '/login',
+                );
+              },
+              child: Text('Logout'),
+            ),
+          ],
+        );
+      },
     );
   }
 
