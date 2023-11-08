@@ -18,3 +18,17 @@ body
     font-family: Katibeh;
     color: #47413d;
 }
+.logo
+{
+    width: 2%;
+    min-width: 80px;
+}
+
+.profile-button
+{
+    width: 2%;
+    min-width: 80px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}

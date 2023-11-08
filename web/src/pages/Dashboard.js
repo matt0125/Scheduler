@@ -6,6 +6,8 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import "../styles/Dashboard.css";
+import logo from "../images/branding.png";
+import profile from "../images/profile-button.svg";
 import axios from 'axios';
 
 export default class DemoApp extends React.Component {
@@ -20,6 +22,8 @@ export default class DemoApp extends React.Component {
       <div className='demo-app'>
         {this.FilterBar()}
         <div className='demo-app-main'>
+        <img src={logo} alt="sched logo" className="logo"></img>
+        <img className="profile-button" src={profile} alt="Profile_Button" />
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{
