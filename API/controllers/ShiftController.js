@@ -212,7 +212,6 @@ exports.getShiftByEmpId = async (req, res) => {
   }
 };
 
-
 exports.getShiftByEmpIdAndDate = async (req, res) => {
   try {
     console.log('Fetching for shifts by employee ID and date...');
@@ -245,7 +244,6 @@ exports.getShiftByEmpIdAndDate = async (req, res) => {
       }
     }
 
-
     const shifts = await Shift.find({
       empId,
       date: {
@@ -273,4 +271,26 @@ exports.getShiftByEmpIdAndDate = async (req, res) => {
   }
 };
 
+exports.getShiftByManager = async (req, res) => {
+  try {
+    console.log('Fetching shifts by manager...');
+    
+    // Query shifts based on manager-related data
+    const shifts = await Shift.find({
+      empId: {
+        $in: await Employee.find({ managerIdent: true }).distinct('_id')
+      }
+    });
 
+    if (!shifts || shifts.length === 0) {
+      return res.status(404).json({ message: 'No shifts found for managers' });
+    }
+
+    res.status(200).json(shifts);
+  } 
+  
+  catch (error) {
+    res.status(500).json({ message: 'Error fetching shifts for managers', error });
+    console.error('There was an error fetching shifts for managers', error);
+  }
+};
