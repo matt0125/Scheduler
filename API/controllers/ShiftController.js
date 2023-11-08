@@ -73,13 +73,10 @@ exports.createShift = async (req, res) => {
       const isAvailable = dayOfWeekMatch && startTimeMatch && endTimeMatch;
       console.log('Is available?', isAvailable);
 
-if(isAvailable){
-  return res.status(400).json({ message: 'Employee IS available at this time' });
-}
-
       return isAvailable;
     });
     
+    return res.status(400).json({ message: employee.availability.length.toString() });
 
     if (!isAvailable) {
       return res.status(400).json({ message: 'Employee is not available at this time' });
