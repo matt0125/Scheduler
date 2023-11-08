@@ -73,15 +73,28 @@ class APIService {
 
     final responseData = await postToEndpoint(data, 'shifts/empbydates');
     List temp = [];
+
+    try{
+      if(responseData['message'] != null)
+        {
+          print(responseData['message']);
+          return shifts;
+        }
+    }
+    catch(e)
+    {
+      print(e);
+    }
+
     for(final item in responseData["shifts"])
-      {
-        shifts.add(Shift(
+    {
+      shifts.add(Shift(
           date: Shift.formatDate(item['date']),
           startTime: item['templateId']['startTime'],
           endTime: item['templateId']['endTime'],
           positionTitle: item['templateId']['positionId']['name']
-        ));
-      }
+      ));
+    }
 
     return shifts;
   }
