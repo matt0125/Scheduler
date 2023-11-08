@@ -7,6 +7,28 @@ const employeeController = require('./controllers/EmployeeController'); // Impor
 const shiftTemplateController = require('./controllers/ShiftTemplateController');
 const shiftController = require('./controllers/ShiftController');
 const { create } = require('domain');
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.JWT_SECRET_KEY;
+
+// Middleware to authenticate and protect routes
+const authenticateJWT = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (authHeader) {
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, secretKey, (err, user) => {
+      if (err) {
+        return res.sendStatus(403);
+      }
+
+      req.user = user;
+      next();
+    });
+  } else {
+    res.sendStatus(401);
+  }
+};
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -38,6 +60,10 @@ app.get('/', (req, res) => {
 // employee
 app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
+
+// Protected routes below this line
+app.use(authenticateJWT);
+
 app.get('/api/employee/:id', employeeController.getEmployee);
 app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
 

@@ -2,6 +2,8 @@ const Employee = require('../models/Employee');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // for bcrypt password hashing
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.JWT_SECRET_KEY;
 
 // Was used for unique index testing
 
@@ -106,8 +108,11 @@ exports.loginEmployee = async (req, res) => {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
+    // If the password matches, create a JWT token
+    const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: '2h' }); // Expires in 2 hours
+
     // If the password matches, proceed to login
-    return res.json({ message: 'Login successful', id: user._id });
+    return res.json({ message: 'Login successful', id: user._id, tokenL: token });
   } catch (error) {
     res.status(500).json({ message: 'Error authenticating user', error });
     console.error("There was an error logging in:", error);
