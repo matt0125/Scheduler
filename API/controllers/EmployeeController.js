@@ -138,6 +138,32 @@ exports.getEmployee = async (req, res) => {
   }
 }
 
+exports.getEmployeeByAvailability = async (req, res) => {
+  try {
+    console.log('Fetching employees by availability...');
+
+    const { dayOfWeek, startTime, endTime } = req.params;
+
+    // Find employees with matching availability
+    const employees = await Employee.find({
+      'availability.dayOfWeek': dayOfWeek,
+      'availability.startTime': startTime,
+      'availability.endTime': endTime,
+    });
+
+    if (!employees || employees.length === 0) {
+      return res.status(404).json({ message: 'No employees found with the specified availability' });
+    }
+
+    res.status(200).json(employees);
+  } 
+  
+  catch (error) {
+    res.status(500).json({ message: 'Error fetching employees by availability', error });
+    console.error('There was an error fetching employees by availability', error);
+  }
+};
+
 // Availabilities are stored as an array of objects in the Employee model
 
 exports.createAvailability = async (req, res) => {
