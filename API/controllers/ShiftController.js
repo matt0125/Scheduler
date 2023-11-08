@@ -53,11 +53,8 @@ exports.createShift = async (req, res) => {
     }
 
     // Validate employee's availability
-    const isAvailable = employee.availability.some(avail => {
-      if (isAvailable == true)
-        return true;
 
-      
+    const isAvailable = employee.availability.some(avail => {
       // Debugging: log the availability and template times
       console.log(`Checking availability for dayOfWeek: ${avail.dayOfWeek} with template dayOfWeek: ${dayOfWeek}`);
       console.log(`Employee Start Time: ${avail.startTime}, Template Start Time: ${template.startTime}`);
@@ -76,7 +73,9 @@ exports.createShift = async (req, res) => {
       const isAvailable = dayOfWeekMatch && startTimeMatch && endTimeMatch;
       console.log('Is available?', isAvailable);
 
-
+if(isAvailable){
+  return res.status(400).json({ message: 'Employee IS available at this time' });
+}
 
       return isAvailable;
     });
