@@ -39,6 +39,7 @@ app.get('/', (req, res) => {
 app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
 app.get('/api/employee/:id', employeeController.getEmployee);
+app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
 
 // shifts
 app.post('/api/shifts', shiftController.createShift);
@@ -50,12 +51,15 @@ app.post('/api/shifts/empbydates', shiftController.getShiftByEmpIdAndDate);
 
 app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
 app.get('/api/shifts/empid/:empId', shiftController.getShiftByEmpId);
+app.post('/api/shifts/manager', shiftController.getShiftByManager);
 
 // shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
 app.get('/api/shift-templates/:id', shiftTemplateController.getShiftTemplate);
 app.put('/api/shift-templates/:id', shiftTemplateController.editShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
+
+app.post('/api/shift-templates/manager', shiftTemplateController.getShiftTemplateByManager);
 
 // availabilities
 app.post('/api/employee/:employeeId/availability', employeeController.createAvailability);
