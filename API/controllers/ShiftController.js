@@ -99,7 +99,7 @@ exports.createShift = async (req, res) => {
     res.status(201).json(newShift);
   } catch (error) {
     console.log('Error creating shift:', error)
-    res.status(400).json({ message: 'Failed to create shift', error });
+    res.status(400).json({ message: 'Failed to create shift', error: error.toString() });
   }
 };
 
