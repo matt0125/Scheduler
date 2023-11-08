@@ -18,8 +18,7 @@ class ScheduleCard extends StatelessWidget {
     if (this.date == null)
       return Container();
     else {
-      return Expanded(
-          child:Card(
+      return Card(
           elevation: 4, // Add some elevation for a card-like effect
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0), // Rounded corners
@@ -63,7 +62,6 @@ class ScheduleCard extends StatelessWidget {
                   ),
               ],
             ),
-          ),
       );
     }
   }
@@ -90,7 +88,7 @@ class ScheduleCard extends StatelessWidget {
       endH += 12;
 
     return (endH-startH).toString() +
-        (endM-startM != 0 ? ((endM-startM)/60).toString() : "") +
+        (endM-startM != 0 ? ((endM-startM)/60).toStringAsFixed(2) : "") +
         " hours";
   }
 }
