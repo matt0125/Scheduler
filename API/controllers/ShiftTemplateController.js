@@ -1,4 +1,6 @@
 const ShiftTemplate = require('../models/ShiftTemplate');
+const Position = require('../models/Position');
+const Employee = require('../models/Employee');
 
 exports.createShiftTemplate = async (req, res) => {
   try {
@@ -100,3 +102,33 @@ exports.deleteShiftTemplate = async (req, res) => {
     res.status(400).json({ message: 'Failed to delete shift template', error });
   }
 };
+
+exports.getShiftTemplateByManager = async (req, res) => {
+  try {
+    console.log('Fetching shift templates by manager...');
+
+    // Step 1: Find all employees with managerIdent set to true
+    const managerEmployees = await Employee.find({ managerIdent: true });
+
+    // Step 2: Get the positions associated with manager employees
+    const managedPositions = managerEmployees.reduce((positions, employee) => {
+      return positions.concat(employee.positions);
+    }, []);
+
+    // Step 3: Find shift templates whose positionId matches the managed positions
+    const shiftTemplates = await ShiftTemplate.find({
+      positionId: { $in: managedPositions },
+    });
+
+    if (!shiftTemplates || shiftTemplates.length === 0) {
+      return res.status(404).json({ message: 'No shift templates found for managers' });
+    }
+
+    res.status(200).json(shiftTemplates);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching shift templates for managers', error });
+    console.error('There was an error fetching shift templates for managers', error);
+  }
+};
+
+
