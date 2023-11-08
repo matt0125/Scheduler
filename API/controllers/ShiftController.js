@@ -82,6 +82,7 @@ exports.createShift = async (req, res) => {
     
     // Create a new shift
     const newShift = new Shift({
+      _id: new mongoose.Types.ObjectId(),
       date,
       empId,
       templateId
