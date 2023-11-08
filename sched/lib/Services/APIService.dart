@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
 class APIService {
@@ -59,6 +60,30 @@ class APIService {
             ? responseData['employeeId']
             : null);
   }
+
+  Future<List<Shift>> GetShiftsByDate( String empId, String startDate, String endDate ) async {
+    final data = {
+      'empId': empId,
+      'startDate': startDate,
+      'endDate': endDate,
+    };
+
+    List<Shift> shifts = [];
+
+    final responseData = await postToEndpoint(data, 'shifts/empbydates');
+
+    for(final item in responseData.values)
+      {
+        shifts.add(Shift(
+          date: Shift.formatDate(item['date']),
+          startTime: item['startTime'],
+          endTime: item['endTime'],
+          positionTitle: item['templateId']['positionId']['name']
+        ));
+      }
+
+    return shifts;
+  }
 }
 
 class Response {
@@ -69,4 +94,31 @@ class Response {
     required this.message,
     this.empId,
   });
+}
+
+class Shift {
+  final String? date;
+  final String? startTime;
+  final String? endTime;
+  final String? positionTitle;
+
+  Shift({
+    this.date,
+    this.startTime,
+    this.endTime,
+    this.positionTitle,
+  });
+
+  static String formatDate(String dateString) {
+    DateTime date = DateTime.parse(dateString);
+    String formattedDate = "${_getMonthName(date.month)} ${date.day}, ${date.year}";
+    return formattedDate;
+  }
+
+  static String _getMonthName(int month) {
+    final months = [
+      'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    return months[month - 1];
+  }
 }
