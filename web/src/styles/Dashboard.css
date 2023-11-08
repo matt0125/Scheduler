@@ -1,6 +1,20 @@
 body
 {
       width: 100%;
-      height: 100vh;
+      height: 100%;
       background: #EDE7E3; /* Replace gradient with solid color */
+      --fc-button-active-bg-color: #b4a395;
+      --fc-button-bg-color: #cabfb7;
+      --fc-button-border-color: #47413d;
+      --fc-button-text-color:#47413d;
+      --fc-button-hover-bg-color: #938881;
+      --fc-button-hover-border-color: #47413d;
+      --fc-button-active-border-color: none;
+}
+
+
+.fc-toolbar .fc-button
+{
+    font-family: Katibeh;
+    color: #47413d;
 }

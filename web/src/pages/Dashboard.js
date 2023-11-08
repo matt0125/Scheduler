@@ -6,6 +6,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import "../styles/Dashboard.css";
+import axios from 'axios';
 
 export default class DemoApp extends React.Component {
 
@@ -27,9 +28,9 @@ export default class DemoApp extends React.Component {
               right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
             allDaySlot={false}
-            height={480}
+            height={520}
             scrollTime={"09:00:00"}
-            initialView='dayGridMonth'
+            initialView='timeGridWeek'
             editable={true}
             selectable={true}
             selectMirror={true}
@@ -54,32 +55,19 @@ export default class DemoApp extends React.Component {
   // Login as empployee
   // Call get JWT API
   // Save empployee object (whole thing) in a JWT
-
+  // Gets shifts by managerID
 
   // Login as mangager
 
 
   // Gets shifts by manager
 
+
+  // Add FilterBar here
   FilterBar() {
     return (
-      <div className='demo-app-sidebar'>
-        <div className='demo-app-sidebar-section'>
-          <label>
-            <input
-              type='checkbox'
-              checked={this.state.weekendsVisible}
-              onChange={this.handleWeekendsToggle}
-            ></input>
-            toggle weekends
-          </label>
-        </div>
-        <div className='demo-app-sidebar-section'>
-          <h2>All Events ({this.state.currentEvents.length})</h2>
-          <ul>
-            {this.state.currentEvents.map(renderSidebarEvent)}
-          </ul>
-        </div>
+      <div>
+
       </div>
     )
   }
