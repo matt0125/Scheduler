@@ -275,7 +275,7 @@ exports.getShiftByManager = async (req, res) => {
   try {
     console.log('Fetching shifts by manager...');
     
-    // Query shifts based on manager-related data
+    // Find shifts where the employee is a manager
     const shifts = await Shift.find({
       empId: {
         $in: await Employee.find({ managerIdent: true }).distinct('_id')
