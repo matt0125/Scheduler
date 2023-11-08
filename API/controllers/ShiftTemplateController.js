@@ -10,6 +10,7 @@ exports.createShiftTemplate = async (req, res) => {
 
     // Create a new shift template
     const newShiftTemplate = new ShiftTemplate({
+      _id: new mongoose.Types.ObjectId(),
       dayOfWeek,
       startTime,
       endTime,
