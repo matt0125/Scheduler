@@ -1,61 +1,43 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const employeeSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
-    required: true
-  },
-  lastName: {
-    type: String,
-    required: true
-  },
-  username: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: String,
-    required: true
-  },
-  empId: {
-    type: String,
-    required: true
-  },
-  positionId: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
-    required: true
-  },
-  dayAvail: {
-    type: String,
-    required: true
-  },
-  endAvail: {
-    type: String,
-    required: true
-  },
-  startAvail: {
-    type: String,
-    required: true
-  },
-  managerIdent: {
-    type: Boolean,
-    default: false
-  }
+// Availability subdocument schema
+const AvailabilitySchema = new Schema({
+  dayOfWeek: Number,
+  startTime: String,
+  endTime: String,
+  isValidated: Boolean
 });
 
-employeeSchema.index({ username: 1 }, { unique: true });
+// Preference subdocument schema
+const PreferenceSchema = new Schema({
+  dayOfWeek: Number,
+  startTime: String,
+  endTime: String
+});
 
-module.exports = mongoose.model('Employee', employeeSchema, 'Employee');
+// Main Employee schema
+const EmployeeSchema = new Schema({
+  _id: Schema.Types.ObjectId,
+  firstName: String,
+  lastName: String,
+  username: String,
+  password: String, // This should be hashed, not stored in plain text
+  email: String,
+  phone: String,
+  managerIdent: Boolean,
+  managedBy: Schema.Types.ObjectId,
+  availability: [AvailabilitySchema],
+  positions: [{ type: Schema.Types.ObjectId, ref: 'Position' }], // Assuming 'Position' is another model
+  preference: [PreferenceSchema]
+});
+
+// If 'Position' is a separate model, define its schema as well
+// const PositionSchema = new Schema({
+//   // define the schema for the Position if necessary
+// });
+
+// mongoose.model('Position', PositionSchema);
+const Employee = mongoose.model('Employee', EmployeeSchema, 'Employee');
+
+module.exports = Employee;
