@@ -28,7 +28,7 @@ exports.createShiftTemplate = async (req, res) => {
   } 
   
   catch (error) {
-    res.status(400).json({ message: 'Failed to create shift template', error: error });
+    res.status(400).json({ message: 'Failed to create shift template', error: error.toString() });
   }
 };
 
