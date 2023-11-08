@@ -3,6 +3,7 @@ import '../Widgets/ScheduleCard.dart';
 import '../Services/APIService.dart';
 import '../Services/DataService.dart';
 import '../Models/Shift.dart';
+import 'package:intl/intl.dart';
 
 class DashboardPage extends StatefulWidget {
   DashboardPage() : super();
@@ -30,11 +31,31 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   void getShifts() async{
-    _shifts = await api.GetShiftsByDate(DataService.readEmpId(), "10-10-2000", "10-10-2024");
+    List<String> days = getSunSat();
+    _shifts = await api.GetShiftsByDate(DataService.readEmpId(), days[0], days[1]);
     setState(() {
       _isLoading = false;
     });
   }
+
+  List<String> getSunSat(){
+    List<String> days = [];
+    final today = DateTime.now();
+
+    if (today.weekday == 7)
+      {
+        days.add(DateFormat('MM-dd-yyyy').format(today));
+        days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: 7))));
+      }
+    else
+      {
+        days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: (-1*today.weekday)))));
+        days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: (6 + (-1*today.weekday))))));
+      }
+
+    return days;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

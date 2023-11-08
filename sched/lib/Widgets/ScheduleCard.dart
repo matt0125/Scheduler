@@ -6,12 +6,32 @@ class ScheduleCard extends StatelessWidget {
   final String? endTime;
   final String? positionTitle;
 
+  String? printTime;
+
   ScheduleCard({
     this.date,
     this.startTime,
     this.endTime,
     this.positionTitle,
-  });
+  }) {
+    if(this.startTime != null && this.endTime != null)
+      {
+        int startH = int.parse(this.startTime!.split(":")[0]);
+        int endH = int.parse(this.endTime!.split(":")[0]);
+        int startM = int.parse(this.startTime!.split(":")[1]);
+        int endM = int.parse(this.endTime!.split(":")[1]);
+
+        String startAM = startH < 12 ? "AM" : "PM";
+        String endAM = endH < 12 ? "AM" : "PM";
+
+        if(startH > 12)
+          startH -= 12;
+        if(endH > 12)
+          endH -= 12;
+
+        this.printTime = "${startH}:${startM} ${startAM != endAM ? startAM : ""}- ${endH}:${endM} ${endAM}";
+      }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +74,7 @@ class ScheduleCard extends StatelessWidget {
                   padding: EdgeInsets.all(8.0),
                   alignment: Alignment.bottomCenter,
                   child: Text(
-                    startTime!.split(" ")[1] == endTime!.split(" ")[1] ?
-                    (startTime!.split(" ")[0] + ' - $endTime') :
-                    '$startTime - $endTime',
+                    this.printTime!,
                     style: TextStyle(fontSize: 24),
                   ),
                   ),
@@ -81,11 +99,15 @@ class ScheduleCard extends StatelessWidget {
     {
       endH = 0;
     }
-
-    if (startTime.split(" ")[1] == "PM")
-      startH += 12;
-    if (endTime.split(" ")[1] == "PM")
-      endH += 12;
+    try{
+      if (startTime.split(" ")[1] == "PM")
+        startH += 12;
+      if (endTime.split(" ")[1] == "PM")
+        endH += 12;
+    }
+    catch(e){
+      print(e);
+    }
 
     return (endH-startH).toString() +
         (endM-startM != 0 ? ((endM-startM)/60).toStringAsFixed(2) : "") +
