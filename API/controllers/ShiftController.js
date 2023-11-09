@@ -3,7 +3,6 @@ const Shift = require('../models/Shift');
 const Employee = require('../models/Employee');
 const ShiftTemplate = require('../models/ShiftTemplate');
 const Position  = require('../models/Position');
-const mongoose = require('mongoose');
 
 exports.createShift = async (req, res) => {
   
