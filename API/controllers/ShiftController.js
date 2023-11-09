@@ -176,7 +176,11 @@ exports.getShiftByDate = async (req, res) => {
 
     const shifts = await Shift.find({
       date: { $gte: selectedDate, $lt: nextDate },
-    }).populate('empId');
+    }).populate({
+      path: 'empId',
+      model: Employee,
+      select: 'firstName lastName',
+    });
 
     if (!shifts || shifts.length === 0) {
       return res.status(404).json({ message: 'No shifts found for the specified date' });
