@@ -11,7 +11,6 @@ import profile from "../images/profile-button.svg";
 import axios from 'axios';
 
 export default class DemoApp extends React.Component {
-
   state = {
     weekendsVisible: true,
     currentEvents: []
@@ -82,20 +81,46 @@ export default class DemoApp extends React.Component {
     })
   }
 
-  handleDateSelect = (selectInfo) => {
+  handleDateSelect = async (selectInfo) => {
     let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
 
     if (title) {
-      calendarApi.addEvent({
+      const event = {
         id: createEventId(),
         title,
         start: selectInfo.startStr,
         end: selectInfo.endStr,
         allDay: selectInfo.allDay
-      })
+      };
+
+      try {
+        const jwtToken = localStorage.getItem('token');
+        const response = await axios.post('http://localhost:3000/api/shift-templates', {
+          dayOfWeek: 5, // convert startStr to day of week
+          startTime: "8:00",
+          endTime: "10:30",
+          positionId: "6540314729a02a019abee6e6" // you will need to get the positionId as required by your API
+        }, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`
+          }
+
+        });
+
+        calendarApi.addEvent(event);
+        alert('New shift template created!');
+      } catch (error) {
+        alert(error);
+      }
+      
+      
+
+      const empId = localStorage.getItem('id');
+      const templateId = 'TEMPLATE_ID';
+      const date = formatDate(event.start, { year: 'numeric', month: '2-digit', day: '2-digit' });
     }
   }
 

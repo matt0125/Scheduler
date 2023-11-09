@@ -42,7 +42,7 @@ const Login = () => {
 
     // Call the backend API to authenticate the user
     // TODO: Replace this with a real API call
-    const response = await fetch("http://large.poosd-project.com/api/login", {
+    const response = await fetch("http://localhost:3000/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,9 +53,17 @@ const Login = () => {
     console.log(JSON.stringify({ username, password }));
     console.log(response.status);
 
+    const data = await response.json();
+
     // Check the response status code
     if (response.status === 200) {
       // Login successful
+      const token = data.token;
+      const id = data.id;
+      console.log(data);
+      localStorage.setItem('token', token);
+      localStorage.setItem('id', id);
+      navigate('/dashboard');
       alert("Logged in");
     } else {
       // Login failed
@@ -105,7 +113,7 @@ const Login = () => {
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
-                <button onClick={ () => window.location.href = "/dashboard"  } type="submit" className="submit-button">Login</button>
+                <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
                 <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>
                 <p className="login-register-p">Don't have an account  <a href={url} className="login-register-url">sign up</a></p>
               </div>
