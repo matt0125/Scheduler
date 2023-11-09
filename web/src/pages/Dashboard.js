@@ -8,13 +8,43 @@ import { INITIAL_EVENTS, createEventId } from './event-utils'
 import "../styles/Dashboard.css";
 import logo from "../images/branding.png";
 import profile from "../images/profile-button.svg";
+import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
+
 
 export default class DemoApp extends React.Component {
   state = {
     weekendsVisible: true,
-    currentEvents: []
+    currentEvents: [],
+    isOpen: false
   }
+
+  // Trying to get Emmployee info and use it in forms using get Employee API
+  handleProfileFormOpen = async () => {
+    this.setState({
+      isOpen: true,
+    });
+  
+    try {
+      let jwtToken = localStorage.getItem('token');
+      const response = await axios.get('http://large.poosd-project.com/api/employee/', {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+      alert('Employee GOT!');
+    } catch (error) {
+      alert(error);
+    }
+  };
+  
+
+  handleProfileFormClose = () => {
+    this.setState({
+      isOpen: false,
+    });
+  };
+  
 
   render() {
     return (
@@ -22,7 +52,30 @@ export default class DemoApp extends React.Component {
         {this.FilterBar()}
         <div className='demo-app-main'>
         <img src={logo} alt="sched logo" className="logo"></img>
-        <img className="profile-button" src={profile} alt="Profile_Button" />
+        <img
+          src={profile}
+          alt="Profile Button"
+          className="profile-button"
+          onClick={this.handleProfileFormOpen}
+        />
+
+        <Modal show={this.state.isOpen} onHide={this.handleProfileFormClose}>
+          <Modal.Header>
+            <Modal.Title>Profile Form</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <form>
+              <input type="text" placeholder="Name" />
+              <input type="email" placeholder="Email" />
+              <button type="submit">Submit</button>
+            </form>
+          </Modal.Body>
+          <Modal.Footer>
+            <button type="button" onClick={this.handleProfileFormClose}>
+              Close
+            </button>
+          </Modal.Footer>
+        </Modal>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{
