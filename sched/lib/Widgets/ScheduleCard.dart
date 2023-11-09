@@ -46,42 +46,47 @@ class ScheduleCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16.0), // Rounded corners
           ),
           margin: EdgeInsets.all(16.0), // Add some margin for spacing
-
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.topRight,
-                  child: Text(
-                    date ?? '',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
+          child: InkWell(
+          onTap: () {
+            // Navigate to the 'dailyschedule' page when the card is tapped
+            Navigator.pushNamed(context, '/dailyschedule/${this.unformattedDate}');
+          },
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(8.0),
+                    alignment: Alignment.topRight,
+                    child: Text(
+                      date ?? '',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 40),
-                Text(
-                  numHours(startTime!, endTime!),
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '\n$positionTitle',
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                ),
+                  SizedBox(height: 40),
+                  Text(
+                    numHours(startTime!, endTime!),
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '\n$positionTitle',
+                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                  ),
 
-                SizedBox(height: 28),
-                Container(
-                  padding: EdgeInsets.all(8.0),
-                  alignment: Alignment.bottomCenter,
-                  child: Text(
-                    this.printTime!,
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  ),
-              ],
+                  SizedBox(height: 28),
+                  Container(
+                    padding: EdgeInsets.all(8.0),
+                    alignment: Alignment.bottomCenter,
+                    child: Text(
+                      this.printTime!,
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    ),
+                ],
             ),
+          ),
       );
     }
   }
