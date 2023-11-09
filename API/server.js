@@ -6,6 +6,7 @@ const cors = require('cors');
 const employeeController = require('./controllers/EmployeeController'); // Importing the employee controller
 const shiftTemplateController = require('./controllers/ShiftTemplateController');
 const shiftController = require('./controllers/ShiftController');
+const positionController = require('./controllers/PositionController');
 const { create } = require('domain');
 const jwt = require('jsonwebtoken');
 const PositionController = require('./controllers/PositionController');
@@ -103,6 +104,11 @@ app.put('/api/shift-templates/:id', shiftTemplateController.editShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
 
 app.post('/api/shift-templates/manager', shiftTemplateController.getShiftTemplateByManager);
+
+// Positions
+app.get('/api/positions/:managerId', positionController.getPositionsByManager);
+app.post('/api/positions/manager', positionController.createPositionByManager);
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
