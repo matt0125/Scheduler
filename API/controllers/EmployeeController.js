@@ -173,6 +173,28 @@ exports.getEmployeeByAvailability = async (req, res) => {
   }
 };
 
+// Given a manager, get all of their employees
+exports.getEmployeeByManager = async (req, res) => {
+  try {
+
+  }
+
+  catch (error) {
+
+  }
+}
+
+// Given an employee, get their teammates (other employees) that are managed by the same person
+exports.getEmployeesOfTheSameManager = async (req, res) => {
+  try {
+
+  }
+
+  catch (error) {
+
+  }
+}
+
 // Availabilities are stored as an array of objects in the Employee model
 
 exports.createAvailability = async (req, res) => {
