@@ -42,6 +42,7 @@ const Register = () => {
 
   let url = "/";
   return (
+    <div id="register-body">
     <Container>
         <Row>
           <Col>
@@ -96,6 +97,7 @@ const Register = () => {
           </Col>
         </Row>
       </Container>
+    </div>
   );
 };
 

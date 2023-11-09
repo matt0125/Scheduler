@@ -7,7 +7,6 @@ import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import logo from "../images/branding-notitle.png";
-//import MediaQuery from 'react-responsive'
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -74,6 +73,7 @@ const Login = () => {
   let url = "/register";
   let url2 = "/dashboard";
   return (
+    <div id="login-body">
       <Container>
         <Row>
           <Col>
@@ -121,6 +121,7 @@ const Login = () => {
           </Col>
         </Row>
       </Container>
+      </div>
   );
 };
 

@@ -1,25 +1,5 @@
-.register-form {
-  display: grid;
-  place-items: center;
-}
-
-.register-box {
-  padding-top: 5% 10% 5% 10%;
-  border-radius: 5px;
-  display: grid;
-  grid-template-columns: 50% 50%;
-  align-self: center;
-  place-items: center;
-  position: relative;
-}
-
-.register-box input {
-  width: 300px;
-  margin: 0 10px 0 0;
-  background-color: #CDBFB6;
-  border-radius: 10px;
-  padding: 10px 0px 10px 40px;
-  font-size: 20px;
+.row{
+  display: flex;
 }
 
 .input-font{
@@ -33,17 +13,213 @@
   margin-bottom: 5px;
 }
 
+
 .managerID-input-group input{
   align-items: center;
 }
 
+@media (max-width: 650px) {
 
-
-
-.register-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
+  #register-body{
+    background-color: #F8F8F8;
   }
+  .register-box {
+    padding-top: 5% 10% 5% 10%;
+    border-radius: 5px;
+    display: grid;
+    align-self: center;
+    place-items: center;
+    position: relative;
+  }
+  .register-form {
+    display: grid;
+    place-items: center;
+  }
+  .register-box input {
+    width: 300px;
+    margin: 0 10px 0 0;
+    background-color: #CDBFB6;
+    border-radius: 10px;
+    padding: 10px 0px 10px 40px;
+    font-size: 20px;
+  }
+  .submit-button{
+    width: 400px;
+    height: 50px;
+    background-color: #B1947B;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 10px 40px 10px 40px;
+    font-size: 20px;
+  }
+  .login-register-p{
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+  .business-photo{
+    display: none;
+  }
+
+}
+@media (min-width: 750px){
+  #register-body {
+    width: 100%;
+    height: 100%;
+    background-color:#ccc;
+    background: linear-gradient(
+      to right,
+      #EDE7E3 0%,
+      #EDE7E3 50%,
+      #F8F8F8 50%,
+      #F8F8F8 100%
+    )
+  }
+  .register-box {
+    padding-top: 5% 10% 5% 10%;
+    border-radius: 5px;
+    display: grid;
+    align-self: center;
+    place-items: center;
+    position: relative;
+  }
+  .register-form {
+    display: grid;
+    place-items: center;
+  }
+  .register-box input {
+    width: 300px;
+    margin: 0 10px 0 0;
+    background-color: #CDBFB6;
+    border-radius: 10px;
+    padding: 10px 0px 10px 40px;
+    font-size: 20px;
+  }
+  .submit-button{
+    width: 400px;
+    height: 50px;
+    background-color: #B1947B;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 10px 40px 10px 40px;
+    font-size: 20px;
+  }
+  .login-register-p{
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+}
+@media (min-width: 650px){
+  #register-body {
+    width: 100%;
+    height: 100%;
+    background-color:#ccc;
+    background: linear-gradient(
+      to right,
+      #EDE7E3 0%,
+      #EDE7E3 50%,
+      #F8F8F8 50%,
+      #F8F8F8 100%
+    )
+  }
+  .register-box {
+    padding-top: 5% 10% 5% 10%;
+    border-radius: 5px;
+    display: grid;
+    align-self: center;
+    place-items: center;
+    position: relative;
+  }
+  .register-form {
+    display: grid;
+    place-items: center;
+  }
+  .register-box input {
+    width: 250px;
+    margin: 0 10px 0 0;
+    background-color: #CDBFB6;
+    border-radius: 10px;
+    padding: 10px 0px 10px 40px;
+    font-size: 20px;
+  }
+  .submit-button{
+    width: 400px;
+    height: 50px;
+    background-color: #B1947B;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 10px 40px 10px 40px;
+    font-size: 20px;
+  }
+  .login-register-p{
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+
+  .business-photo {
+    height: 70%;
+    width: 70%;
+    padding-left: 20%;
+    align-self: center;
+    place-items: center;
+  }
+}
+
+@media (min-width: 1450px) {
+  #register-body {
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(
+      to right,
+      #EDE7E3 0%,
+      #EDE7E3 50%,
+      #F8F8F8 50%,
+      #F8F8F8 100%
+    )
+  }
+  .register-box {
+    padding-top: 5% 10% 5% 10%;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    align-self: center;
+    place-items: center;
+    position: relative;
+  }
+  .register-form {
+    display: grid;
+    place-items: center;
+  }
+  
+  .register-box input {
+    width: 300px;
+    margin: 0 10px 0 0;
+    background-color: #CDBFB6;
+    border-radius: 10px;
+    padding: 10px 0px 10px 40px;
+    font-size: 20px;
+  }
+  .submit-button{
+    width: 400px;
+    height: 50px;
+    background-color: #B1947B;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 10px 40px 10px 40px;
+    font-size: 20px;
+  }
+  .login-register-p{
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  .business-photo {
+    height: 50%;
+    width: 70%;
+    padding-left: 20%;
+    align-self: center;
+    place-items: center;
+  }
+}
