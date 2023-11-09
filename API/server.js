@@ -66,6 +66,8 @@ app.post('/api/login', employeeController.loginEmployee);
 app.use(authenticateJWT);
 
 app.get('/api/employee/:id', employeeController.getEmployee);
+app.get('/api/employee/:id', employeeController.getEmployeeByManager);
+app.get('/api/employee/:id', employeeController.getEmployeesOfTheSameManager);
 app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
 
 // availabilities
@@ -88,10 +90,10 @@ app.get('/api/shifts/:id', shiftController.getShift);
 app.put('/api/shifts/:id', shiftController.editShift);
 app.delete('/api/shifts/:id', shiftController.deleteShift);
 
-app.post('/api/shifts/empbydates', shiftController.getShiftByEmpIdAndDate);
+app.post('/api/shifts/empbydates', shiftController.getShiftByEmployeeAndDate);
 
 app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
-app.get('/api/shifts/empid/:empId', shiftController.getShiftByEmpId);
+app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
 
 // shift templates
