@@ -1,3 +1,45 @@
+.register-form {
+  display: grid;
+  place-items: center;
+}
+
+.register-box {
+  padding-top: 5% 10% 5% 10%;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  align-self: center;
+  place-items: center;
+  position: relative;
+}
+
+.register-box input {
+  width: 300px;
+  margin: 0 10px 0 0;
+  background-color: #CDBFB6;
+  border-radius: 10px;
+  padding: 10px 0px 10px 40px;
+  font-size: 20px;
+}
+
+.input-font{
+  color: #49423E;
+  text-align: center;
+  font-family: Katibeh;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 10;
+  line-height: normal;
+  margin-bottom: 5px;
+}
+
+.managerID-input-group input{
+  align-items: center;
+}
+
+
+
+
 .register-container {
     max-width: 400px;
     margin: 0 auto;
@@ -5,36 +47,3 @@
     border: 1px solid #ccc;
     background-color: #f9f9f9;
   }
-  
-  .register-form div {
-    margin-bottom: 10px;
-  }
-  
-  .register-title {
-    text-align: center;
-  }
-  
-  .register-form label {
-    display: block;
-    font-weight: bold;
-  }
-  
-  .register-form input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-  }
-  
-  .register-form button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .register-form button:hover {
-    background-color: #0056b3;
-  }
-  

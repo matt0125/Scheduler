@@ -6,7 +6,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
-import logo from "../images/branding.png";
+import logo from "../images/branding-notitle.png";
 //import MediaQuery from 'react-responsive'
 
 const Login = () => {
@@ -80,7 +80,7 @@ const Login = () => {
             <img src={logo} alt="sched logo" className="logo"></img>
           </Col>
           <Col className="title">
-            <h1>Name of WebApp</h1>
+            <h1>Sched</h1>
           </Col>
         </Row>
         <Row className="row"> 

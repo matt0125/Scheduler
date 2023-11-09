@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import "../styles/Register.css";
+import { Container, Row, Col } from "react-bootstrap";
+import vector from "../images/table-meeting.png";
+import logo from "../images/branding-notitle.png";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -37,18 +40,62 @@ const Register = () => {
     }
   };
 
+  let url = "/";
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" name="username" placeholder="Username" onChange={handleChange} />
-      <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-      {/* Add more input fields similarly */}
-      <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-      <input type="text" name="firstName" placeholder="First Name" onChange={handleChange} />
-      <input type="text" name="lastName" placeholder="Last Name" onChange={handleChange} />
-      <input type="text" name="phone" placeholder="Phone" onChange={handleChange} />
-      <input type="checkbox" name="managerIdent" onChange={(e) => handleChange({ target: { name: 'managerIdent', value: e.target.checked } })} />
-      <button type="submit">Register</button>
-    </form>
+    <Container>
+        <Row>
+          <Col>
+            <img src={logo} alt="sched logo" className="logo"></img>
+          </Col>
+          <Col className="title">
+            <h1>Sched</h1>
+          </Col>
+        </Row>
+        <Row className="row"> 
+          <Col className="column">
+            <img src={vector} className="business-photo" alt="business vector"/>
+          </Col>
+          <Col className="main-column">            
+            <form onSubmit={handleSubmit}>
+            <div className='register-form'>
+            <h1 class="font-family-katibeh">Register</h1>
+            <div className='register-box'>
+              <div class="firstName-input-group">  
+              <h2 class="input-font">First Name</h2>
+                <input type="text" name="firstName" placeholder="" onChange={handleChange} />
+              </div>
+              <div class="lastName-input-group"> 
+              <h2 class="input-font">Last Name</h2>
+                <input type="text" name="lastName" placeholder="" onChange={handleChange} />
+              </div>
+              <div class="user-input-group"> 
+              <h2 class="input-font">Username</h2>
+                <input type="text" name="username" placeholder="" onChange={handleChange} />
+              </div>
+              <div class="pass-input-group"> 
+              <h2 class="input-font">Password</h2>
+                <input type="password" name="password" placeholder="" onChange={handleChange} />
+              </div>
+              <div class="email-input-group"> 
+              <h2 class="input-font">Email</h2>
+                <input type="email" name="email" placeholder="" onChange={handleChange} />
+              </div>
+              <div class="phone-input-group">
+              <h2 class="input-font">Phone Number</h2>
+                <input type="text" name="phone" placeholder="" onChange={handleChange} />
+              </div>
+            </div>
+            <div class="managerID-input-group">
+            <h2 class="input-font">Are you a manager or an employee?</h2>
+              <input type="checkbox" name="managerIdent" onChange={(e) => handleChange({ target: { name: 'managerIdent', value: e.target.checked } })} />
+            </div>
+            <button type="submit" className="submit-button">Sign Up</button>
+            <p className="login-register-p">Have an account?  <a href={url} className="login-register-url">log in</a></p>
+            </div>
+            </form>
+          </Col>
+        </Row>
+      </Container>
   );
 };
 
