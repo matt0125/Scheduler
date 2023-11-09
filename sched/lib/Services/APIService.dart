@@ -62,7 +62,7 @@ class APIService {
             : null);
   }
 
-  Future<List<Shift>> GetShiftsByDate( String empId, String startDate, String endDate ) async {
+  Future<List<Shift>> GetShiftsByEmpAndDate( String empId, String startDate, String endDate ) async {
     final data = {
       'empId': empId,
       'startDate': startDate,
