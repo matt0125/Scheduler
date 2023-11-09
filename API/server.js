@@ -78,6 +78,7 @@ app.get('/api/employee/:employeeId/availabilities', employeeController.getAvaila
 app.post('/api/position', PositionController.createPosition);
 app.get('/api/position/:id', PositionController.getPosition);
 app.get('/api/position', PositionController.getAllPositions);
+app.get('/api/position/:name', PositionController.getPositionByName);
 app.put('/api/position/:id', PositionController.updatePosition);
 app.delete('/api/position/:id', PositionController.deletePosition);
 

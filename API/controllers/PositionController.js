@@ -70,12 +70,17 @@ const PositionController = {
   getPositionByName: async (req, res) => {
     try {
       const { name } = req.params; // Assuming you're passing the name as a URL parameter
+      
       const position = await Position.findOne({ name: name });
+      
       if (!position) {
         return res.status(404).json({ message: 'Position not found' });
       }
+      
       res.status(200).json(position);
-    } catch (error) {
+    } 
+    
+    catch (error) {
       res.status(400).json({ message: 'Failed to get position by name', error });
     }
   }

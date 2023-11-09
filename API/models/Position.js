@@ -5,7 +5,8 @@ const positionSchema = new mongoose.Schema({
   _id: Schema.Types.ObjectId,
   name: {
     type: String,
-    required: true // if 'name' is always required, otherwise remove this line
+    required: true, // if 'name' is always required, otherwise remove this line
+    unique: true
   }
 });
 
