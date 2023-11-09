@@ -25,7 +25,7 @@ class _DailySchedulePageState extends State<DailySchedulePage> {
   }
 
   void getShifts() async {
-    _shifts = await api.GetShiftsByDate(
+    _shifts = await api.GetShiftsByEmpAndDate(
         DataService.readEmpId(), "10-10-2000", "10-10-2024");
     setState(() {
       _isLoading = false;

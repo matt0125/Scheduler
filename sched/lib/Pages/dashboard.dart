@@ -32,7 +32,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   void getShifts() async{
     List<String> days = getSunSat();
-    _shifts = await api.GetShiftsByDate(DataService.readEmpId(), days[0], days[1]);
+    _shifts = await api.GetShiftsByEmpAndDate(DataService.readEmpId(), days[0], days[1]);
     setState(() {
       _isLoading = false;
     });
