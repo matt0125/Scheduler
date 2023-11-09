@@ -180,11 +180,7 @@ exports.getShiftByDate = async (req, res) => {
       path: 'empId',
       model: Employee,
       select: 'firstName lastName',
-    }).populate({
-      path: 'templateId',
-      model: Position,
-      select: 'name',
-    });
+    }).populate('templateId');
 
     if (!shifts || shifts.length === 0) {
       return res.status(404).json({ message: 'No shifts found for the specified date' });
