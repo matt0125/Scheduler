@@ -62,6 +62,12 @@ app.get('/', (req, res) => {
 app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
 
+// Protected routes below this line
+app.use(authenticateJWT);
+
+app.get('/api/employee/:id', employeeController.getEmployee);
+app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
+
 // availabilities
 app.post('/api/employee/:employeeId/availability', employeeController.createAvailability);
 app.put('/api/employee/:employeeId/availability/:availabilityId', employeeController.updateAvailability);
@@ -73,12 +79,6 @@ app.post('/api/position/', PositionController.createPosition);
 app.get('/api/position/:id', PositionController.getPosition);
 app.put('/api/position/:id', PositionController.updatePosition);
 app.delete('/api/position/:id', PositionController.deletePosition);
-
-// Protected routes below this line
-app.use(authenticateJWT);
-
-app.get('/api/employee/:id', employeeController.getEmployee);
-app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
 
 // shifts
 app.post('/api/shifts', shiftController.createShift);
