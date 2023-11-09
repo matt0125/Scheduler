@@ -8,6 +8,7 @@ const shiftTemplateController = require('./controllers/ShiftTemplateController')
 const shiftController = require('./controllers/ShiftController');
 const { create } = require('domain');
 const jwt = require('jsonwebtoken');
+const PositionController = require('./controllers/PositionController');
 const secretKey = process.env.JWT_SECRET_KEY;
 
 // Middleware to authenticate and protect routes
@@ -61,6 +62,18 @@ app.get('/', (req, res) => {
 app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
 
+// availabilities
+app.post('/api/employee/:employeeId/availability', employeeController.createAvailability);
+app.put('/api/employee/:employeeId/availability/:availabilityId', employeeController.updateAvailability);
+app.delete('/api/employee/:employeeId/availability/:availabilityId', employeeController.deleteAvailability);
+app.get('/api/employee/:employeeId/availabilities', employeeController.getAvailabilities);
+
+// positions
+app.post('/api/position/', PositionController.createPosition);
+app.get('/api/position/:id', PositionController.getPosition);
+app.put('/api/position/:id', PositionController.updatePosition);
+app.delete('/api/position/:id', PositionController.deletePosition);
+
 // Protected routes below this line
 app.use(authenticateJWT);
 
@@ -86,12 +99,6 @@ app.put('/api/shift-templates/:id', shiftTemplateController.editShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
 
 app.post('/api/shift-templates/manager', shiftTemplateController.getShiftTemplateByManager);
-
-// availabilities
-app.post('/api/employee/:employeeId/availability', employeeController.createAvailability);
-app.put('/api/employee/:employeeId/availability/:availabilityId', employeeController.updateAvailability);
-app.delete('/api/employee/:employeeId/availability/:availabilityId', employeeController.deleteAvailability);
-app.get('/api/employee/:employeeId/availabilities', employeeController.getAvailabilities);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
