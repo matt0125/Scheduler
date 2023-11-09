@@ -13,7 +13,49 @@ import axios from 'axios';
 export default class DemoApp extends React.Component {
   state = {
     weekendsVisible: true,
-    currentEvents: []
+    currentEvents: [],
+    positions: [], // To store the list of positions
+    selectedPositionId: null // To store the selected position ID
+  }
+
+  componentDidMount() {
+    this.fetchPositions();
+  }
+
+  renderPositionSelect() {
+    return (
+      <select onChange={this.handlePositionSelect} value={this.state.selectedPositionId || ''}>
+        <option value="">Select Position</option>
+        {this.state.positions.map(position => (
+          <option key={position._id} value={position._id}>{position.name}</option>
+        ))}
+      </select>
+    );
+  }
+
+  fetchPositions = async () => {
+    // Fetch the positions based on the manager ID
+    // The manager ID should ideally come from a logged-in manager's data
+    const managerId = localStorage.getItem('id');
+    const jwtToken = localStorage.getItem('token');
+    
+    try {
+      const response = await axios.get(`http://localhost:3000/api/positions/${managerId}`, {
+        headers: {
+          contentType: 'application/json',
+          Authorization: `Bearer ${jwtToken}`
+        }
+      });
+
+      this.setState({ positions: response.data });
+    } catch (error) {
+      alert('Failed to fetch positions: ' + error.message);
+      console.log(error);
+    }
+  }
+
+  handlePositionSelect = (event) => {
+    this.setState({ selectedPositionId: event.target.value });
   }
 
   render() {
@@ -70,7 +112,7 @@ export default class DemoApp extends React.Component {
   FilterBar() {
     return (
       <div>
-
+        {this.renderPositionSelect()}
       </div>
     )
   }
@@ -87,7 +129,7 @@ export default class DemoApp extends React.Component {
 
     calendarApi.unselect() // clear date selection
 
-    if (title) {
+    if (title && this.state.selectedPositionId) {
       const event = {
         id: createEventId(),
         title,
@@ -98,11 +140,14 @@ export default class DemoApp extends React.Component {
 
       try {
         const jwtToken = localStorage.getItem('token');
+        console.log(convertToStandardTime(selectInfo.startStr));
+        console.log(convertToStandardTime(selectInfo.endStr));
+        console.log(getDayOfWeek(selectInfo.startStr));
         const response = await axios.post('http://localhost:3000/api/shift-templates', {
-          dayOfWeek: 5, // convert startStr to day of week
-          startTime: selectInfo.startStr,
-          endTime: selectInfo.endStr,
-          positionId: "6540314729a02a019abee6e6" // you will need to get the positionId as required by your API
+          dayOfWeek: getDayOfWeek(selectInfo.startStr), // convert startStr to day of week
+          startTime: convertToStandardTime(selectInfo.startStr),
+          endTime: convertToStandardTime(selectInfo.endStr),
+          positionId: this.state.selectedPositionId // you will need to get the positionId as required by your API
         }, {
           headers: {
             Authorization: `Bearer ${jwtToken}`
@@ -121,6 +166,8 @@ export default class DemoApp extends React.Component {
       const empId = localStorage.getItem('id');
       const templateId = 'TEMPLATE_ID';
       const date = formatDate(event.start, { year: 'numeric', month: '2-digit', day: '2-digit' });
+    } else {
+      alert('You must select a position first.');
     }
   }
 
@@ -154,4 +201,24 @@ function renderSidebarEvent(event) {
       <i>{event.title}</i>
     </li>
   )
+}
+
+function convertToStandardTime(timeString) {
+  // Extract the time part before the timezone offset
+  const timePart = timeString.split('T')[1].split('-')[0];
+  
+  // Extract the hours and minutes
+  const hoursAndMinutes = timePart.split(':').slice(0, 2).join(':');
+  
+  return hoursAndMinutes;
+}
+
+function getDayOfWeek(dateString) {
+  // Create a new Date object from the date string
+  const date = new Date(dateString);
+
+  // Get the day of the week from the date object
+  const dayOfWeek = date.getDay();
+
+  return dayOfWeek;
 }

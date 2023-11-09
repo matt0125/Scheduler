@@ -6,6 +6,7 @@ const cors = require('cors');
 const employeeController = require('./controllers/EmployeeController'); // Importing the employee controller
 const shiftTemplateController = require('./controllers/ShiftTemplateController');
 const shiftController = require('./controllers/ShiftController');
+const positionController = require('./controllers/PositionController');
 const { create } = require('domain');
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
@@ -92,6 +93,11 @@ app.post('/api/employee/:employeeId/availability', employeeController.createAvai
 app.put('/api/employee/:employeeId/availability/:availabilityId', employeeController.updateAvailability);
 app.delete('/api/employee/:employeeId/availability/:availabilityId', employeeController.deleteAvailability);
 app.get('/api/employee/:employeeId/availabilities', employeeController.getAvailabilities);
+
+// Positions
+app.get('/api/positions/:managerId', positionController.getPositionsByManager);
+app.post('/api/positions/manager', positionController.createPositionByManager);
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
