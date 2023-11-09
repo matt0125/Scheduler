@@ -100,8 +100,8 @@ export default class DemoApp extends React.Component {
         const jwtToken = localStorage.getItem('token');
         const response = await axios.post('http://localhost:3000/api/shift-templates', {
           dayOfWeek: 5, // convert startStr to day of week
-          startTime: "8:00",
-          endTime: "10:30",
+          startTime: selectInfo.startStr,
+          endTime: selectInfo.endStr,
           positionId: "6540314729a02a019abee6e6" // you will need to get the positionId as required by your API
         }, {
           headers: {
