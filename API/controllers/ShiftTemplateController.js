@@ -1,6 +1,7 @@
 const ShiftTemplate = require('../models/ShiftTemplate');
 const Position = require('../models/Position');
 const Employee = require('../models/Employee');
+const mongoose = require('mongoose');
 
 exports.createShiftTemplate = async (req, res) => {
   try {
@@ -10,6 +11,7 @@ exports.createShiftTemplate = async (req, res) => {
 
     // Create a new shift template
     const newShiftTemplate = new ShiftTemplate({
+      _id: new mongoose.Types.ObjectId(),
       dayOfWeek,
       startTime,
       endTime,
@@ -20,7 +22,13 @@ exports.createShiftTemplate = async (req, res) => {
     console.log(positionId);
 
     // Save to the database
-    await newShiftTemplate.save();
+    try {
+      await newShiftTemplate.save();
+    } catch (e) {
+      console.log("ERRROR")
+      console.log(e.message);
+    }
+    
     
     console.log('New shift template created: ', newShiftTemplate);
 
@@ -29,6 +37,7 @@ exports.createShiftTemplate = async (req, res) => {
   
   catch (error) {
     res.status(400).json({ message: 'Failed to create shift template', error });
+    console.log('There was an error creating shift template', error);
   }
 };
 

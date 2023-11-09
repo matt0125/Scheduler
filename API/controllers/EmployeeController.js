@@ -112,7 +112,7 @@ exports.loginEmployee = async (req, res) => {
     const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: '2h' }); // Expires in 2 hours
 
     // If the password matches, proceed to login
-    return res.json({ message: 'Login successful', id: user._id, tokenL: token });
+    return res.json({ message: 'Login successful', id: user._id, token: token });
   } catch (error) {
     res.status(500).json({ message: 'Error authenticating user', error });
     console.error("There was an error logging in:", error);
