@@ -180,6 +180,10 @@ exports.getShiftByDate = async (req, res) => {
       path: 'empId',
       model: Employee,
       select: 'firstName lastName',
+    }).populate({
+      path: 'templateId',
+      model: Position,
+      select: 'name',
     });
 
     if (!shifts || shifts.length === 0) {
