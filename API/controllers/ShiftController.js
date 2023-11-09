@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Shift = require('../models/Shift');
 const Employee = require('../models/Employee');
 const ShiftTemplate = require('../models/ShiftTemplate');
@@ -5,10 +6,11 @@ const Position  = require('../models/Position');
 const mongoose = require('mongoose');
 
 exports.createShift = async (req, res) => {
-  console.log('Creating shift...');
-  console.log('Type of Employee in controller:', typeof Employee);
+  
   try {
     console.log('Creating shift...');
+    console.log('Type of Employee in controller:', typeof Employee);
+    
     const { date, empId, templateId } = req.body;
 
     if (!date || !empId || !templateId) {
@@ -73,11 +75,8 @@ exports.createShift = async (req, res) => {
       const isAvailable = dayOfWeekMatch && startTimeMatch && endTimeMatch;
       console.log('Is available?', isAvailable);
 
-
-
       return isAvailable;
     });
-    
 
     if (!isAvailable) {
       return res.status(400).json({ message: 'Employee is not available at this time' });
@@ -95,9 +94,11 @@ exports.createShift = async (req, res) => {
     await newShift.save();
     
     res.status(201).json(newShift);
-  } catch (error) {
+  } 
+  
+  catch (error) {
     console.log('Error creating shift:', error)
-    res.status(400).json({ message: 'Failed to create shift', error });
+    res.status(400).json({ message: 'Failed to create shift', error: error.toString() });
   }
 };
 
@@ -113,8 +114,10 @@ exports.getShift = async (req, res) => {
     }
 
     res.status(200).json(shift);
-  } catch (error) {
-    res.status(400).json({ message: 'Failed to get shift', error });
+  } 
+  
+  catch (error) {
+    res.status(400).json({ message: 'Failed to get shift', error: error.toString() });
   }
 };
 
@@ -127,6 +130,7 @@ exports.editShift = async (req, res) => {
     const { date, empId, templateId } = req.body;
 
     console.log('Shift ID:', id);
+
     // Update shift by ID
     const updatedShift = await Shift.findByIdAndUpdate(
       id,
@@ -139,18 +143,24 @@ exports.editShift = async (req, res) => {
     }
 
     res.status(200).json(updatedShift);
-  } catch (error) {
-    res.status(400).json({ message: 'Failed to edit shift', error });
+  } 
+  
+  catch (error) {
+    res.status(400).json({ message: 'Failed to edit shift', error: error.toString() });
   }
 };
 
 exports.deleteShift = async (req, res) => {
   try {
     const { id } = req.params;
+    
     await Shift.findByIdAndDelete(id);
+    
     res.status(200).json({ message: 'Shift deleted successfully' });
-  } catch (error) {
-    res.status(400).json({ message: 'Failed to delete shift', error });
+  } 
+  
+  catch (error) {
+    res.status(400).json({ message: 'Failed to delete shift', error: error.toString() });
   }
 };
 
@@ -163,10 +173,6 @@ exports.getShiftByDate = async (req, res) => {
   try {
     console.log('Fetching for shifts by date...');
 
-    // const unixTimestamp = -61851600000000;
-    // const isoDate = new Date(unixTimestamp).toISOString();
-    // console.log(isoDate);
-
     const { date } = req.params;
     
     console.log(date);
@@ -178,8 +184,23 @@ exports.getShiftByDate = async (req, res) => {
 
     const shifts = await Shift.find({
       date: { $gte: selectedDate, $lt: nextDate },
+    }).populate({
+      path: 'empId',
+      model: Employee,
+      select: 'firstName lastName',
+    }).populate({
+      path: 'templateId',
+      model: ShiftTemplate,
+      select: 'startTime endTime positionId',
+    }).populate({
+      path: 'templateId',
+      populate: {
+        path: 'positionId',
+        model: Position,
+        select: 'name'
+      },
     });
-
+    
     if (!shifts || shifts.length === 0) {
       return res.status(404).json({ message: 'No shifts found for the specified date' });
     }
@@ -188,7 +209,7 @@ exports.getShiftByDate = async (req, res) => {
   }
 
   catch (error) {
-    res.status(500).json({ message: 'Error fetching for shifts by date', error});
+    res.status(500).json({ message: 'Error fetching for shifts by date', error: error.toString() });
     console.error('There was an error fetching for shifts by date', error); 
   }
 }
@@ -209,7 +230,7 @@ exports.getShiftByEmpId = async (req, res) => {
   } 
   
   catch (error) {
-    res.status(500).json({ message: 'Error fetching shifts by employee ID', error });
+    res.status(500).json({ message: 'Error fetching shifts by employee ID', error: error.toString() });
     console.error('There was an error fetching shifts by employee ID', error);
   }
 };
@@ -264,7 +285,7 @@ exports.getShiftByEmpIdAndDate = async (req, res) => {
       return res.status(404).json({ message: 'No shifts found for the specified employee ID' });
     }
 
-    res.status(200).json(shifts);
+    res.status(200).json({shifts: shifts});
   } 
   
   catch (error) {
@@ -276,23 +297,30 @@ exports.getShiftByEmpIdAndDate = async (req, res) => {
 exports.getShiftByManager = async (req, res) => {
   try {
     console.log('Fetching shifts by manager...');
-    
-    // Find shifts where the employee is a manager
+
+    const { empId } = req.body; // assuming the employee is a manager... for now
+
+    // Find employees managed by the specified manager
+    const managedEmployees = await Employee.find({ managedBy: empId });
+
+    // Extract the IDs of the managed employees
+    const managedEmployeeIds = managedEmployees.map((employee) => employee._id);
+
+    // Find shifts for the managed employees
     const shifts = await Shift.find({
-      empId: {
-        $in: await Employee.find({ managerIdent: true }).distinct('_id')
-      }
+      empId: { $in: managedEmployeeIds },
     });
 
     if (!shifts || shifts.length === 0) {
-      return res.status(404).json({ message: 'No shifts found for managers' });
+      return res.status(404).json({ message: 'No shifts found for employees managed by the specified manager' });
     }
 
-    res.status(200).json(shifts);
+    res.status(200).json({ shifts: shifts });
   } 
   
   catch (error) {
-    res.status(500).json({ message: 'Error fetching shifts for managers', error });
-    console.error('There was an error fetching shifts for managers', error);
+    res.status(500).json({ message: 'Error fetching shifts for employees managed by the specified manager', error: error.toString() });
+    console.error('There was an error fetching shifts for employees managed by the specified manager', error);
   }
 };
+

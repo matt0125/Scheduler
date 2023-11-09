@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import '../Widgets/calendar_widget.dart';
 import '../Widgets/ScheduleCard.dart';
+import '../Services/APIService.dart';
+import '../Services/DataService.dart';
+import '../Models/Shift.dart';
+import 'package:intl/intl.dart';
 
 class DashboardPage extends StatefulWidget {
   DashboardPage() : super();
@@ -15,6 +18,43 @@ class _DashboardPageState extends State<DashboardPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final PageController _pageController = PageController();
   int currentIndex = 0; // Track the current index
+
+  bool _isLoading = true;
+  final api = APIService();
+  List<Shift> _shifts = [];
+
+  @override
+  void initState()
+  {
+    super.initState();
+    getShifts();
+  }
+
+  void getShifts() async{
+    List<String> days = getSunSat();
+    _shifts = await api.GetShiftsByDate(DataService.readEmpId(), days[0], days[1]);
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  List<String> getSunSat(){
+    List<String> days = [];
+    final today = DateTime.now();
+
+    if (today.weekday == 7)
+      {
+        days.add(DateFormat('MM-dd-yyyy').format(today));
+        days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: 7))));
+      }
+    else
+      {
+        days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: (-1*today.weekday)))));
+        days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: (6 + (-1*today.weekday))))));
+      }
+
+    return days;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,54 +74,25 @@ class _DashboardPageState extends State<DashboardPage> {
             Container(
               height: MediaQuery.of(context).size.height * 0.3, // Adjust the fraction as needed
               // width: MediaQuery.of(context).size.width * 0.85,
-              child: PageView(
-                controller: _pageController,
-                scrollDirection: Axis.horizontal,
-                onPageChanged: (index) {
-                  setState(() {
-                    currentIndex = index;
-                  });
-                },
-                children: <Widget>[
-                  ScheduleCard(
-                    date: 'November 5, 2023',
-                    startTime: '10:00 AM',
-                    endTime: '12:00 PM',
-                    positionTitle: 'Host',
-                  ),
-                  ScheduleCard(
-                    date: 'November 6, 2023',
-                    startTime: '12:00 AM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Busser',
-                  ),
-                  ScheduleCard(),
-                  ScheduleCard(
-                    date: 'November 8, 2023',
-                    startTime: '2:00 PM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Host',
-                  ),
-                  ScheduleCard(
-                    date: 'November 9, 2023',
-                    startTime: '2:00 PM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Server',
-                  ),
-                  ScheduleCard(
-                    date: 'November 10, 2023',
-                    startTime: '2:00 PM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Carry Out',
-                  ),
-                  ScheduleCard(
-                    date: 'November 11, 2023',
-                    startTime: '2:00 PM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Conference Call 6',
-                  ),
-                ],
-              ),
+              child: _isLoading ? Center(child: CircularProgressIndicator()):
+                  PageView.builder(
+                      controller: _pageController,
+                      scrollDirection: Axis.horizontal,
+                      onPageChanged: (index) {
+                        setState(() {
+                          currentIndex = index;
+                        });
+                      },
+                      itemCount: _shifts.length,
+                      itemBuilder: (context, index){
+                        return ScheduleCard(
+                          date: _shifts[index].date,
+                          unformattedDate: _shifts[index].unformattedDate,
+                          startTime: _shifts[index].startTime,
+                          endTime: _shifts[index].endTime,
+                          positionTitle: _shifts[index].positionTitle,
+                        );
+                      }),
             ),
           ],
         ),

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const ShiftTemplate = require('../models/ShiftTemplate');
 const Position = require('../models/Position');
 const Employee = require('../models/Employee');

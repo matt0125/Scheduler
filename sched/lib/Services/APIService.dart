@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:sched/Models/Shift.dart';
 
 class APIService {
   final String baseUrl;
@@ -71,16 +72,30 @@ class APIService {
     List<Shift> shifts = [];
 
     final responseData = await postToEndpoint(data, 'shifts/empbydates');
+    List temp = [];
 
-    for(final item in responseData.values)
-      {
-        shifts.add(Shift(
+    try{
+      if(responseData['message'] != null)
+        {
+          print(responseData['message']);
+          return shifts;
+        }
+    }
+    catch(e)
+    {
+      print(e);
+    }
+
+    for(final item in responseData["shifts"])
+    {
+      shifts.add(Shift(
           date: Shift.formatDate(item['date']),
-          startTime: item['startTime'],
-          endTime: item['endTime'],
+          unformattedDate: Shift.formatDate2(item['date']),
+          startTime: item['templateId']['startTime'],
+          endTime: item['templateId']['endTime'],
           positionTitle: item['templateId']['positionId']['name']
-        ));
-      }
+      ));
+    }
 
     return shifts;
   }
@@ -96,29 +111,3 @@ class Response {
   });
 }
 
-class Shift {
-  final String? date;
-  final String? startTime;
-  final String? endTime;
-  final String? positionTitle;
-
-  Shift({
-    this.date,
-    this.startTime,
-    this.endTime,
-    this.positionTitle,
-  });
-
-  static String formatDate(String dateString) {
-    DateTime date = DateTime.parse(dateString);
-    String formattedDate = "${_getMonthName(date.month)} ${date.day}, ${date.year}";
-    return formattedDate;
-  }
-
-  static String _getMonthName(int month) {
-    final months = [
-      'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    return months[month - 1];
-  }
-}

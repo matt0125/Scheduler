@@ -146,14 +146,18 @@ exports.getEmployee = async (req, res) => {
 exports.getEmployeeByAvailability = async (req, res) => {
   try {
     console.log('Fetching employees by availability...');
-
-    const { dayOfWeek, startTime, endTime } = req.params;
+    
+    const { dayOfWeek, startTime, endTime } = req.body;
 
     // Find employees with matching availability
     const employees = await Employee.find({
-      'availability.dayOfWeek': dayOfWeek,
-      'availability.startTime': startTime,
-      'availability.endTime': endTime,
+      availability: {
+        $elemMatch: {
+          dayOfWeek: dayOfWeek,
+          startTime: startTime,
+          endTime: endTime,
+        },
+      },
     });
 
     if (!employees || employees.length === 0) {
