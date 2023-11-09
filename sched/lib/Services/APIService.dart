@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:sched/Models/Shift.dart';
+import '../Models/FullShift.dart';
 
 class APIService {
   final String baseUrl;
@@ -22,6 +23,21 @@ class APIService {
         'Content-Type': 'application/json',
       },
       body: json.encode(data),
+    );
+    try {
+      return json.decode(response.body);
+    } catch (e) {
+      throw Exception('Failed to decode response for $endpoint: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> getToEndpoint(Map<String, dynamic>? data, String endpoint) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/$endpoint'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: (data != null ? json.encode(data) : null),
     );
     try {
       return json.decode(response.body);
@@ -76,10 +92,10 @@ class APIService {
 
     try{
       if(responseData['message'] != null)
-        {
-          print(responseData['message']);
-          return shifts;
-        }
+      {
+        print(responseData['message']);
+        return shifts;
+      }
     }
     catch(e)
     {
@@ -94,6 +110,37 @@ class APIService {
           startTime: item['templateId']['startTime'],
           endTime: item['templateId']['endTime'],
           positionTitle: item['templateId']['positionId']['name']
+      ));
+    }
+
+    return shifts;
+  }
+  Future<List<FullShift>> GetShiftsByDate( String date ) async {
+    List<FullShift> shifts = [];
+
+    final responseData = await getToEndpoint(null, 'shifts/empbydates');
+    List temp = [];
+
+    try{
+      if(responseData['message'] != null)
+      {
+        print(responseData['message']);
+        return shifts;
+      }
+    }
+    catch(e)
+    {
+      print(e);
+    }
+
+    for(final item in responseData["shifts"])
+    {
+      shifts.add(FullShift(
+          startTime: item['templateId']['startTime'],
+          endTime: item['templateId']['endTime'],
+          positionTitle: item['templateId']['positionId']['name'],
+          firstName: item['empId']['firstName'],
+          lastName: item['empId']['lastName'],
       ));
     }
 
