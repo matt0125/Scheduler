@@ -176,6 +176,10 @@ exports.getShiftByDate = async (req, res) => {
 
     const shifts = await Shift.find({
       date: { $gte: selectedDate, $lt: nextDate },
+    }).populate({
+      path: 'empId',
+      model: Employee,
+      select: 'firstName lastName', // Specify the fields you want to populate
     });
 
     if (!shifts || shifts.length === 0) {
