@@ -178,7 +178,6 @@ exports.getShiftByDate = async (req, res) => {
       date: { $gte: selectedDate, $lt: nextDate },
     }).populate({
       path: 'empId',
-      model: Employee,
       select: 'firstName lastName', // Specify the fields you want to populate
     });
 
