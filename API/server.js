@@ -109,6 +109,9 @@ app.post('/api/shift-templates/manager', shiftTemplateController.getShiftTemplat
 app.get('/api/positions/:managerId', positionController.getPositionsByManager);
 app.post('/api/positions/manager', positionController.createPositionByManager);
 
+// Update password
+app.put('/api/employee/:employeeId/password', employeeController.updatePassword);
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

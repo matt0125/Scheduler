@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // for bcrypt password hashing
 const jwt = require('jsonwebtoken');
+const e = require('express');
 const secretKey = process.env.JWT_SECRET_KEY;
 
 // Was used for unique index testing
@@ -313,6 +314,42 @@ exports.getAvailabilities = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error fetching availabilities', error });
     console.error('There was an error fetching availabilities', error );
+  }
+};
+
+exports.updatePassword = async (req, res) => {
+  try {
+    const { employeeId } = req.params; // Assuming the employee ID is passed in the URL
+    console.log(employeeId);
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new passwords are required' });
+    }
+
+    // Find the employee by ID
+    const employee = await Employee.findById(employeeId);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Compare current password with the hashed password in the database
+    const isMatch = await bcrypt.compare(currentPassword, employee.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    // Hash the new password
+    const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update the password in the database
+    employee.password = hashedNewPassword;
+    await employee.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating password', err });
+    console.error("There was an error:", err);
   }
 };
 
