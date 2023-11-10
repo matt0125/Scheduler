@@ -11,6 +11,7 @@ import profile from "../images/profile-button.svg";
 import axios from 'axios';
 import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
+import { withRouter } from 'react-router-dom';
 
 export default class DemoApp extends React.Component {
   state = {
@@ -18,7 +19,8 @@ export default class DemoApp extends React.Component {
     currentEvents: [],
     positions: [], // To store the list of positions
     selectedPositionId: null, // To store the selected position ID
-    showModal: false  // Add this line
+    showModal: false,  // Add this line
+    shiftTemplates: []
   }
    // Function to handle opening the modal
    openModal = () => {
@@ -33,16 +35,22 @@ export default class DemoApp extends React.Component {
   // Function to handle sign out
   handleSignOut = () => {
     localStorage.clear();
-    this.props.history.push('/'); // Redirect to Login.js
+    this.props.navigate('/'); // Use the navigate function passed as a prop
   }
 
-  // Function to handle edit profile - placeholder for now
+  // Function to handle edit profile
   handleEditProfile = () => {
-    // Placeholder function
-  }
+    // Assuming the employee ID is stored in localStorage
+    const employeeId = localStorage.getItem('id'); 
+
+    // Navigate to the EditProfile page with the employee ID
+    this.props.navigate(`/edit-profile/${employeeId}`);
+  };
+
 
   componentDidMount() {
     this.fetchPositions();
+    this.fetchShiftTemplates();
   }
 
   renderPositionSelect() {
@@ -73,6 +81,26 @@ export default class DemoApp extends React.Component {
       this.setState({ positions: response.data });
     } catch (error) {
       alert('Failed to fetch positions: ' + error.message);
+      console.log(error);
+    }
+  }
+
+  fetchShiftTemplates = async () => {
+    const managerId = localStorage.getItem('id');
+    const jwtToken = localStorage.getItem('token');
+  
+    try {
+      const response = await axios.get(`http://localhost:3000/api/shift-templates/manager/${managerId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      });
+  
+      const formattedShiftTemplates = formatShiftTemplatesForCalendar(response.data);
+      this.setState({ shiftTemplates: formattedShiftTemplates });
+      console.log(formattedShiftTemplates);
+    } catch (error) {
+      alert('Failed to fetch shift templates: ' + error.message);
       console.log(error);
     }
   }
@@ -113,6 +141,7 @@ export default class DemoApp extends React.Component {
             eventContent={renderEventContent} // custom render function
             eventClick={this.handleEventClick}
             eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+            events={this.state.shiftTemplates}
             /* you can update a remote database when these fire:
             eventAdd={function(){}}
             eventChange={function(){}}
@@ -174,7 +203,8 @@ export default class DemoApp extends React.Component {
           dayOfWeek: getDayOfWeek(selectInfo.startStr), // convert startStr to day of week
           startTime: convertToStandardTime(selectInfo.startStr),
           endTime: convertToStandardTime(selectInfo.endStr),
-          positionId: this.state.selectedPositionId // you will need to get the positionId as required by your API
+          positionId: this.state.selectedPositionId, // you will need to get the positionId as required by your API
+          managerId: localStorage.getItem('id')
         }, {
           headers: {
             Authorization: `Bearer ${jwtToken}`
@@ -248,4 +278,25 @@ function getDayOfWeek(dateString) {
   const dayOfWeek = date.getDay();
 
   return dayOfWeek;
+}
+
+// Function to format shift templates into FullCalendar events
+function formatShiftTemplatesForCalendar(shiftTemplates) {
+  return shiftTemplates.map(template => {
+    // Assuming your template has properties like `startTime`, `endTime`, `title`
+    return {
+      id: template._id, // or some unique identifier from your template
+      title: template.title,
+      start: formatDateTimeForCalendar(template.startTime),
+      end: formatDateTimeForCalendar(template.endTime),
+      // Include other relevant properties
+    };
+  });
+}
+
+// Helper function to format date/time for FullCalendar
+function formatDateTimeForCalendar(dateTime) {
+  // Format the dateTime string as needed for the calendar
+  // Example: "2023-11-10T09:00:00" (if your API returns date and time separately, you may need to concatenate them)
+  return dateTime;
 }

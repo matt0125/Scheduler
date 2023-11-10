@@ -10,6 +10,10 @@ const shiftTemplateSchema = new Schema({
   positionId: {
     type: Schema.Types.ObjectId,
     ref: 'Position'
+  },
+  managerId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Employee',
   }
 });
 
