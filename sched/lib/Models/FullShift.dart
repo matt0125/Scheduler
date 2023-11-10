@@ -6,6 +6,7 @@ class FullShift {
   final String? lastName;
   String? fullName;
   String? printTime;
+  String? printPositionTitle;
 
   FullShift({
     this.startTime,
@@ -31,6 +32,22 @@ class FullShift {
         endH -= 12;
 
       this.printTime = "${startH}:${startM} ${startAM != endAM ? startAM : ""}- ${endH}:${endM} ${endAM}";
+
+      this.printPositionTitle = format(this.positionTitle);
     }
+  }
+
+  String? format(String? positionTitle) {
+    if(positionTitle != null)
+      {
+        List<String> ogWords = positionTitle.split(" ");
+        List<String> newWords = [];
+        for(String word in ogWords)
+          {
+            newWords.add(word[0].toUpperCase() + word.substring(1).toLowerCase());
+          }
+        return newWords.join(" ");
+      }
+    return null;
   }
 }

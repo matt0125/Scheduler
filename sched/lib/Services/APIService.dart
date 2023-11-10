@@ -34,13 +34,12 @@ class APIService {
   }
 
   Future<Map<String, dynamic>> getToEndpoint(Map<String, dynamic>? data, String endpoint) async {
-    final response = await http.post(
+    final response = await http.get(
       Uri.parse('$baseUrl/$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${DataService.readJWT()}',
-      },
-      body: (data != null ? json.encode(data) : null),
+      }
     );
     try {
       return json.decode(response.body);
@@ -120,10 +119,12 @@ class APIService {
     return shifts;
   }
   Future<List<FullShift>> GetShiftsByDate( String date ) async {
+    List<String> dates = date.split("-");
+    String formattedDate = "${dates[2]}-${dates[0]}-${dates[1]}T00:00:00.000Z";
+
     List<FullShift> shifts = [];
 
-    final responseData = await getToEndpoint(null, 'shifts/empbydates');
-    List temp = [];
+    final responseData = await getToEndpoint(null, 'shifts/date/${formattedDate}');
 
     try{
       if(responseData['message'] != null)

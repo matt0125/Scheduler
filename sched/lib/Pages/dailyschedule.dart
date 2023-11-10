@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import '../Models/Shift.dart';
+import '../Models/FullShift.dart';
 import '../Services/APIService.dart';
-import '../Services/DataService.dart';
 
 
 class DailySchedulePage extends StatefulWidget {
@@ -15,7 +14,7 @@ class DailySchedulePage extends StatefulWidget {
 
 class _DailySchedulePageState extends State<DailySchedulePage> {
   bool _isLoading = true;
-  List<Shift> _shifts = [];
+  List<FullShift> _shifts = [];
   final api = APIService();
 
   @override
@@ -25,7 +24,7 @@ class _DailySchedulePageState extends State<DailySchedulePage> {
   }
 
   void getShifts() async {
-    _shifts = await api.GetShiftsByEmpAndDate("10-10-2000", "10-10-2024");
+    _shifts = await api.GetShiftsByDate(widget.date);
     setState(() {
       _isLoading = false;
     });
@@ -52,7 +51,7 @@ class _DailySchedulePageState extends State<DailySchedulePage> {
 }
 
 class ShiftText extends StatelessWidget {
-  final Shift shift;
+  final FullShift shift;
 
   ShiftText({required this.shift});
 
@@ -63,9 +62,11 @@ class ShiftText extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Position: ${shift.positionTitle}", style: TextStyle(fontSize: 18)),
-          Text("Time: ${shift.startTime} - ${shift.endTime}", style: TextStyle(fontSize: 16)),
-          SizedBox(height: 10),
+          Text("${shift.fullName} - ${shift.printPositionTitle}", style: TextStyle(fontSize: 22)),
+          Text("${shift.printTime}", style: TextStyle(fontSize: 18)),
+          SizedBox(height: 5),
+          Divider(),
+          SizedBox(height: 5),
         ],
       ),
     );
