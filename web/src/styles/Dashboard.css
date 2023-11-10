@@ -32,3 +32,11 @@ body
     top: 10px;
     right: 10px;
 }
+.ReactModal__Overlay {
+    z-index: 1000; /* Ensure it's above other content */
+  }
+
+.modal {
+    width: 500px;
+    height: 300px;
+}

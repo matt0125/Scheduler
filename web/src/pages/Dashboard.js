@@ -9,13 +9,36 @@ import "../styles/Dashboard.css";
 import logo from "../images/branding.png";
 import profile from "../images/profile-button.svg";
 import axios from 'axios';
+import Modal from 'react-modal';
+import { useNavigate } from "react-router-dom";
 
 export default class DemoApp extends React.Component {
   state = {
     weekendsVisible: true,
     currentEvents: [],
     positions: [], // To store the list of positions
-    selectedPositionId: null // To store the selected position ID
+    selectedPositionId: null, // To store the selected position ID
+    showModal: false  // Add this line
+  }
+   // Function to handle opening the modal
+   openModal = () => {
+    this.setState({ showModal: true });
+  }
+
+  // Function to handle closing the modal
+  closeModal = () => {
+    this.setState({ showModal: false });
+  }
+
+  // Function to handle sign out
+  handleSignOut = () => {
+    localStorage.clear();
+    this.props.history.push('/'); // Redirect to Login.js
+  }
+
+  // Function to handle edit profile - placeholder for now
+  handleEditProfile = () => {
+    // Placeholder function
   }
 
   componentDidMount() {
@@ -64,7 +87,11 @@ export default class DemoApp extends React.Component {
         {this.FilterBar()}
         <div className='demo-app-main'>
         <img src={logo} alt="sched logo" className="logo"></img>
-        <img className="profile-button" src={profile} alt="Profile_Button" />
+        <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openModal} />
+        <Modal isOpen={this.state.showModal} onRequestClose={this.closeModal}>
+            <button onClick={this.handleSignOut}>Sign Out</button>
+            <button onClick={this.handleEditProfile}>Edit Profile</button>
+          </Modal>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{
