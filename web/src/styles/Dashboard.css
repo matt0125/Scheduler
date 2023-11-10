@@ -32,6 +32,26 @@ body
     top: 10px;
     right: 10px;
 }
-.ReactModal__Overlay {
+.ReactModal__Overlay
+{
     z-index: 1000; /* Ensure it's above other content */
-  }
+}
+
+/* Modal Content */
+.ReactModal__Content {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 10px; /* Rounded corners */
+    outline: none;
+    padding: 20px;
+    width: 15%; /* Set to a percentage of the screen width */
+    max-width: 250px; /* Maximum width of the modal */
+    height: 15%; /* Set to a percentage of the screen width */
+    max-height: 250px; /* Maximum width of the modal */
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2); /* Shadow for pop effect */
+}
