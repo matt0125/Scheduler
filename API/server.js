@@ -106,7 +106,7 @@ app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTempla
 app.get('/api/shift-templates/manager/:managerId', shiftTemplateController.getShiftTemplateByManager);
 
 // Positions
-app.get('/api/positions/:positionId', positionController.getPosition);
+app.get('/api/position/:positionId', positionController.getPosition);
 app.get('/api/positions/:managerId', positionController.getPositionsByManager);
 app.post('/api/positions/manager', positionController.createPositionByManager);
 

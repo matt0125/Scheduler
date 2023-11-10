@@ -129,13 +129,15 @@ exports.getShiftTemplateByManager = async (req, res) => {
     const shiftTemplates = await ShiftTemplate.find({ managerId });
 
     if (!shiftTemplates || shiftTemplates.length === 0) {
-      return res.status(404).json({ message: 'No shift templates found for this manager' });
+      console.log('No shift templates found for this manager');
+      return res.status(200).json({ message: 'No shift templates found for this manager', shiftTemplates: [] });
     }
 
     res.status(200).json(shiftTemplates);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching shift templates for the manager', error });
     console.error('There was an error fetching shift templates for the manager', error);
+    console.log(error);
   }
 };
 
