@@ -9,6 +9,7 @@ const shiftController = require('./controllers/ShiftController');
 const positionController = require('./controllers/PositionController');
 const { create } = require('domain');
 const jwt = require('jsonwebtoken');
+const PositionController = require('./controllers/PositionController');
 const secretKey = process.env.JWT_SECRET_KEY;
 
 // Middleware to authenticate and protect routes
@@ -66,7 +67,23 @@ app.post('/api/login', employeeController.loginEmployee);
 app.use(authenticateJWT);
 
 app.get('/api/employee/:id', employeeController.getEmployee);
+app.get('/api/employee/:id', employeeController.getEmployeeByManager);
+app.get('/api/employee/:id', employeeController.getEmployeesOfTheSameManager);
 app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
+
+// availabilities
+app.post('/api/employee/:employeeId/availability', employeeController.createAvailability);
+app.put('/api/employee/:employeeId/availability/:availabilityId', employeeController.updateAvailability);
+app.delete('/api/employee/:employeeId/availability/:availabilityId', employeeController.deleteAvailability);
+app.get('/api/employee/:employeeId/availabilities', employeeController.getAvailabilities);
+
+// positions
+app.post('/api/position', PositionController.createPosition);
+app.get('/api/position/:id', PositionController.getPosition);
+app.get('/api/position', PositionController.getAllPositions);
+app.get('/api/position/:name', PositionController.getPositionByName);
+app.put('/api/position/:id', PositionController.updatePosition);
+app.delete('/api/position/:id', PositionController.deletePosition);
 
 // shifts
 app.post('/api/shifts', shiftController.createShift);
@@ -74,10 +91,10 @@ app.get('/api/shifts/:id', shiftController.getShift);
 app.put('/api/shifts/:id', shiftController.editShift);
 app.delete('/api/shifts/:id', shiftController.deleteShift);
 
-app.post('/api/shifts/empbydates', shiftController.getShiftByEmpIdAndDate);
+app.post('/api/shifts/empbydates', shiftController.getShiftByEmployeeAndDate);
 
 app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
-app.get('/api/shifts/empid/:empId', shiftController.getShiftByEmpId);
+app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
 
 // shift templates
@@ -88,15 +105,12 @@ app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTempla
 
 app.post('/api/shift-templates/manager', shiftTemplateController.getShiftTemplateByManager);
 
-// availabilities
-app.post('/api/employee/:employeeId/availability', employeeController.createAvailability);
-app.put('/api/employee/:employeeId/availability/:availabilityId', employeeController.updateAvailability);
-app.delete('/api/employee/:employeeId/availability/:availabilityId', employeeController.deleteAvailability);
-app.get('/api/employee/:employeeId/availabilities', employeeController.getAvailabilities);
-
 // Positions
 app.get('/api/positions/:managerId', positionController.getPositionsByManager);
 app.post('/api/positions/manager', positionController.createPositionByManager);
+
+// Update password
+app.put('/api/employee/:employeeId/password', employeeController.updatePassword);
 
 
 app.listen(port, () => {

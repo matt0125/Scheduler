@@ -168,6 +168,7 @@ function convertTimeToMinutes(time) {
   return hours * 60 + minutes;
 }
 
+// Given an date, get all shifst that match
 exports.getShiftByDate = async (req, res) => {
   try {
     console.log('Fetching for shifts by date...');
@@ -213,7 +214,8 @@ exports.getShiftByDate = async (req, res) => {
   }
 }
 
-exports.getShiftByEmpId = async (req, res) => {
+// Given an employee, get all of their shifts
+exports.getShiftByEmployee = async (req, res) => {
   try {
     console.log('Fetching for shifts by employee ID...');
     
@@ -234,7 +236,7 @@ exports.getShiftByEmpId = async (req, res) => {
   }
 };
 
-exports.getShiftByEmpIdAndDate = async (req, res) => {
+exports.getShiftByEmployeeAndDate = async (req, res) => {
   try {
     console.log('Fetching for shifts by employee ID and date...');
     
