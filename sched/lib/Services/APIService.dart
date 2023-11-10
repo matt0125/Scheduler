@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:sched/Models/Shift.dart';
+import 'package:sched/Services/DataService.dart';
 import '../Models/FullShift.dart';
 
 class APIService {
@@ -21,6 +22,7 @@ class APIService {
       Uri.parse('$baseUrl/$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${DataService.readJWT()}',
       },
       body: json.encode(data),
     );
@@ -36,6 +38,7 @@ class APIService {
       Uri.parse('$baseUrl/$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${DataService.readJWT()}',
       },
       body: (data != null ? json.encode(data) : null),
     );
@@ -55,6 +58,7 @@ class APIService {
     final responseData = await postToEndpoint(data, 'login');
 
     return Response(message: responseData['message'],
+        token: responseData['token'],
         empId: (responseData['message'] == 'Login successful')
             ? responseData['id']
             : null);
@@ -78,9 +82,9 @@ class APIService {
             : null);
   }
 
-  Future<List<Shift>> GetShiftsByEmpAndDate( String empId, String startDate, String endDate ) async {
+  Future<List<Shift>> GetShiftsByEmpAndDate( String startDate, String endDate ) async {
     final data = {
-      'empId': empId,
+      'empId': DataService.readEmpId(),
       'startDate': startDate,
       'endDate': endDate,
     };
@@ -151,10 +155,12 @@ class APIService {
 class Response {
   final String message;
   final String? empId;
+  final String? token;
 
   Response({
     required this.message,
     this.empId,
+    this.token,
   });
 }
 

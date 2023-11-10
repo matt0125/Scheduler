@@ -119,6 +119,7 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
               onPressed: () {
                 // Perform logout here
                 DataService.clearEmpId();
+                DataService.clearJWT();
                 Navigator.pushReplacementNamed(
                   context,
                   '/login',

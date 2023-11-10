@@ -22,13 +22,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String initRoute = '/login';
+    // String initRoute = '/login';
 
 
-    if(DataService.readEmpId() != "null")
-      {
-        initRoute = '/';
-      }
+    // if(DataService.readEmpId() != "null")
+    //   {
+    //     initRoute = '/';
+    //   }
 
     return MaterialApp(
       theme: ThemeData(
@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
             fontSize: 20,
           ),
         )),
-      initialRoute: initRoute,
+      initialRoute: '/login',
         onGenerateRoute: (settings) {
           if (settings.name!.startsWith('/dailyschedule/')) {
             final date = settings.name!.split('/').last;
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
           return null;
         },
       routes: {
-        '/': (context) => TabsPage(),
+        '/': (context) => WelcomePage(),
         '/login': (context) => const LoginPage(), // Set the LoginPage as the initial route
          '/signup': (context) => const SignUpPage(), // Define a named route for the SignUpPage
         '/welcome': (context) => WelcomePage(),

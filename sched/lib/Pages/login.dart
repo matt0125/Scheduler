@@ -3,6 +3,8 @@ import 'package:sched/Services/APIService.dart';
 import 'package:sched/Services/DataService.dart';
 import 'package:sched/Widgets/popup.dart';
 
+import '../tabs.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -18,6 +20,15 @@ class _LoginPageState extends State<LoginPage> {
   final data = DataService();
   final apiService = APIService();
 
+
+  @override
+  void initState()
+  {
+    super.initState();
+    DataService.clearEmpId();
+  }
+
+
   Future<void> _login() async {
     final String username = usernameController.text;
     final String password = passwordController.text;
@@ -30,11 +41,12 @@ class _LoginPageState extends State<LoginPage> {
         message: response.message,
       ).show(context);
     } else {
-      DataService.writeEmpId(response.empId);
-
-      Navigator.pushReplacementNamed(
-        context,
-        '/',
+      DataService.writeEmpId(response.empId!);
+      DataService.writeJWT(response.token!);
+      Navigator.pushReplacement(context,
+        MaterialPageRoute(
+          builder: (context) => TabsPage(), // Pass the user ID if needed
+        ),
       );
     }
   }

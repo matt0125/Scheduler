@@ -75,7 +75,7 @@ class _SignUpPageState extends State<SignUpPage> {
           message: response.message,
         ).show(context);
       } else {
-        DataService.writeEmpId(response.empId);
+        DataService.writeEmpId(response.empId!);
 
         Navigator.pushReplacementNamed(
           context,

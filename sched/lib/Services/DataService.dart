@@ -13,9 +13,9 @@ class DataService {
     }
   }
 
-  static Future<void> writeEmpId(String? empId) async {
+  static Future<void> writeEmpId(String empId) async {
     _checkPrefsInitialized();
-    if(empId != null)
+    await clearEmpId();
     await _prefs!.setString('empId', empId);
   }
 
@@ -27,5 +27,22 @@ class DataService {
   static Future<void> clearEmpId() async {
     _checkPrefsInitialized();
     await _prefs!.remove('empId');
+  }
+
+
+  static Future<void> writeJWT(String jwt) async {
+    _checkPrefsInitialized();
+    await clearJWT();
+    await _prefs!.setString('JWT', jwt);
+  }
+
+  static String readJWT() {
+    _checkPrefsInitialized();
+    return _prefs!.getString('JWT').toString();
+  }
+
+  static Future<void> clearJWT() async {
+    _checkPrefsInitialized();
+    await _prefs!.remove('JWT');
   }
 }
