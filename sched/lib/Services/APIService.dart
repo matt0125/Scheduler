@@ -48,6 +48,23 @@ class APIService {
     }
   }
 
+  Future<Map<String, dynamic>> putToEndpoint(Map<String, dynamic> data, String endpoint) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/$endpoint'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${DataService.readJWT()}',
+      },
+      body: json.encode(data),
+    );
+    try {
+      return json.decode(response.body);
+    } catch (e) {
+      throw Exception('Failed to decode response for $endpoint: $e');
+    }
+  }
+
+
   Future<Response> login(String username, String password) async {
     final data = {
       'username': username,
@@ -118,6 +135,7 @@ class APIService {
 
     return shifts;
   }
+
   Future<List<FullShift>> GetShiftsByDate( String date ) async {
     List<String> dates = date.split("-");
     String formattedDate = "${dates[2]}-${dates[0]}-${dates[1]}T00:00:00.000Z";
@@ -151,6 +169,24 @@ class APIService {
 
     return shifts;
   }
+
+  Future<Response> updatePassword({required String currentPassword,required String newPassword,}) async {
+    final data = {
+      'currentPassword': currentPassword,
+      'newPassword': newPassword,
+    };
+
+
+      final responseData = await putToEndpoint(data, 'employee/${DataService.readEmpId()}/password');
+
+      // Check if the response body indicates success
+      return Response(message: responseData['message'],
+          token: responseData['token'],
+          empId: (responseData['message'] == 'Password updated successfully')
+              ? responseData['id']
+              : null);
+  }
+
 }
 
 class Response {
