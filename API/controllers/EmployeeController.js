@@ -191,14 +191,14 @@ exports.getEmployeesOfTheSameManager = async (req, res) => {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
 
     // Find the employee by ID
-    const employee = await Employee.findById(employeeId).select('firstName lastName email phone');
+    const employee = await Employee.findById(employeeId).select('-id firstName lastName email phone');
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const teammates = await Employee.find({managedBy: employee.managedBy, _id: { $ne: employeeId}}).select('firstName lastName email phone');
+    const teammates = await Employee.find({managedBy: employee.managedBy, _id: { $ne: employeeId}}).select('-id firstName lastName email phone');
 
-    const manager = await Employee.findById(employee.managedBy).select('firstName lastName email phone');
+    const manager = await Employee.findById(employee.managedBy).select('-id firstName lastName email phone');
 
     res.status(200).json({employee: employee, teammates: teammates, manager: manager});
   }
