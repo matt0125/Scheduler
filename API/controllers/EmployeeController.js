@@ -204,7 +204,7 @@ exports.getManager = async (req, res) => {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
 
     // Find the employee by ID
-    const manager = await Employee.findById(employeeId).select('-_id managedBy').populate({path:'managedBy'});
+    const manager = await Employee.findById(employeeId).select('-_id managedBy').populate({path:'managedBy', select:'-password -__v'});
 
     if (!manager) {
       return res.status(404).json({ message: 'Manager not found' });
