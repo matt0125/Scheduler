@@ -90,13 +90,21 @@ export default class DemoApp extends React.Component {
     const jwtToken = localStorage.getItem('token');
   
     try {
+      console.log(managerId);
       const response = await axios.get(`http://localhost:3000/api/shift-templates/manager/${managerId}`, {
         headers: {
-          Authorization: `Bearer ${jwtToken}`
+          Authorization: `Bearer ${jwtToken}`,
+          contentType: 'application/json'
         }
       });
-  
-      const formattedShiftTemplates = formatShiftTemplatesForCalendar(response.data);
+      
+      // TODO: Check if shift template is empty
+      const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data);
+
+      // for (const template of formattedShiftTemplates) {
+      //   calendarApi.addEvent(template);
+      // }
+      
       this.setState({ shiftTemplates: formattedShiftTemplates });
       console.log(formattedShiftTemplates);
     } catch (error) {
@@ -136,12 +144,11 @@ export default class DemoApp extends React.Component {
             selectMirror={true}
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
-            initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
+            initialEvents={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
             select={this.handleDateSelect}
             eventContent={renderEventContent} // custom render function
             eventClick={this.handleEventClick}
             eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-            events={this.state.shiftTemplates}
             /* you can update a remote database when these fire:
             eventAdd={function(){}}
             eventChange={function(){}}
@@ -281,17 +288,23 @@ function getDayOfWeek(dateString) {
 }
 
 // Function to format shift templates into FullCalendar events
-function formatShiftTemplatesForCalendar(shiftTemplates) {
-  return shiftTemplates.map(template => {
-    // Assuming your template has properties like `startTime`, `endTime`, `title`
-    return {
-      id: template._id, // or some unique identifier from your template
-      title: template.title,
+async function formatShiftTemplatesForCalendar(shiftTemplates) {
+  const formattedTemplates = [];
+
+  for (const template of shiftTemplates) {
+    // Fetch the title for each position
+    const title = await getPositionTitle(template.positionId); // Make sure getPositionTitle is async
+
+    formattedTemplates.push({
+      id: template._id,
+      title: title, // Use the fetched title
       start: formatDateTimeForCalendar(template.startTime),
       end: formatDateTimeForCalendar(template.endTime),
-      // Include other relevant properties
-    };
-  });
+      // Add other properties as necessary
+    });
+  }
+
+  return formattedTemplates;
 }
 
 // Helper function to format date/time for FullCalendar
@@ -299,4 +312,32 @@ function formatDateTimeForCalendar(dateTime) {
   // Format the dateTime string as needed for the calendar
   // Example: "2023-11-10T09:00:00" (if your API returns date and time separately, you may need to concatenate them)
   return dateTime;
+}
+
+function getPositionTitle(positionId) {
+  // Define the base URL
+  const baseUrl = 'http://localhost:3000/api/positions/';
+
+  // Append the positionId to the URL
+  const url = `${baseUrl}${positionId}`;
+
+  // Retrieve the JWT token from local storage
+  const jwtToken = localStorage.getItem('token');
+
+  // Make a GET request using Axios
+  return axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+      contentType: 'application/json'
+    }
+  })
+    .then(response => {
+      // Handle success: extract and return the position title from the response
+      return response.data.title; // Assuming the title is directly in the response data
+    })
+    .catch(error => {
+      // Handle error
+      console.error('Error fetching position title:', error);
+      return "error fetching position"; // Rethrow or handle the error as needed
+    });
 }
