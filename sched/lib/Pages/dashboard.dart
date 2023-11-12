@@ -45,7 +45,7 @@ class _DashboardPageState extends State<DashboardPage> {
     if (today.weekday == 7)
       {
         days.add(DateFormat('MM-dd-yyyy').format(today));
-        days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: 7))));
+        days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: 6))));
       }
     else
       {
@@ -113,17 +113,17 @@ class _DaySelectorState extends State<DaySelector> {
   int selectedDayIndex = DateTime.now().weekday - 1;
 
   List<int> getDatesForWeek() {
-    final now = DateTime.now();
-    final dayIndex = now.weekday;
-    final currentDay = now.day;
+    DateTime today = DateTime.now();
+    DateTime sunday = today.weekday == 7 ? today: today.add(Duration(days: (-1 * today.weekday)));
 
-    final List<int> datesForWeek = List.generate(7, (index) {
-      final daysDifference = dayIndex - index;
-      final date = currentDay - daysDifference;
-      return date;
-    });
+    List<int> dates = [];
 
-    return datesForWeek;
+    for(int i = 0; i < 7; i++)
+      {
+        dates.add(int.parse(DateFormat('dd').format(sunday.add(Duration(days: i)))));
+      }
+
+    return dates;
   }
 
 
