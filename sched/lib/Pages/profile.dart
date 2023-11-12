@@ -44,65 +44,84 @@ class _ProfileTabState extends State<ProfileTab> with AutomaticKeepAliveClientMi
         ],
       ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 10),
-          child: Stack(
-            children: <Widget>[
-              Positioned(
-                top: 0,
-                left: 0,
-                child: Container(
-                  width: 100,
-                  height: 100,
-                  child: Image.asset(
-                    'assets/icon/Sched logo.png',
-                    fit: BoxFit.contain, // You can adjust BoxFit to your needs
+        child: Stack(
+          children: <Widget>[
+            Container(
+              color: Color(0xFFEDE7E3),
+              height: MediaQuery.of(context).size.height / 4, // Divide the screen into three parts
+            ),
+            Positioned(
+              top: 25,
+              left: MediaQuery.of(context).size.width/2 - 87.5,
+              child: Container(
+                width: 175,
+                height: 175,
+                child: Image.asset(
+                  'assets/icon/Sched logo.png',
+                  fit: BoxFit.contain, // You can adjust BoxFit to your needs
+                ),
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 4,
+                ),
+                Divider(
+
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AvailabilityScreen()),
+                    );
+                  },
+                  child: Text(
+                    '  Set Availability  ',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFB1947B),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 120),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => AvailabilityScreen()),
-                        );
-                      },
-                      child: Text('Availability'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFB1947B),
-                      ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TimeOffScreen()),
+                    );
+                  },
+                  child: Text(
+                    'Request Time-off',
+                    style: TextStyle(
+                      fontSize: 20,
                     ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => TimeOffScreen()),
-                        );
-                      },
-                      child: Text('Time-off'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFB1947B),
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _showPasswordUpdateDialog(context);
-                      },
-                      child: Text('Update Password'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFB1947B),
-                      ),
-                    ),
-                  ],
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFB1947B),
+                  ),
                 ),
-              ),
-            ],
-          ),
+                ElevatedButton(
+                  onPressed: () {
+                    _showPasswordUpdateDialog(context);
+                  },
+                  child: Text(
+                    'Update Password',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFB1947B),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
