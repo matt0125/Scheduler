@@ -68,7 +68,7 @@ app.use(authenticateJWT);
 
 app.get('/api/employee/:id', employeeController.getEmployee);
 app.get('/api/employee/:id', employeeController.getEmployeeByManager);
-app.get('/api/employee/:id/teammates', employeeController.getEmployeesOfTheSameManager);
+app.get('/api/employee/:employeeId/teammates', employeeController.getEmployeesOfTheSameManager);
 app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
 
 // availabilities

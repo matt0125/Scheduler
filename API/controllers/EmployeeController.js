@@ -188,8 +188,21 @@ exports.getEmployeeByManager = async (req, res) => {
 // Given an employee, get their teammates (other employees) that are managed by the same person
 exports.getEmployeesOfTheSameManager = async (req, res) => {
   try {
+    const { employeeId } = req.params; // Get the employee ID from the request parameters
 
+    // Find the employee by ID
+    const employee = await Employee.findById(employeeId).select('firstName lastName email phone');
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    const teammates = await Employee.find({managedBy: employee.managedBy, _id: { $ne: employeeId}}).select('firstName lastName email phone');
+
+    const manager = await Employee.findById(employee.managedBy).select('firstName lastName email phone');
+
+    res.status(200).json({employee: employee, teammates: teammates, manager: manager});
   }
+  
 
   catch (error) {
     res.status(500).json({ message: 'Error searching for employees', error: error.toString() });
