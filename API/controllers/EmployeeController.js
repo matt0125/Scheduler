@@ -201,7 +201,7 @@ exports.getEmployeesByManager = async (req, res) => {
 // Given an employee, get their teammates (other employees) that are managed by the same person
 exports.getManager = async (req, res) => {
   try {
-    const { id: employeeId } = req.params; // Get the employee ID from the request parameters
+    const { employeeId } = req.params; // Get the employee ID from the request parameters
 
     // Find the employee by ID
     const manager = await Employee.findById(employeeId).select('-_id managedBy').populate({path:'managedBy'});
