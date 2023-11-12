@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+import 'package:sched/Models/Employee.dart';
 import 'package:sched/Models/Shift.dart';
 import 'package:sched/Services/DataService.dart';
 import '../Models/FullShift.dart';
@@ -187,6 +188,71 @@ class APIService {
               : null);
   }
 
+  Future<Team> GetTeammates( ) async {
+    Team team;
+
+    final responseData = await getToEndpoint(null, 'employee/${DataService.readEmpId()}/teammates');
+
+    try{
+      if(responseData['message'] != null)
+      {
+        print(responseData['message']);
+      }
+    }
+    catch(e)
+    {
+      print(e);
+    }
+
+    List<Employee> teammates = [];
+
+    for(final item in responseData["teammates"])
+    {
+      List<String> positions = [];
+      for(final position in item['positions'])
+        {
+          positions.add(position['name']);
+        }
+      teammates.add(Employee(
+        firstName: item['firstName'],
+        lastName: item['lastName'],
+        email: item['email'],
+        phone: item['phone'],
+        positionTitles: positions,
+      ));
+    }
+
+    List<String> managerPositions = [];
+    for(final position in responseData['manager']['positions'])
+    {
+      managerPositions.add(position['name']);
+    }
+    List<String> selfPositions = [];
+    for(final position in responseData['employee']['positions'])
+    {
+      selfPositions.add(position['name']);
+    }
+
+    team = Team(
+      teammates: teammates,
+      manager: Employee(
+        firstName: responseData['manager']['firstName'],
+        lastName: responseData['manager']['lastName'],
+        email: responseData['manager']['email'],
+        phone: responseData['manager']['phone'],
+        positionTitles: managerPositions,
+      ),
+      self: Employee(
+        firstName: responseData['employee']['firstName'],
+        lastName: responseData['employee']['lastName'],
+        email: responseData['employee']['email'],
+        phone: responseData['employee']['phone'],
+        positionTitles: selfPositions,
+      )
+    );
+
+    return team;
+  }
 }
 
 class Response {
