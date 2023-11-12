@@ -41,14 +41,19 @@ class _TeamTabState extends State<TeamTab> {
             itemCount: _team.teammates.length+1,
             itemBuilder: (context, index) {
               Employee coworker;
+              bool isManager = false;
               if(index == 0){
                 coworker = _team.manager;
+                isManager = true;
               }
               else {
                 coworker = _team.teammates[index-1];
               }
               return ListTile(
-                title: Text(coworker.fullName),
+                title: Text(
+                  coworker.fullName,
+                  style: TextStyle(fontWeight: isManager ? FontWeight.bold: FontWeight.normal ),
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -56,14 +61,23 @@ class _TeamTabState extends State<TeamTab> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         SizedBox(height: 12),
-                        Text(coworker.email),
+                        Text(
+                          coworker.email,
+                          style: TextStyle(fontWeight: isManager ? FontWeight.bold: FontWeight.normal ),
+                        ),
                         // Add spacing here
-                        Text(coworker.phone),
+                        Text(
+                          coworker.phone,
+                          style: TextStyle(fontWeight: isManager ? FontWeight.bold: FontWeight.normal ),
+                        ),
                       ],
                     ),
                   ],
                 ),
-                subtitle: Text(coworker.positionTitles.join(', ')), // Display all positions
+                subtitle: Text(
+                    coworker.positionTitles.join(', '),
+                    style: TextStyle(fontWeight: isManager ? FontWeight.bold: FontWeight.normal ),
+                ), // Display all positions
               );
             },
           )
