@@ -192,7 +192,8 @@ exports.getEmployeesOfTheSameManager = async (req, res) => {
   }
 
   catch (error) {
-
+    res.status(500).json({ message: 'Error searching for employees', error: error.toString() });
+    console.error("There was an error:", err);
   }
 }
 
