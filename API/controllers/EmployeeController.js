@@ -210,7 +210,7 @@ exports.getManager = async (req, res) => {
       return res.status(404).json({ message: 'Manager not found' });
     }
 
-    res.status(200).json({manager: manager.managedBy, teammates: teammates});
+    res.status(200).json({manager: manager.managedBy});
   }
   
 
