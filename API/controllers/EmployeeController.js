@@ -200,7 +200,7 @@ exports.getEmployeesOfTheSameManager = async (req, res) => {
 
     const manager = await Employee.findById(employeeId).select('-_id managedBy').populate({path:'managedBy', select: '-_id firstName lastName email phone'});
 
-    res.status(200).json({employee: employee, teammates: teammates, manager: manager.managedBy});
+    res.status(200).json({employee: employee, manager: manager.managedBy, teammates: teammates});
   }
   
 
