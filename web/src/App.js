@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import EditProfile from './pages/EditProfile'; // Import EditProfile
 import ChangePassword from './pages/ChangePassword'; // Import ChangePassword
+import UpdateAvailability from './pages/UpdateAvailability'; // Import UpdateAvailability
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
         <Route path="/dashboard" element={<DashboardWithNavigate/>} />
         <Route path="/edit-profile/:employeeId" element={<EditProfile/>} /> {/* Add this line */}
         <Route path="/change-password/:employeeId" element={<ChangePassword />} />
+        <Route path="/update-availability/:employeeId" element={<UpdateAvailability/>} />
       </Routes>
     </Router>
   );

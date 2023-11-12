@@ -3,8 +3,9 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
-const EditProfile = ({ employeeId }) => {
-
+const EditProfile = () => {
+  const { employeeId } = useParams(); // use employeeId from URL
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -32,6 +33,10 @@ const EditProfile = ({ employeeId }) => {
     fetchEmployeeData();
   }, [employeeId]);
 
+  const handlePasswordChangeClick = () => {
+    navigate(`/change-password/${employeeId}`); // Navigate to ChangePassword
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -44,6 +49,10 @@ const EditProfile = ({ employeeId }) => {
       alert(error);
       console.error('Error updating profile', error);
     }
+  };
+  // Handles navigation to UpdateAvailability
+  const handleUpdateAvailabilityClick = () => {
+    navigate(`/update-availability/${employeeId}`); // Navigate to UpdateAvailability
   };
 
   // Additional handlers for Change Password and Change Availability can be added here
@@ -81,8 +90,8 @@ const EditProfile = ({ employeeId }) => {
           placeholder="Phone Number"
         />
         <button type="button" onClick={handleSave}>Save</button>
-        <button type="button">Change Password</button>
-        <button type="button">Change Availability</button>
+        <button type="button" onClick={handlePasswordChangeClick}>Change Password</button>
+        <button type="button" onClick={handleUpdateAvailabilityClick}>Change Availability</button>
       </form>
     </div>
   );
