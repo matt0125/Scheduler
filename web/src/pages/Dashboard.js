@@ -96,14 +96,23 @@ export default class DemoApp extends React.Component {
         }
       });
   
-      const formattedShiftTemplates = formatShiftTemplatesForCalendar(response.data);
-      this.setState({ shiftTemplates: formattedShiftTemplates });
-      console.log(formattedShiftTemplates);
+      // Check if the response is an array
+      if (Array.isArray(response.data)) {
+        const formattedShiftTemplates = formatShiftTemplatesForCalendar(response.data);
+        this.setState({ shiftTemplates: formattedShiftTemplates });
+      } else {
+        // Handle case where response is not an array
+        console.error('Response is not an array', response.data);
+        console.log()
+        this.setState({ shiftTemplates: [] });
+      }
     } catch (error) {
       alert('Failed to fetch shift templates: ' + error.message);
       console.log(error);
+      this.setState({ shiftTemplates: [] }); // Reset to empty array on error
     }
   }
+  
 
   handlePositionSelect = (event) => {
     this.setState({ selectedPositionId: event.target.value });
