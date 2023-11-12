@@ -51,6 +51,7 @@ export default class DemoApp extends React.Component {
   componentDidMount() {
     this.fetchPositions();
     this.fetchShiftTemplates();
+    console.log("Startup: ",this.state.shiftTemplates);
   }
 
   renderPositionSelect() {
@@ -100,19 +101,26 @@ export default class DemoApp extends React.Component {
   
       // Check if the response is an array
       if (Array.isArray(response.data)) {
-        const formattedShiftTemplates = formatShiftTemplatesForCalendar(response.data);
+        console.log("response data is ", response.data);
+        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data);
+        console.log("formatted shift template:", formattedShiftTemplates);
         this.setState({ shiftTemplates: formattedShiftTemplates });
       } else {
         // Handle case where response is not an array
         console.error('Response is not an array', response.data);
         console.log()
         this.setState({ shiftTemplates: [] });
+
       }
+      // calendarApi = selectInfo.view.calendar;
+      // console.log("this is being added: ", shiftTemplates[0]);
+      // calendarApi.addEvent(shiftTemplates[0])
     } catch (error) {
       alert('Failed to fetch shift templates: ' + error.message);
       console.log(error);
       this.setState({ shiftTemplates: [] }); // Reset to empty array on error
     }
+    console.log("After startup: ", this.state.shiftTemplates);
   }
   
 
@@ -147,7 +155,7 @@ export default class DemoApp extends React.Component {
             selectMirror={true}
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
-            initialEvents={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
+            events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
             select={this.handleDateSelect}
             eventContent={renderEventContent} // custom render function
             eventClick={this.handleEventClick}
@@ -290,25 +298,7 @@ function getDayOfWeek(dateString) {
   return dayOfWeek;
 }
 
-// Function to format shift templates into FullCalendar events
-async function formatShiftTemplatesForCalendar(shiftTemplates) {
-  const formattedTemplates = [];
 
-  for (const template of shiftTemplates) {
-    // Fetch the title for each position
-    const title = await getPositionTitle(template.positionId); // Make sure getPositionTitle is async
-
-    formattedTemplates.push({
-      id: template._id,
-      title: title, // Use the fetched title
-      start: formatDateTimeForCalendar(template.startTime),
-      end: formatDateTimeForCalendar(template.endTime),
-      // Add other properties as necessary
-    });
-  }
-
-  return formattedTemplates;
-}
 
 // Helper function to format date/time for FullCalendar
 function formatDateTimeForCalendar(dateTime) {
@@ -317,15 +307,17 @@ function formatDateTimeForCalendar(dateTime) {
   return dateTime;
 }
 
-function getPositionTitle(positionId) {
+async function getPositionTitle(positionId) {
   // Define the base URL
-  const baseUrl = 'http://localhost:3000/api/positions/';
+  const baseUrl = 'http://localhost:3000/api/position/';
 
   // Append the positionId to the URL
   const url = `${baseUrl}${positionId}`;
 
   // Retrieve the JWT token from local storage
   const jwtToken = localStorage.getItem('token');
+
+  console.log("Position ID is:", positionId);
 
   // Make a GET request using Axios
   return axios.get(url, {
@@ -336,7 +328,7 @@ function getPositionTitle(positionId) {
   })
     .then(response => {
       // Handle success: extract and return the position title from the response
-      return response.data.title; // Assuming the title is directly in the response data
+      return response.data.name; // Assuming the title is directly in the response data
     })
     .catch(error => {
       // Handle error
@@ -344,3 +336,78 @@ function getPositionTitle(positionId) {
       return "error fetching position"; // Rethrow or handle the error as needed
     });
 }
+
+
+
+async function formatShiftTemplatesForCalendar(shiftTemplates) {
+  const formattedTemplates = [];
+
+  for (const template of shiftTemplates) {
+    const title = await getPositionTitle(template.positionId);
+
+    // No need to call toISOString again as getNextFormattedDateForDayOfWeek already returns an ISO string
+    const startDateTime = await getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime);
+    const endDateTime = await getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime);
+
+    formattedTemplates.push({
+      id: template._id,
+      title: title, // title fetched from getPositionTitle
+      start: startDateTime,
+      end: endDateTime,
+    });
+  }
+
+  return formattedTemplates;
+}
+
+
+function getNextFormattedDateForDayOfWeek(dayOfWeek, time) {
+
+  const targetDay = dayOfWeek;
+  if (targetDay === undefined) {
+      throw new Error('Invalid day of the week');
+  }
+
+  // Parse the time
+  const [hours, minutes] = time.split(':').map(Number);
+  console.log(hours, minutes);
+  if (isNaN(hours) || isNaN(minutes)) {
+      throw new Error('Invalid time format');
+  }
+
+  // Get the current date and time
+  const currentDate = new Date();
+  console.log("date ", currentDate);
+  console.log("date ", currentDate.getDay());
+  console.log(targetDay);
+
+  // Calculate the difference between the current day and the target day
+  let dayDifference = targetDay - currentDate.getDay();
+  if (dayDifference < 0) {
+      // If target day is in the past of the current week, move to the next week
+      dayDifference += 7;
+  }
+  console.log("diff", dayDifference);
+
+  // Set the date to the next occurrence of the target day
+  currentDate.setDate(currentDate.getDate() + dayDifference);
+  console.log("date ", currentDate);
+
+  // Set the time
+  currentDate.setHours(hours, minutes, 0); // Setting seconds to 0
+  console.log("date ", currentDate);
+
+  // Format the date in YYYY-MM-DDTHH:MM:SS format
+  // Adjusting for local timezone offset
+  const timezoneOffset = currentDate.getTimezoneOffset() * 60000; // offset in milliseconds
+  console.log("offset ", timezoneOffset);
+  const localDate = new Date(currentDate.getTime() - timezoneOffset);
+  console.log("local date", localDate);
+  let formattedDate = localDate.toISOString().replace(/:\d{2}\.\d{3}Z$/, '');
+
+  return formattedDate;
+}
+
+// Example usage
+console.log(getNextFormattedDateForDayOfWeek(2, '15:30'));
+
