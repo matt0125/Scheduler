@@ -175,18 +175,30 @@ exports.getEmployeeByAvailability = async (req, res) => {
 };
 
 // Given a manager, get all of their employees
-exports.getEmployeeByManager = async (req, res) => {
+exports.getEmployeesByManager = async (req, res) => {
   try {
+    const { id: managerId } = req.params; // Get the employee ID from the request parameters
 
+    // Find the employee by ID
+    const manager = await Employee.findById(managerId).select('-_id firstName lastName email phone positions').populate('positions');
+    if (!manager) {
+      return res.status(404).json({ message: 'Manager not found' });
+    }
+
+    const employees = await Employee.find({managedBy: manager.managedBy, _id: { $ne: managerId}}).select('-_id firstName lastName email phone positions').populate('positions');
+
+    res.status(200).json({manager: manager, employees: employees});
   }
+  
 
   catch (error) {
-
+    res.status(500).json({ message: 'Error searching for employees', error: error.toString() });
+    console.error("There was an error:", err);
   }
 }
 
 // Given an employee, get their teammates (other employees) that are managed by the same person
-exports.getEmployeesOfTheSameManager = async (req, res) => {
+exports.getTeammates = async (req, res) => {
   try {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
 
