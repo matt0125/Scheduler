@@ -24,6 +24,7 @@ export default class DemoApp extends React.Component {
     selectedPositionId: null, // To store the selected position ID
     showModal: false,  // Add this line
     shiftTemplates: [],
+    selectMirrorEnabled: true,
   }
    // Function to handle opening the modal
    openModal = () => {
@@ -113,7 +114,7 @@ export default class DemoApp extends React.Component {
         console.error('Response is not an array', response.data);
         console.log()
         this.setState({ shiftTemplates: [] });
-
+        this.setState({ selectMirrorEnabled: false });
       }
       // calendarApi = selectInfo.view.calendar;
       // console.log("this is being added: ", shiftTemplates[0]);
@@ -130,6 +131,11 @@ export default class DemoApp extends React.Component {
   handlePositionSelect = (event) => {
     this.setState({ selectedPositionId: event.target.value });
   }
+
+  handleDateClick = () => {
+    // Enable selectMirror when starting selection
+    this.setState({ selectMirrorEnabled: true });
+  };
 
   render() {
     return (
@@ -160,9 +166,9 @@ export default class DemoApp extends React.Component {
             weekends={this.state.weekendsVisible}
             events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
             select={this.handleDateSelect}
-            eventContent={renderEventContent} // custom render function
-            eventClick={this.handleEventClick}
+            eventContent={this.renderEventContent} // custom render function
             eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+            dateClick={this.handleDateClick}
             /* you can update a remote database when these fire:
             eventAdd={function(){}}
             eventChange={function(){}}
@@ -178,7 +184,7 @@ export default class DemoApp extends React.Component {
   // Call get JWT API
   // Save empployee object (whole thing) in a JWT
   // Gets shifts by managerID
-
+l
   // Login as mangager
 
 
@@ -201,20 +207,13 @@ export default class DemoApp extends React.Component {
   }
 
   handleDateSelect = async (selectInfo) => {
+    // Disable selectMirror temporarily
     let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
 
     if (title && this.state.selectedPositionId) {
-      const event = {
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      };
-
       try {
         const jwtToken = localStorage.getItem('token');
         console.log(convertToStandardTime(selectInfo.startStr));
@@ -233,27 +232,32 @@ export default class DemoApp extends React.Component {
 
         });
 
-        calendarApi.addEvent(event);
+        // full calendar creation
+        const event = {
+          id: createEventId(),
+          title: response,
+          start: selectInfo.startStr,
+          end: selectInfo.endStr,
+          allDay: selectInfo.allDay
+        };
+
+        // calendarApi.addEvent(event);
         alert('New shift template created!');
+        alert('Fetching events!');
+        this.fetchShiftTemplates();
       } catch (error) {
         alert(error);
       }
       
       
 
-      const empId = localStorage.getItem('id');
-      const templateId = 'TEMPLATE_ID';
-      const date = formatDate(event.start, { year: 'numeric', month: '2-digit', day: '2-digit' });
+      // const empId = localStorage.getItem('id');
+      // const templateId = 'TEMPLATE_ID';
+      // const date = formatDate(event.start, { year: 'numeric', month: '2-digit', day: '2-digit' });
     } else {
       alert('You must select a position first.');
     }
   }
-
-  handleEventClick = (clickInfo) => {
-    if (window.confirm(`Are you sure you want to delete the event "${clickInfo.event.title}"`)) {
-      clickInfo.event.remove();
-    }
-  };
 
   handleEvents = (events) => {
     this.setState({
@@ -261,24 +265,70 @@ export default class DemoApp extends React.Component {
     })
   }
 
-}
+  // Make this be able to add employees to shift temmplates 
+  handleEventDelete = (clickInfo) => {
+    alert(typeof clickInfo);
+    if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
+      alert(clickInfo.id);
+      const eventId = clickInfo.id; // Assuming the event ID is stored in clickInfo.event.id
+      const url = `http://large.poosd-project.com/api/shift-templates/${eventId}`;
 
-function renderEventContent(eventInfo) {
-  return (
-    <>
-      <b>{eventInfo.timeText}</b>
-      <i>{eventInfo.event.title}</i>
-    </>
-  )
-}
+      // Retrieve the JWT from local storage
+      const jwtToken = localStorage.getItem("token");
 
-function renderSidebarEvent(event) {
-  return (
-    <li key={event.id}>
-      <b>{formatDate(event.start, {year: 'numeric', month: 'short', day: 'numeric'})}</b>
-      <i>{event.title}</i>
-    </li>
-  )
+      axios.delete(url, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            contentType: 'application/json'
+        }
+      })
+            .then(response => {
+                // Handle the successful response here
+                console.log(response.data);
+                // You might want to remove the event from the calendar view here
+                clickInfo.remove();
+                alert("Event deleted successfully.");
+            })
+            .catch(error => {
+                // Handle any errors here
+                console.error('Error:', error);
+                alert("Failed to delete the event.," );
+            });
+    }
+  };
+  
+  handleEventEdit = (clickInfo) => {
+    if (window.confirm(`What employees do you want to add to this event "${clickInfo.title}"`)) {
+    }
+  };
+
+  renderEventContent = (eventInfo) => {
+    return (
+      <div>
+        <b style={{ color: '#47413d' }}>{eventInfo.timeText}</b>
+        <i style={{ color: '#47413d' }}>{eventInfo.event.title}</i>
+        <button
+          className="event-edit-button"
+          onClick={() => this.handleEventEdit(eventInfo.event)}
+          aria-label="Edit event"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer', marginRight: '5px' }}
+        >
+          ✏️
+        </button>
+        <button
+          className="event-delete-button"
+          onClick={() => this.handleEventDelete(eventInfo.event)}
+          aria-label="Delete event"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+        >
+          🗑️
+        </button>
+      </div>
+    )
+  }
+  
+
+
 }
 
 function convertToStandardTime(timeString) {
