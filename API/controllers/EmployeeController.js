@@ -233,7 +233,7 @@ exports.getTeammates = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const teammates = await Employee.find({managedBy: mongoose.ObjectId(employee.managedBy), _id: { $ne: employeeId}}).select('-_id firstName lastName email phone positions').populate({path:'positions', select:'-_id name'});
+    const teammates = await Employee.find({managedBy: { $exists: true, $ne: null, $eq: employee.managedBy }, _id: { $ne: employeeId}}).select('-_id firstName lastName email phone positions').populate({path:'positions', select:'-_id name'});
 
     const manager = await Employee.findById(employeeId).select('-_id managedBy').populate({path:'managedBy', select: '-_id firstName lastName email phone positions', populate:{path:'positions', select:'-_id name'}});
 
