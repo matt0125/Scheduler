@@ -66,6 +66,7 @@ exports.registerEmployee = async (req, res) => {
       managerIdent,
       managedBy,
       availability, // make sure to validate the structure on the client side or before saving
+      isVailadated: false,
       positions, // ensure this is an array of ObjectId references to the Position model
       preference, // as above, validate structure before saving
       __v: 0 // typically this is handled by Mongoose and does not need to be set manually
@@ -232,7 +233,7 @@ exports.getTeammates = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const teammates = await Employee.find({managedBy: employee.managedBy, _id: { $ne: employeeId}}).select('-_id firstName lastName email phone positions').populate({path:'positions', select:'-_id name'});
+    const teammates = await Employee.find({managedBy: mongoose.ObjectId(employee.managedBy), _id: { $ne: employeeId}}).select('-_id firstName lastName email phone positions').populate({path:'positions', select:'-_id name'});
 
     const manager = await Employee.findById(employeeId).select('-_id managedBy').populate({path:'managedBy', select: '-_id firstName lastName email phone positions', populate:{path:'positions', select:'-_id name'}});
 

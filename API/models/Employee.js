@@ -31,6 +31,7 @@ const EmployeeSchema = new Schema({
     ref: 'Employee'
   },
   availability: [AvailabilitySchema],
+  isValidated: Boolean,
   positions: [{ type: Schema.Types.ObjectId, ref: 'Position' }], // Assuming 'Position' is another model
   preference: [PreferenceSchema]
 });
