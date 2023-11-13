@@ -57,7 +57,13 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Row(
+          children: [
+            SchedLogoImage(),
+            SizedBox(width: 8.0),
+            Sched(),
+          ],
+        ),
         automaticallyImplyLeading: false,
       ),
       body: Center(
@@ -65,14 +71,7 @@ class _DashboardPageState extends State<DashboardPage> {
           mainAxisAlignment: MainAxisAlignment.start, // Align content to the top
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0, left: 8.0), // Adjust top and left padding as needed
-              child: SchedLogoImage(),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0), // Adjust left padding as needed
-              child: Sched(),
-            ),
+            SizedBox(height: 50),
             DaySelector(pageController: _pageController, currentIndex: currentIndex),
             SizedBox(height: 20),
             Container(
@@ -194,50 +193,37 @@ class _DaySelectorState extends State<DaySelector> {
   }
 }
 
-class Sched extends StatelessWidget {
-  const Sched({Key? key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 50.0),
-      child: Align(
-        alignment: Alignment.center,
-        child: const Text(
-          "Sched",
-          style: TextStyle(
-            height: .05,
-            fontFamily: 'Katibeh',
-            fontSize: 100,
-            fontWeight: FontWeight.w400,
-            color: Color(0xFF49423E),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class SchedLogoImage extends StatelessWidget {
   const SchedLogoImage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        width: 90, // Set the desired width
-        height: 100, // Adjusted total height (including empty space and image height)
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end, // Align the image to the bottom of the container
-          children: [
-            Container(
-              height: 5, // Adjusted height for the empty space above the image
-            ),
-            Image.asset(
-              'assets/icon/Sched logo.png',
-              fit: BoxFit.contain, // You can adjust BoxFit to your needs
-            ),
-          ],
+    return Container(
+      padding: EdgeInsets.only(left: 8.0),
+      child: Image.asset(
+        'assets/icon/Sched logo.png',
+        fit: BoxFit.contain,
+        width: 40.0, // Adjust the width to make the image smaller
+        height: 40.0, // Adjust the height to make the image smaller
+      ),
+    );
+  }
+}
+
+class Sched extends StatelessWidget {
+  const Sched({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(left: 8.0,top: 20),
+      child: const Text(
+        "Sched",
+        style: TextStyle(
+          fontFamily: 'Katibeh',
+          fontSize: 40.0, // Adjust the font size to make the text smaller
+          fontWeight: FontWeight.w400,
+          color: Color(0xFF49423E),
         ),
       ),
     );
