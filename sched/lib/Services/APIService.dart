@@ -303,6 +303,7 @@ class APIService {
         positions.add(position['name']);
       }
       managers.add(Employee(
+        employeeId: item['_id'],
         firstName: item['firstName'],
         lastName: item['lastName'],
         email: item['email'],
@@ -312,6 +313,19 @@ class APIService {
     }
 
     return managers;
+  }
+
+  Future<Response> AssignManager ( String managerId ) async {
+    final data = {
+      'managerId': managerId,
+    };
+
+    final responseData = await postToEndpoint(data, 'employee/${DataService.readEmpId()}/assign/manager');
+
+    return Response(
+      message: responseData['message'],
+      success: (responseData['message'] == 'Manager assigned successfully!') ? true: false,
+    );
   }
 
   Future<List<Position>> GetAllPositions () async {
@@ -348,11 +362,13 @@ class Response {
   final String message;
   final String? empId;
   final String? token;
+  final bool? success;
 
   Response({
     required this.message,
     this.empId,
     this.token,
+    this.success,
   });
 }
 

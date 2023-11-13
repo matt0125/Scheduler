@@ -449,7 +449,7 @@ exports.assignManager = async (req, res) => {
     employee.managerId = managerId;
     await employee.save();
 
-    res.status(200).json({ message: 'Password updated successfully' });
+    res.status(200).json({ message: 'Manager assigned successfully!' });
   } catch (error) {
     res.status(500).json({ message: 'Error assigning manager', error: error.toString() });
     console.error("There was an error:", error);
