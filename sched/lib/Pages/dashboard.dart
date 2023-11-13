@@ -86,11 +86,12 @@ class _DashboardPageState extends State<DashboardPage> {
                       itemCount: _shifts.length,
                       itemBuilder: (context, index){
                         return ScheduleCard(
-                          date: _shifts[index].date,
-                          unformattedDate: _shifts[index].unformattedDate,
-                          startTime: _shifts[index].startTime,
-                          endTime: _shifts[index].endTime,
-                          positionTitle: _shifts[index].positionTitle,
+                          shift: _shifts[index]
+                          // date: _shifts[index].date,
+                          // unformattedDate: _shifts[index].unformattedDate,
+                          // startTime: _shifts[index].startTime,
+                          // endTime: _shifts[index].endTime,
+                          // positionTitle: _shifts[index].positionTitle,
                         );
                       }),
             ),

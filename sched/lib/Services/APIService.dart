@@ -106,10 +106,24 @@ class APIService {
       'endDate': endDate,
     };
 
+    List<String> start = startDate.split("-");
+    List<String> end = endDate.split("-");
+
+    DateTime sDate = DateTime.parse("${start[2]}-${start[0]}-${start[1]}");
+    DateTime eDate = DateTime.parse("${end[2]}-${end[0]}-${end[1]}");
+    int numDays = eDate.difference(sDate).inDays;
+
     List<Shift> shifts = [];
 
+    for(int i = 0; i <= numDays; i++)
+      {
+        shifts.add(Shift(
+            rawDate: sDate.add(Duration(days: i)).toString(),
+            isWorking: false)
+        );
+      }
+
     final responseData = await postToEndpoint(data, 'shifts/empbydates');
-    List temp = [];
 
     try{
       if(responseData['message'] != null)
@@ -125,13 +139,17 @@ class APIService {
 
     for(final item in responseData["shifts"])
     {
-      shifts.add(Shift(
-          date: Shift.formatDate(item['date']),
-          unformattedDate: Shift.formatDate2(item['date']),
+      // Find day
+      DateTime date = item['date'];
+      int index = date.difference(sDate).inDays;
+
+      shifts[index] = Shift(
+          rawDate: item['date'],
+          isWorking: true,
           startTime: item['templateId']['startTime'],
           endTime: item['templateId']['endTime'],
           positionTitle: item['templateId']['positionId']['name']
-      ));
+      );
     }
 
     return shifts;

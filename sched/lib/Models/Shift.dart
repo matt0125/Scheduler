@@ -1,43 +1,30 @@
 class Shift {
-  final String? date;
-  final String? unformattedDate;
+  final String rawDate;
+  late final String date;
+  final bool isWorking;
+  late final String? unformattedDate;
   final String? startTime;
   final String? endTime;
   final String? positionTitle;
 
   Shift({
-    this.date,
-    this.unformattedDate,
+    required this.rawDate,
+    required this.isWorking,
     this.startTime,
     this.endTime,
     this.positionTitle,
-  });
-
-  factory Shift.fromJson(dynamic json){
-    return Shift(
-      date: json['date'] as String,
-      startTime: json['startTime'] as String,
-      endTime: json['endTime'] as String,
-      positionTitle: json['positionTitle'] as String
-    );
+  }){
+    this.unformattedDate = _formatDate2(this.rawDate);
+    this.date = _formatDate(this.rawDate);
   }
 
-  static List<Shift> shiftsFromSnapshot(List snapshot)
-  {
-    return snapshot.map(
-        (data){
-          return Shift.fromJson(data);
-        }
-    ).toList();
-  }
-
-  static String formatDate(String dateString) {
+  static String _formatDate(String dateString) {
     DateTime date = DateTime.parse(dateString);
     String formattedDate = "${_getMonthName(date.month)} ${date.day}, ${date.year}";
     return formattedDate;
   }
 
-  static String formatDate2(String dateString) {
+  static String _formatDate2(String dateString) {
     DateTime date = DateTime.parse(dateString);
     String formattedDate = "${(date.month).toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}-${date.year}";
     return formattedDate;
