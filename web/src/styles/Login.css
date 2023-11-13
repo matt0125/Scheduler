@@ -224,7 +224,7 @@ h1 {
 @media (max-width: 650px) {
   #login-body {
     background-color: #F8F8F8;
-    height: 100%;
+    height: 100vh;
   }
   .login-box {
     width: 100%;

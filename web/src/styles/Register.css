@@ -13,10 +13,82 @@
   margin-bottom: 5px;
 }
 
+.email-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.email-input-group img {
+  position: absolute;
+  left: 10px;
+  top: 75%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+
+.email-input-group input {
+  padding-left: 40px;
+  z-index: 0;
+}
+
+.pass-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.pass-input-group img {
+  position: absolute;
+  left: 10px;
+  top: 75%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+
+.pass-input-group input {
+  padding-left: 40px;
+  z-index: 0;
+}
+
+.phone-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.phone-input-group img {
+  position: absolute;
+  left: 10px;
+  top: 75%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+
+.phone-input-group input {
+  padding-left: 40px;
+  z-index: 0;
+}
 
 .managerID-input-group input{
   align-items: center;
+  text-align: center;
 }
+
+#radio-buttons{
+  margin-left: 15%;
+}
+
+
 
 @media (max-width: 650px) {
 
@@ -144,7 +216,7 @@
     font-size: 20px;
   }
   .submit-button{
-    width: 400px;
+    width: 300px;
     height: 50px;
     background-color: #B1947B;
     border-radius: 10px;

@@ -4,6 +4,11 @@ import "../styles/Register.css";
 import { Container, Row, Col } from "react-bootstrap";
 import vector from "../images/table-meeting.png";
 import logo from "../images/branding-notitle.png";
+import emailIcon from "../images/email.png";
+import passIcon from "../images/password.png";
+import phoneIcon from "../images/phone.png";
+
+
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -35,10 +40,12 @@ const Register = () => {
     try {
       const response = await axios.post('http://large.poosd-project.com/api/register', formData);
       console.log('Registration successful:', response.data);
+      alert("Registered successfully.")
     } catch (err) {
       console.log('Error during registration:', err);
     }
   };
+
 
   let url = "/";
   return (
@@ -75,20 +82,35 @@ const Register = () => {
               </div>
               <div class="pass-input-group"> 
               <h2 class="input-font">Password</h2>
+              <img src={passIcon} alt="pass icon" /> 
                 <input type="password" name="password" placeholder="" onChange={handleChange} />
               </div>
-              <div class="email-input-group"> 
+              <div class="email-input-group">
               <h2 class="input-font">Email</h2>
+              <img src={emailIcon} alt="email icon" /> 
                 <input type="email" name="email" placeholder="" onChange={handleChange} />
               </div>
               <div class="phone-input-group">
               <h2 class="input-font">Phone Number</h2>
+              <img src={phoneIcon} alt="email icon" /> 
                 <input type="text" name="phone" placeholder="" onChange={handleChange} />
               </div>
             </div>
             <div class="managerID-input-group">
             <h2 class="input-font">Are you a manager or an employee?</h2>
-              <input type="checkbox" name="managerIdent" onChange={(e) => handleChange({ target: { name: 'managerIdent', value: e.target.checked } })} />
+            <div id="radio-buttons">
+            <input 
+              type="radio" 
+              value="Manager" 
+              name="title" 
+              onChange={(e) => handleChange({ target: { name: 'managerIdent', value: e.target.checked } })}
+              /> Manager
+            <input 
+            type="radio" 
+            value="Employee" 
+            name="title" 
+            onChange={(e) => handleChange({ target: { name: 'managerIdent', value: false} })}/> Employee
+            </div>
             </div>
             <button type="submit" className="submit-button">Sign Up</button>
             <p className="login-register-p">Have an account?  <a href={url} className="login-register-url">log in</a></p>

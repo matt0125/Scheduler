@@ -63,7 +63,6 @@ const Login = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('id', id);
       navigate('/dashboard');
-      alert("Logged in");
     } else {
       // Login failed
       alert("Invalid username or password");
