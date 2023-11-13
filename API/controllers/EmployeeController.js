@@ -228,16 +228,21 @@ exports.getTeammates = async (req, res) => {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
 
     // Find the employee by ID
-    const employee = await Employee.findById(employeeId).select('-_id firstName lastName email phone positions').populate({path:'positions', select:'-_id name'});
+    const employee = await Employee.findById(employeeId).select('-_id firstName lastName email phone positions')
+    .populate({path:'positions', select:'-_id name'});
+
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const teammates = await Employee.find({managedBy: { $exists: true, $ne: null, $eq: employee.managedBy }, _id: { $ne: employeeId}}).select('-_id firstName lastName email phone positions').populate({path:'positions', select:'-_id name'});
+    const teammates = await Employee.find({managedBy: { $exists: true, $ne: null, $eq: employee.managedBy }, _id: { $ne: employeeId}})
+    .select('-_id firstName lastName email phone positions')
+    .populate({path:'positions', select:'-_id name'});
 
-    const manager = await Employee.findById(employeeId).select('-_id managedBy').populate({path:'managedBy', select: '-_id firstName lastName email phone positions', populate:{path:'positions', select:'-_id name'}});
+    const manager = await Employee.findById(employee.managedBy).select('-_id firstName lastName email phone positions')
+    .populate({path:'positions', select:'-_id name'});
 
-    res.status(200).json({employee: employee, manager: manager.managedBy, teammates: teammates});
+    res.status(200).json({employee: employee, manager: manager, teammates: teammates});
   }
   
 
