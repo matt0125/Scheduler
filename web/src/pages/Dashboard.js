@@ -13,6 +13,9 @@ import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 
+// Define your color choices here based on the image provided
+const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
+
 export default class DemoApp extends React.Component {
   state = {
     weekendsVisible: true,
@@ -20,7 +23,7 @@ export default class DemoApp extends React.Component {
     positions: [], // To store the list of positions
     selectedPositionId: null, // To store the selected position ID
     showModal: false,  // Add this line
-    shiftTemplates: []
+    shiftTemplates: [],
   }
    // Function to handle opening the modal
    openModal = () => {
@@ -337,29 +340,51 @@ async function getPositionTitle(positionId) {
     });
 }
 
-
+let colorIndex = 0;
+function getNextColor() {
+  const color = colorChoices[colorIndex];
+  colorIndex = (colorIndex + 1) % colorChoices.length; // Move to the next color or wrap around
+  return color;
+}
 
 async function formatShiftTemplatesForCalendar(shiftTemplates) {
-  const formattedTemplates = [];
+  const formattedTemplates = {};
+  const positionColors = {}; // Initialize an object to store colors
 
   for (const template of shiftTemplates) {
-    const title = await getPositionTitle(template.positionId);
+    const positionId = template.positionId;
+
+    // Check if a color has already been assigned to this position
+    if (!positionColors[positionId]) {
+      // If not, get the next color from the predefined choices and store it
+      positionColors[positionId] = getNextColor();
+    }
+
+    const title = await getPositionTitle(positionId);
 
     // No need to call toISOString again as getNextFormattedDateForDayOfWeek already returns an ISO string
     const startDateTime = await getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime);
     const endDateTime = await getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime);
 
-    formattedTemplates.push({
+    // Add events to the same position in an array
+    if (!formattedTemplates[positionId]) {
+      formattedTemplates[positionId] = [];
+    }
+
+    formattedTemplates[positionId].push({
       id: template._id,
       title: title, // title fetched from getPositionTitle
       start: startDateTime,
       end: endDateTime,
+      color: positionColors[positionId], // Assign the color to the event
     });
   }
 
-  return formattedTemplates;
-}
+  // Flatten the formattedTemplates object into an array
+  const flattenedTemplates = Object.values(formattedTemplates).flat();
 
+  return flattenedTemplates;
+}
 
 function getNextFormattedDateForDayOfWeek(dayOfWeek, time) {
 
