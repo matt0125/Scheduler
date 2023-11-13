@@ -412,7 +412,7 @@ exports.updatePassword = async (req, res) => {
 exports.getAllManagers = async (req, res) => {
   try {
     // Find the employee by ID
-    const managers = await Employee.find({managerIdent: { $exists: true, $ne: null, $eq: true }});
+    const managers = await Employee.find({managerIdent: { $exists: true, $ne: null, $eq: true }}).populate('positions');
     if (!managers) {
       return res.status(404).json({ message: 'No managers found' });
     }

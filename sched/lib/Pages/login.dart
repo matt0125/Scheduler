@@ -41,8 +41,8 @@ class _LoginPageState extends State<LoginPage> {
         message: response.message,
       ).show(context);
     } else {
-      DataService.writeEmpId(response.empId!);
-      DataService.writeJWT(response.token!);
+      await DataService.writeEmpId(response.empId!);
+      await DataService.writeJWT(response.token!);
       Navigator.pushReplacement(context,
         MaterialPageRoute(
           builder: (context) => TabsPage(), // Pass the user ID if needed
