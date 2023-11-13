@@ -66,24 +66,10 @@ class ScheduleCard extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 40),
+              SizedBox(height: 46,),
               Text(
-                " ",
+                'Not scheduled',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                '\nDay off',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              ),
-
-              SizedBox(height: 28),
-              Container(
-                padding: EdgeInsets.all(8.0),
-                alignment: Alignment.bottomCenter,
-                child: Text(
-                  "All day",
-                  style: TextStyle(fontSize: 24),
-                ),
               ),
             ],
           ),
