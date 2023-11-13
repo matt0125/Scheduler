@@ -19,6 +19,7 @@ const PositionController = {
   getPosition: async (req, res) => {
     try {
       const { id } = req.params;
+      console.log("position Id is ", id);
       const position = await Position.findById(id);
       if (!position) {
         return res.status(404).json({ message: 'Position not found' });
