@@ -404,3 +404,49 @@ exports.updatePassword = async (req, res) => {
   }
 };
 
+exports.getAllManagers = async (req, res) => {
+  try {
+    // Find the employee by ID
+    const managers = await Employee.find({managerIdent: { $exists: true, $ne: null, $eq: true }});
+    if (!managers) {
+      return res.status(404).json({ message: 'No managers found' });
+    }
+
+    res.status(200).json({ managers: managers });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating password', error: error.toString() });
+    console.error("There was an error:", error);
+  }
+};
+
+exports.assignManager = async (req, res) => {
+  try {
+    const { employeeId } = req.params; // Assuming the employee ID is passed in the URL
+    
+    const { managerId } = req.body;
+
+    // Find the employee by ID
+    const employee = await Employee.findById(employeeId);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Find the employee by ID
+    const manager = await Employee.findById(managerId);
+    if (!manager) {
+      return res.status(404).json({ message: 'Manager not found' });
+    }
+    if (manager.managerIdent == false) {
+      return res.status(401).json({ message: 'Employee is not a manager' });
+    }
+
+    // Update the password in the database
+    employee.managerId = managerId;
+    await employee.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error assigning manager', error: error.toString() });
+    console.error("There was an error:", error);
+  }
+};

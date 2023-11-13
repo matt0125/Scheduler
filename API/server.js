@@ -72,6 +72,10 @@ app.get('/api/manager/:id/employees', employeeController.getEmployeesByManager);
 app.get('/api/employee/:employeeId/teammates', employeeController.getTeammates);
 app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
 
+// post register
+app.get('/api/manager/allmanagers', employeeController.getAllManagers);
+app.post('/api/employee/:employeeId/assign/manager', employeeController.assignManager);
+
 // availabilities
 app.post('/api/employee/:employeeId/availability', employeeController.createAvailability);
 app.put('/api/employee/:employeeId/availability/:availabilityId', employeeController.updateAvailability);
