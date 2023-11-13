@@ -7,7 +7,7 @@ exports.createShiftTemplate = async (req, res) => {
   try {
     console.log("Creating shift template...");
 
-    const { dayOfWeek, startTime, endTime, positionId } = req.body;
+    const { dayOfWeek, startTime, endTime, positionId, managerId } = req.body;
 
     // Create a new shift template
     const newShiftTemplate = new ShiftTemplate({
@@ -16,7 +16,10 @@ exports.createShiftTemplate = async (req, res) => {
       startTime,
       endTime,
       positionId,
+      managerId,
     });
+
+    console.log(newShiftTemplate);
     
     console.log(dayOfWeek);
     console.log(positionId);
@@ -71,7 +74,7 @@ exports.editShiftTemplate = async (req, res) => {
     console.log('Request body:', req.body);
 
     const { id } = req.params;
-    const { dayOfWeek, startTime, endTime, positionId } = req.body;
+    const { dayOfWeek, startTime, endTime, positionId, managerId } = req.body;
 
     console.log('Shift template id:', id);
 
@@ -114,29 +117,27 @@ exports.deleteShiftTemplate = async (req, res) => {
 
 exports.getShiftTemplateByManager = async (req, res) => {
   try {
-    console.log('Fetching shift templates by manager...');
+    console.log('Fetching shift templates for a specific manager...');
 
-    // Step 1: Find all employees with managerIdent set to true
-    const managerEmployees = await Employee.find({ managerIdent: true });
+    // Assuming the manager's ID is passed as a query parameter
+    const managerId = req.params.managerId;
 
-    // Step 2: Get the positions associated with manager employees
-    const managedPositions = managerEmployees.reduce((positions, employee) => {
-      return positions.concat(employee.positions);
-    }, []);
+    if (!managerId) {
+      return res.status(400).json({ message: 'Manager ID is required' });
+    }
 
-    // Step 3: Find shift templates whose positionId matches the managed positions
-    const shiftTemplates = await ShiftTemplate.find({
-      positionId: { $in: managedPositions },
-    });
+    const shiftTemplates = await ShiftTemplate.find({ managerId });
 
     if (!shiftTemplates || shiftTemplates.length === 0) {
-      return res.status(404).json({ message: 'No shift templates found for managers' });
+      console.log('No shift templates found for this manager');
+      return res.status(200).json({ message: 'No shift templates found for this manager', shiftTemplates: [] });
     }
 
     res.status(200).json(shiftTemplates);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching shift templates for managers', error });
-    console.error('There was an error fetching shift templates for managers', error);
+    res.status(500).json({ message: 'Error fetching shift templates for the manager', error });
+    console.error('There was an error fetching shift templates for the manager', error);
+    console.log(error);
   }
 };
 

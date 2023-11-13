@@ -108,14 +108,16 @@ app.get('/api/shift-templates/:id', shiftTemplateController.getShiftTemplate);
 app.put('/api/shift-templates/:id', shiftTemplateController.editShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
 
-app.post('/api/shift-templates/manager', shiftTemplateController.getShiftTemplateByManager);
+app.get('/api/shift-templates/manager/:managerId', shiftTemplateController.getShiftTemplateByManager);
 
 // Positions
+app.get('/api/position/:positionId', positionController.getPosition);
 app.get('/api/positions/:managerId', positionController.getPositionsByManager);
 app.post('/api/positions/manager', positionController.createPositionByManager);
 
-// Update password
+// Update employee
 app.put('/api/employee/:employeeId/password', employeeController.updatePassword);
+app.put('/updateEmployee/:employeeId', employeeController.updateEmployeeProfile);
 
 
 app.listen(port, () => {

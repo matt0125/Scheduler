@@ -5,6 +5,7 @@ class Employee {
   final String email;
   late final List<String> positionTitles;
   late final String fullName;
+  final String? employeeId;
 
   Employee({
     required this.firstName,
@@ -12,6 +13,7 @@ class Employee {
     required this.phone,
     required this.email,
     required this.positionTitles,
+    this.employeeId,
   }){
     for(int i = 0; i < this.positionTitles.length; i++)
       {
