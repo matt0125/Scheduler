@@ -5,6 +5,7 @@ import 'package:sched/Models/Employee.dart';
 import 'package:sched/Models/Shift.dart';
 import 'package:sched/Services/DataService.dart';
 import '../Models/FullShift.dart';
+import '../Models/Position.dart';
 
 class APIService {
   final String baseUrl;
@@ -241,14 +242,20 @@ class APIService {
     }
 
     List<String> managerPositions = [];
-    for(final position in responseData['manager']['positions'])
-    {
-      managerPositions.add(position['name']);
-    }
+    if (responseData['manager']['positions'] != null)
+      {
+        for(final position in responseData['manager']['positions'])
+        {
+          managerPositions.add(position['name']);
+        }
+      }
     List<String> selfPositions = [];
-    for(final position in responseData['employee']['positions'])
+    if (responseData['employee']['positions'] != null)
     {
-      selfPositions.add(position['name']);
+      for(final position in responseData['employee']['positions'])
+      {
+        selfPositions.add(position['name']);
+      }
     }
 
     team = Team(
@@ -270,6 +277,70 @@ class APIService {
     );
 
     return team;
+  }
+
+  Future<List<Employee>> GetAllManagers () async {
+    final responseData = await getToEndpoint(null, 'manager/allmanagers');
+
+    try{
+      if(responseData['message'] != null)
+      {
+        print(responseData['message']);
+      }
+    }
+    catch(e)
+    {
+      print(e);
+    }
+
+    List<Employee> managers = [];
+
+    for(final item in responseData["managers"])
+    {
+      List<String> positions = [];
+      for(final position in item['positions'])
+      {
+        positions.add(position['name']);
+      }
+      managers.add(Employee(
+        firstName: item['firstName'],
+        lastName: item['lastName'],
+        email: item['email'],
+        phone: item['phone'],
+        positionTitles: positions,
+      ));
+    }
+
+    return managers;
+  }
+
+  Future<List<Position>> GetAllPositions () async {
+    final responseData = await getToEndpoint(null, 'position');
+
+    try{
+      if(responseData['message'] != null)
+      {
+        print(responseData['message']);
+      }
+    }
+    catch(e)
+    {
+      print(e);
+    }
+
+    List<Position> positions = [];
+
+    for(final item in responseData["positions"])
+    {
+      positions.add(
+        Position(
+            id: item['_id'],
+            name: item['name']
+        )
+      );
+    }
+
+    return positions;
   }
 }
 

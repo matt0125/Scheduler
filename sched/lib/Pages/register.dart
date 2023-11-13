@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sched/Pages/welcome.dart';
 import 'package:sched/Services/APIService.dart';
 import 'package:sched/Services/DataService.dart';
 import 'package:sched/Widgets/popup.dart';
@@ -75,12 +76,28 @@ class _SignUpPageState extends State<SignUpPage> {
           message: response.message,
         ).show(context);
       } else {
-        DataService.writeEmpId(response.empId!);
-
-        Navigator.pushReplacementNamed(
-          context,
-          '/welcome',
+        final loginResponse = await apiService.login(
+          username,
+          password,
         );
+
+        if(loginResponse.empId != null) {
+          await DataService.writeEmpId(loginResponse.empId!);
+          await DataService.writeJWT(loginResponse.token!);
+
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(
+                builder: (context) => WelcomePage(),
+              )
+          );
+        }
+        else {
+          Popup(
+            title: 'Error',
+            message: loginResponse.message,
+          ).show(context);
+        }
+
       }
     }
   }

@@ -50,10 +50,8 @@ class MyApp extends StatelessWidget {
           return null;
         },
       routes: {
-        '/': (context) => WelcomePage(),
         '/login': (context) => const LoginPage(), // Set the LoginPage as the initial route
          '/signup': (context) => const SignUpPage(), // Define a named route for the SignUpPage
-        '/welcome': (context) => WelcomePage(),
         '/dailyschedule/:date': (context, {arguments} ) => DailySchedulePage(date: arguments['date']),
       },
     );
