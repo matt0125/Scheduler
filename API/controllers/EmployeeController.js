@@ -228,7 +228,7 @@ exports.getTeammates = async (req, res) => {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
 
     // Find the employee by ID
-    const employee = await Employee.findById(employeeId).select('-_id firstName lastName email phone positions')
+    const employee = await Employee.findById(employeeId).select('-_id firstName lastName email phone managedBy positions')
     .populate({path:'positions', select:'-_id name'});
 
     if (!employee) {
