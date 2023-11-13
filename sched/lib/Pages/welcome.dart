@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../tabs.dart';
+
 class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -19,9 +21,10 @@ class WelcomePage extends StatelessWidget {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(
-                  context,
-                  '/',
+                Navigator.pushReplacement(context,
+                  MaterialPageRoute(
+                    builder: (context) => TabsPage(), // Pass the user ID if needed
+                  ),
                 );
               },
               child: Text('Get Started'),
