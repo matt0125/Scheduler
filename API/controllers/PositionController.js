@@ -33,9 +33,9 @@ const PositionController = {
   getAllPositions: async (req, res) => {
     try {
       const positions = await Position.find({});
-      res.status(200).json(positions);
+      res.status(200).json( { positions: positions } );
     } catch (error) {
-      res.status(400).json({ message: 'Failed to get positions', error });
+      res.status(400).json({ message: 'Failed to get positions', error: error });
     }
   },
 
