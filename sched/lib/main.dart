@@ -1,6 +1,5 @@
 // main.dart
 import 'package:flutter/material.dart';
-import 'package:sched/Pages/dashboard.dart';
 import 'package:sched/tabs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Pages/dailyschedule.dart';
@@ -51,7 +50,7 @@ class MyApp extends StatelessWidget {
           return null;
         },
       routes: {
-        '/': (context) => TabsPage(),
+        '/': (context) => WelcomePage(),
         '/login': (context) => const LoginPage(), // Set the LoginPage as the initial route
          '/signup': (context) => const SignUpPage(), // Define a named route for the SignUpPage
         '/welcome': (context) => WelcomePage(),
