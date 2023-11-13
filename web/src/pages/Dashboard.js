@@ -9,17 +9,53 @@ import "../styles/Dashboard.css";
 import logo from "../images/branding.png";
 import profile from "../images/profile-button.svg";
 import axios from 'axios';
+import Modal from 'react-modal';
+import { useNavigate } from "react-router-dom";
+import { withRouter } from 'react-router-dom';
+
+// Define your color choices here based on the image provided
+const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
 
 export default class DemoApp extends React.Component {
   state = {
     weekendsVisible: true,
     currentEvents: [],
     positions: [], // To store the list of positions
-    selectedPositionId: null // To store the selected position ID
+    selectedPositionId: null, // To store the selected position ID
+    showModal: false,  // Add this line
+    shiftTemplates: [],
+    selectMirrorEnabled: true,
   }
+   // Function to handle opening the modal
+   openModal = () => {
+    this.setState({ showModal: true });
+  }
+
+  // Function to handle closing the modal
+  closeModal = () => {
+    this.setState({ showModal: false });
+  }
+
+  // Function to handle sign out
+  handleSignOut = () => {
+    localStorage.clear();
+    this.props.navigate('/'); // Use the navigate function passed as a prop
+  }
+
+  // Function to handle edit profile
+  handleEditProfile = () => {
+    // Assuming the employee ID is stored in localStorage
+    const employeeId = localStorage.getItem('id'); 
+
+    // Navigate to the EditProfile page with the employee ID
+    this.props.navigate(`/edit-profile/${employeeId}`);
+  };
+
 
   componentDidMount() {
     this.fetchPositions();
+    this.fetchShiftTemplates();
+    console.log("Startup: ",this.state.shiftTemplates);
   }
 
   renderPositionSelect() {
@@ -54,9 +90,52 @@ export default class DemoApp extends React.Component {
     }
   }
 
+  fetchShiftTemplates = async () => {
+    const managerId = localStorage.getItem('id');
+    const jwtToken = localStorage.getItem('token');
+  
+    try {
+      console.log(managerId);
+      const response = await axios.get(`http://localhost:3000/api/shift-templates/manager/${managerId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          contentType: 'application/json'
+        }
+      });
+  
+      // Check if the response is an array
+      if (Array.isArray(response.data)) {
+        console.log("response data is ", response.data);
+        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data);
+        console.log("formatted shift template:", formattedShiftTemplates);
+        this.setState({ shiftTemplates: formattedShiftTemplates });
+      } else {
+        // Handle case where response is not an array
+        console.error('Response is not an array', response.data);
+        console.log()
+        this.setState({ shiftTemplates: [] });
+        this.setState({ selectMirrorEnabled: false });
+      }
+      // calendarApi = selectInfo.view.calendar;
+      // console.log("this is being added: ", shiftTemplates[0]);
+      // calendarApi.addEvent(shiftTemplates[0])
+    } catch (error) {
+      alert('Failed to fetch shift templates: ' + error.message);
+      console.log(error);
+      this.setState({ shiftTemplates: [] }); // Reset to empty array on error
+    }
+    console.log("After startup: ", this.state.shiftTemplates);
+  }
+  
+
   handlePositionSelect = (event) => {
     this.setState({ selectedPositionId: event.target.value });
   }
+
+  handleDateClick = () => {
+    // Enable selectMirror when starting selection
+    this.setState({ selectMirrorEnabled: true });
+  };
 
   render() {
     return (
@@ -64,7 +143,11 @@ export default class DemoApp extends React.Component {
         {this.FilterBar()}
         <div className='demo-app-main'>
         <img src={logo} alt="sched logo" className="logo"></img>
-        <img className="profile-button" src={profile} alt="Profile_Button" />
+        <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openModal} />
+        <Modal isOpen={this.state.showModal} onRequestClose={this.closeModal}>
+            <button onClick={this.handleSignOut}>Sign Out</button>
+            <button onClick={this.handleEditProfile}>Edit Profile</button>
+          </Modal>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{
@@ -81,11 +164,11 @@ export default class DemoApp extends React.Component {
             selectMirror={true}
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
-            initialEvents={INITIAL_EVENTS} // alternatively, use the `events` setting to fetch from a feed
+            events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
             select={this.handleDateSelect}
-            eventContent={renderEventContent} // custom render function
-            eventClick={this.handleEventClick}
+            eventContent={this.renderEventContent} // custom render function
             eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+            dateClick={this.handleDateClick}
             /* you can update a remote database when these fire:
             eventAdd={function(){}}
             eventChange={function(){}}
@@ -101,7 +184,7 @@ export default class DemoApp extends React.Component {
   // Call get JWT API
   // Save empployee object (whole thing) in a JWT
   // Gets shifts by managerID
-
+l
   // Login as mangager
 
 
@@ -124,20 +207,13 @@ export default class DemoApp extends React.Component {
   }
 
   handleDateSelect = async (selectInfo) => {
+    // Disable selectMirror temporarily
     let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
 
     if (title && this.state.selectedPositionId) {
-      const event = {
-        id: createEventId(),
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      };
-
       try {
         const jwtToken = localStorage.getItem('token');
         console.log(convertToStandardTime(selectInfo.startStr));
@@ -147,7 +223,8 @@ export default class DemoApp extends React.Component {
           dayOfWeek: getDayOfWeek(selectInfo.startStr), // convert startStr to day of week
           startTime: convertToStandardTime(selectInfo.startStr),
           endTime: convertToStandardTime(selectInfo.endStr),
-          positionId: this.state.selectedPositionId // you will need to get the positionId as required by your API
+          positionId: this.state.selectedPositionId, // you will need to get the positionId as required by your API
+          managerId: localStorage.getItem('id')
         }, {
           headers: {
             Authorization: `Bearer ${jwtToken}`
@@ -155,27 +232,32 @@ export default class DemoApp extends React.Component {
 
         });
 
-        calendarApi.addEvent(event);
+        // full calendar creation
+        const event = {
+          id: createEventId(),
+          title: response,
+          start: selectInfo.startStr,
+          end: selectInfo.endStr,
+          allDay: selectInfo.allDay
+        };
+
+        // calendarApi.addEvent(event);
         alert('New shift template created!');
+        alert('Fetching events!');
+        this.fetchShiftTemplates();
       } catch (error) {
         alert(error);
       }
       
       
 
-      const empId = localStorage.getItem('id');
-      const templateId = 'TEMPLATE_ID';
-      const date = formatDate(event.start, { year: 'numeric', month: '2-digit', day: '2-digit' });
+      // const empId = localStorage.getItem('id');
+      // const templateId = 'TEMPLATE_ID';
+      // const date = formatDate(event.start, { year: 'numeric', month: '2-digit', day: '2-digit' });
     } else {
       alert('You must select a position first.');
     }
   }
-
-  handleEventClick = (clickInfo) => {
-    if (window.confirm(`Are you sure you want to delete the event "${clickInfo.event.title}"`)) {
-      clickInfo.event.remove();
-    }
-  };
 
   handleEvents = (events) => {
     this.setState({
@@ -183,24 +265,70 @@ export default class DemoApp extends React.Component {
     })
   }
 
-}
+  // Make this be able to add employees to shift temmplates 
+  handleEventDelete = (clickInfo) => {
+    alert(typeof clickInfo);
+    if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
+      alert(clickInfo.id);
+      const eventId = clickInfo.id; // Assuming the event ID is stored in clickInfo.event.id
+      const url = `http://large.poosd-project.com/api/shift-templates/${eventId}`;
 
-function renderEventContent(eventInfo) {
-  return (
-    <>
-      <b>{eventInfo.timeText}</b>
-      <i>{eventInfo.event.title}</i>
-    </>
-  )
-}
+      // Retrieve the JWT from local storage
+      const jwtToken = localStorage.getItem("token");
 
-function renderSidebarEvent(event) {
-  return (
-    <li key={event.id}>
-      <b>{formatDate(event.start, {year: 'numeric', month: 'short', day: 'numeric'})}</b>
-      <i>{event.title}</i>
-    </li>
-  )
+      axios.delete(url, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            contentType: 'application/json'
+        }
+      })
+            .then(response => {
+                // Handle the successful response here
+                console.log(response.data);
+                // You might want to remove the event from the calendar view here
+                clickInfo.remove();
+                alert("Event deleted successfully.");
+            })
+            .catch(error => {
+                // Handle any errors here
+                console.error('Error:', error);
+                alert("Failed to delete the event.," );
+            });
+    }
+  };
+  
+  handleEventEdit = (clickInfo) => {
+    if (window.confirm(`What employees do you want to add to this event "${clickInfo.title}"`)) {
+    }
+  };
+
+  renderEventContent = (eventInfo) => {
+    return (
+      <div>
+        <b style={{ color: '#47413d' }}>{eventInfo.timeText}</b>
+        <i style={{ color: '#47413d' }}>{eventInfo.event.title}</i>
+        <button
+          className="event-edit-button"
+          onClick={() => this.handleEventEdit(eventInfo.event)}
+          aria-label="Edit event"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer', marginRight: '5px' }}
+        >
+          ✏️
+        </button>
+        <button
+          className="event-delete-button"
+          onClick={() => this.handleEventDelete(eventInfo.event)}
+          aria-label="Delete event"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+        >
+          🗑️
+        </button>
+      </div>
+    )
+  }
+  
+
+
 }
 
 function convertToStandardTime(timeString) {
@@ -222,3 +350,139 @@ function getDayOfWeek(dateString) {
 
   return dayOfWeek;
 }
+
+
+
+// Helper function to format date/time for FullCalendar
+function formatDateTimeForCalendar(dateTime) {
+  // Format the dateTime string as needed for the calendar
+  // Example: "2023-11-10T09:00:00" (if your API returns date and time separately, you may need to concatenate them)
+  return dateTime;
+}
+
+async function getPositionTitle(positionId) {
+  // Define the base URL
+  const baseUrl = 'http://localhost:3000/api/position/';
+
+  // Append the positionId to the URL
+  const url = `${baseUrl}${positionId}`;
+
+  // Retrieve the JWT token from local storage
+  const jwtToken = localStorage.getItem('token');
+
+  console.log("Position ID is:", positionId);
+
+  // Make a GET request using Axios
+  return axios.get(url, {
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+      contentType: 'application/json'
+    }
+  })
+    .then(response => {
+      // Handle success: extract and return the position title from the response
+      return response.data.name; // Assuming the title is directly in the response data
+    })
+    .catch(error => {
+      // Handle error
+      console.error('Error fetching position title:', error);
+      return "error fetching position"; // Rethrow or handle the error as needed
+    });
+}
+
+let colorIndex = 0;
+function getNextColor() {
+  const color = colorChoices[colorIndex];
+  colorIndex = (colorIndex + 1) % colorChoices.length; // Move to the next color or wrap around
+  return color;
+}
+
+async function formatShiftTemplatesForCalendar(shiftTemplates) {
+  const formattedTemplates = {};
+  const positionColors = {}; // Initialize an object to store colors
+
+  for (const template of shiftTemplates) {
+    const positionId = template.positionId;
+
+    // Check if a color has already been assigned to this position
+    if (!positionColors[positionId]) {
+      // If not, get the next color from the predefined choices and store it
+      positionColors[positionId] = getNextColor();
+    }
+
+    const title = await getPositionTitle(positionId);
+
+    // No need to call toISOString again as getNextFormattedDateForDayOfWeek already returns an ISO string
+    const startDateTime = await getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime);
+    const endDateTime = await getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime);
+
+    // Add events to the same position in an array
+    if (!formattedTemplates[positionId]) {
+      formattedTemplates[positionId] = [];
+    }
+
+    formattedTemplates[positionId].push({
+      id: template._id,
+      title: title, // title fetched from getPositionTitle
+      start: startDateTime,
+      end: endDateTime,
+      color: positionColors[positionId], // Assign the color to the event
+    });
+  }
+
+  // Flatten the formattedTemplates object into an array
+  const flattenedTemplates = Object.values(formattedTemplates).flat();
+
+  return flattenedTemplates;
+}
+
+function getNextFormattedDateForDayOfWeek(dayOfWeek, time) {
+
+  const targetDay = dayOfWeek;
+  if (targetDay === undefined) {
+      throw new Error('Invalid day of the week');
+  }
+
+  // Parse the time
+  const [hours, minutes] = time.split(':').map(Number);
+  console.log(hours, minutes);
+  if (isNaN(hours) || isNaN(minutes)) {
+      throw new Error('Invalid time format');
+  }
+
+  // Get the current date and time
+  const currentDate = new Date();
+  console.log("date ", currentDate);
+  console.log("date ", currentDate.getDay());
+  console.log(targetDay);
+
+  // Calculate the difference between the current day and the target day
+  let dayDifference = targetDay - currentDate.getDay();
+  if (dayDifference < 0) {
+      // If target day is in the past of the current week, move to the next week
+      dayDifference += 7;
+  }
+  console.log("diff", dayDifference);
+
+  // Set the date to the next occurrence of the target day
+  currentDate.setDate(currentDate.getDate() + dayDifference);
+  console.log("date ", currentDate);
+
+  // Set the time
+  currentDate.setHours(hours, minutes, 0); // Setting seconds to 0
+  console.log("date ", currentDate);
+
+  // Format the date in YYYY-MM-DDTHH:MM:SS format
+  // Adjusting for local timezone offset
+  const timezoneOffset = currentDate.getTimezoneOffset() * 60000; // offset in milliseconds
+  console.log("offset ", timezoneOffset);
+  const localDate = new Date(currentDate.getTime() - timezoneOffset);
+  console.log("local date", localDate);
+  let formattedDate = localDate.toISOString().replace(/:\d{2}\.\d{3}Z$/, '');
+
+  return formattedDate;
+}
+
+// Example usage
+console.log(getNextFormattedDateForDayOfWeek(2, '15:30'));
+
