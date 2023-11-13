@@ -40,92 +40,104 @@ class ScheduleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (this.shift.isWorking == false)
-      return Card(
-        elevation: 4, // Add some elevation for a card-like effect
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0), // Rounded corners
-        ),
-        margin: EdgeInsets.all(16.0), // Add some margin for spacing
-        child: InkWell(
-          onTap: () {
-            // Navigate to the 'dailyschedule' page when the card is tapped
-            Navigator.pushNamed(context, '/dailyschedule/${shift.unformattedDate}');
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(8.0),
-                alignment: Alignment.topRight,
-                child: Text(
-                  shift.date ?? '',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+    Widget cardContent;
+
+    if (this.shift.isWorking == false) {
+      cardContent = Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(8.0),
+            alignment: Alignment.topRight,
+            child: Text(
+              shift.date ?? '',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: 46,),
-              Text(
-                'Not scheduled',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-              ),
-            ],
+            ),
           ),
-        ),
+          SizedBox(height: 46,),
+          Text(
+            'Not scheduled',
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+          ),
+        ],
       );
-    else {
-      return Card(
-          elevation: 4, // Add some elevation for a card-like effect
+    } else {
+      cardContent = Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(8.0),
+            alignment: Alignment.topRight,
+            child: Text(
+              shift.date ?? '',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(height: 40),
+          Text(
+            numHours(shift.startTime!, shift.endTime!),
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            '\n${shift.positionTitle}',
+            style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 28),
+          Container(
+            padding: EdgeInsets.all(8.0),
+            alignment: Alignment.bottomCenter,
+            child: Text(
+              this.printTime!,
+              style: TextStyle(fontSize: 24),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Container(
+      padding: EdgeInsets.all(15.0), // Adjust the padding as needed
+      decoration: BoxDecoration(
+        color: Color(0xFFCDBFB6), // Choose a color for the surrounding card
+        borderRadius: BorderRadius.circular(16.0), // Rounded corners
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5), // Choose a color for the shadow
+            spreadRadius: 2,
+            blurRadius: 3,
+            offset: Offset(2, 2), // changes the position of the shadow
+          ),
+        ],
+      ),
+      margin: EdgeInsets.all(16.0), // Add some margin for spacing
+      child: SizedBox(
+        width: 200, // Adjust the width as needed
+        child: Card(
+          // The inner card's properties
+          elevation: 0, // Set this to 0 to prevent double shadow effect
+          color: Color(0xFFEDE7E3), // Set the background color of the inside of the card
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0), // Rounded corners
           ),
-          margin: EdgeInsets.all(16.0), // Add some margin for spacing
           child: InkWell(
-          onTap: () {
-            // Navigate to the 'dailyschedule' page when the card is tapped
-            Navigator.pushNamed(context, '/dailyschedule/${shift.unformattedDate}');
-          },
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    alignment: Alignment.topRight,
-                    child: Text(
-                      shift.date ?? '',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 40),
-                  Text(
-                    numHours(shift.startTime!, shift.endTime!),
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    '\n${shift.positionTitle}',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                  ),
-
-                  SizedBox(height: 28),
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    alignment: Alignment.bottomCenter,
-                    child: Text(
-                      this.printTime!,
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    ),
-                ],
-            ),
+            onTap: () {
+              // Navigate to the 'dailyschedule' page when the card is tapped
+              Navigator.pushNamed(context, '/dailyschedule/${shift.unformattedDate}');
+            },
+            child: cardContent,
           ),
-      );
-    }
+        ),
+      ),
+    );
+
   }
+
 
   String numHours(String startTime, String endTime) {
 

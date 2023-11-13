@@ -29,7 +29,6 @@ class DataService {
     await _prefs!.remove('empId');
   }
 
-
   static Future<void> writeJWT(String jwt) async {
     _checkPrefsInitialized();
     await clearJWT();
@@ -44,5 +43,21 @@ class DataService {
   static Future<void> clearJWT() async {
     _checkPrefsInitialized();
     await _prefs!.remove('JWT');
+  }
+
+  // Add methods for reading and writing total hours
+  static Future<void> writeTotalHours(double totalHours) async {
+    _checkPrefsInitialized();
+    await _prefs!.setDouble('totalHours', totalHours);
+  }
+
+  static double readTotalHours() {
+    _checkPrefsInitialized();
+    return _prefs!.getDouble('totalHours') ?? 0.0;
+  }
+
+  static Future<void> clearTotalHours() async {
+    _checkPrefsInitialized();
+    await _prefs!.remove('totalHours');
   }
 }
