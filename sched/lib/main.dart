@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:sched/tabs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Pages/dailyschedule.dart';
 import 'Pages/login.dart'; // Import the LoginPage from login.dart
 import 'Pages/register.dart'; // Import the SignUpPage from register.dart
 import 'package:sched/Pages/welcome.dart';
 import 'package:sched/Services/DataService.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,13 +22,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String initRoute = '/login';
+    // String initRoute = '/login';
 
 
-    if(DataService.readEmpId() != "null")
-      {
-        initRoute = '/';
-      }
+    // if(DataService.readEmpId() != "null")
+    //   {
+    //     initRoute = '/';
+    //   }
 
     return MaterialApp(
       theme: ThemeData(
@@ -37,12 +39,20 @@ class MyApp extends StatelessWidget {
             fontSize: 20,
           ),
         )),
-      initialRoute: initRoute,
+      initialRoute: '/login',
+        onGenerateRoute: (settings) {
+          if (settings.name!.startsWith('/dailyschedule/')) {
+            final date = settings.name!.split('/').last;
+            return MaterialPageRoute(
+              builder: (context) => DailySchedulePage(date: date),
+            );
+          }
+          return null;
+        },
       routes: {
-        '/': (context) => TabsPage(),
         '/login': (context) => const LoginPage(), // Set the LoginPage as the initial route
-        '/signup': (context) => const SignUpPage(), // Define a named route for the SignUpPage
-        '/welcome': (context) => WelcomePage(),
+         '/signup': (context) => const SignUpPage(), // Define a named route for the SignUpPage
+        '/dailyschedule/:date': (context, {arguments} ) => DailySchedulePage(date: arguments['date']),
       },
     );
   }

@@ -26,8 +26,12 @@ const EmployeeSchema = new Schema({
   email: String,
   phone: String,
   managerIdent: Boolean,
-  managedBy: Schema.Types.ObjectId,
+  managedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'Employee'
+  },
   availability: [AvailabilitySchema],
+  isValidated: Boolean,
   positions: [{ type: Schema.Types.ObjectId, ref: 'Position' }], // Assuming 'Position' is another model
   preference: [PreferenceSchema]
 });

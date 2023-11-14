@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sched/Pages/welcome.dart';
 import 'package:sched/Services/APIService.dart';
 import 'package:sched/Services/DataService.dart';
 import 'package:sched/Widgets/popup.dart';
+import 'package:flutter/services.dart'; // Import for TextInputFormatter
+
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -73,12 +76,28 @@ class _SignUpPageState extends State<SignUpPage> {
           message: response.message,
         ).show(context);
       } else {
-        DataService.writeEmpId(response.empId);
-
-        Navigator.pushReplacementNamed(
-          context,
-          '/welcome',
+        final loginResponse = await apiService.login(
+          username,
+          password,
         );
+
+        if(loginResponse.empId != null) {
+          await DataService.writeEmpId(loginResponse.empId!);
+          await DataService.writeJWT(loginResponse.token!);
+
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(
+                builder: (context) => WelcomePage(),
+              )
+          );
+        }
+        else {
+          Popup(
+            title: 'Error',
+            message: loginResponse.message,
+          ).show(context);
+        }
+
       }
     }
   }
@@ -131,7 +150,9 @@ class _SignUpPageState extends State<SignUpPage> {
                         labelText: 'Phone number',
                         controller: phoneNumberController,
                         isError: !fieldValidation['phoneNumber']!,
+                        inputFormatter: [FilteringTextInputFormatter.digitsOnly], // Restrict input to numbers only
                       ),
+
                       const SizedBox(height: 10.0),
                       BubbleText(
                         labelText: 'Username',
@@ -194,11 +215,6 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 }
 
-
-
-
-
-
 class Sched extends StatelessWidget {
   const Sched({Key? key});
 
@@ -239,14 +255,16 @@ class BubbleText extends StatelessWidget {
   final TextEditingController controller;
   final bool obscureText;
   final Widget? suffixIcon;
-  final bool isError; // Add a new property to determine if the field is incomplete
+  final bool isError;
+  final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
 
   const BubbleText({
     required this.labelText,
     required this.controller,
     this.obscureText = false,
     this.suffixIcon,
-    this.isError = false, // Initialize the isError property with false
+    this.isError = false,
+    this.inputFormatter, // Initialize the inputFormatter property
   });
 
   @override
@@ -270,24 +288,28 @@ class BubbleText extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           suffixIcon: suffixIcon,
-          isError: isError, // Pass the isError property to BubbleContainer
+          isError: isError,
+          inputFormatter: inputFormatter, // Pass the inputFormatter property to BubbleContainer
         ),
       ],
     );
   }
 }
 
+
 class BubbleContainer extends StatelessWidget {
   final TextEditingController controller;
   final bool obscureText;
   final Widget? suffixIcon;
-  final bool isError; // Add a new property to determine if the field is incomplete
+  final bool isError;
+  final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
 
   const BubbleContainer({
     required this.controller,
     required this.obscureText,
     this.suffixIcon,
-    this.isError = false, // Initialize the isError property with false
+    this.isError = false,
+    this.inputFormatter, // Initialize the inputFormatter property
   });
 
   @override
@@ -298,7 +320,7 @@ class BubbleContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(60),
         color: const Color(0xFFCDBFB6),
         border: Border.all(
-          color: isError ? Colors.red : Colors.black, // Change border color if isError is true
+          color: isError ? Colors.red : Colors.black,
           width: 2.0,
         ),
         boxShadow: const [
@@ -313,6 +335,7 @@ class BubbleContainer extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscureText,
+        inputFormatters: inputFormatter, // Apply the inputFormatter here
         decoration: InputDecoration(
           border: InputBorder.none,
           contentPadding:
@@ -330,6 +353,7 @@ class BubbleContainer extends StatelessWidget {
     );
   }
 }
+
 
 class AccountText extends StatelessWidget {
   const AccountText({Key? key});
@@ -364,7 +388,7 @@ class LoginButton extends StatelessWidget {
         );
       },
       child: const Text(
-        'Log in here',
+        'Login here',
         style: TextStyle(
           fontFamily: 'Katibeh',
           fontSize: 17.0,
@@ -377,3 +401,5 @@ class LoginButton extends StatelessWidget {
     );
   }
 }
+
+

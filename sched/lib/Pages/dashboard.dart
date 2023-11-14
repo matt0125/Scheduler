@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import '../Widgets/calendar_widget.dart';
 import '../Widgets/ScheduleCard.dart';
+import '../Services/APIService.dart';
+import '../Models/Shift.dart';
+import 'package:intl/intl.dart';
 
 class DashboardPage extends StatefulWidget {
   DashboardPage() : super();
 
   @override
   bool get wantKeepAlive => true;
+
   @override
   _DashboardPageState createState() => _DashboardPageState();
 }
@@ -16,25 +19,66 @@ class _DashboardPageState extends State<DashboardPage> {
   final PageController _pageController = PageController();
   int currentIndex = 0; // Track the current index
 
+  bool _isLoading = true;
+  final api = APIService();
+  List<Shift> _shifts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getShifts();
+  }
+
+  void getShifts() async {
+    List<String> days = getSunSat();
+    _shifts = await api.GetShiftsByEmpAndDate(days[0], days[1]);
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  List<String> getSunSat() {
+    List<String> days = [];
+    final today = DateTime.now();
+
+    if (today.weekday == 7) {
+      days.add(DateFormat('MM-dd-yyyy').format(today));
+      days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: 6))));
+    } else {
+      days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: (-1 * today.weekday)))));
+      days.add(DateFormat('MM-dd-yyyy').format(today.add(Duration(days: (6 + (-1 * today.weekday))))));
+    }
+
+    return days;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Row(
+          children: [
+            SchedLogoImage(),
+            SizedBox(width: 8.0),
+            Sched(),
+          ],
+        ),
         automaticallyImplyLeading: false,
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start, // Align content to the top
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            DaySelector(pageController: _pageController),
+            SizedBox(height: 50),
+            DaySelector(pageController: _pageController, currentIndex: currentIndex),
             SizedBox(height: 20),
-            // Use a Container with a specified height
             Container(
-              height: MediaQuery.of(context).size.height * 0.3, // Adjust the fraction as needed
-              // width: MediaQuery.of(context).size.width * 0.85,
-              child: PageView(
+              height: MediaQuery.of(context).size.height * 0.3,
+              child: _isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : PageView.builder(
                 controller: _pageController,
                 scrollDirection: Axis.horizontal,
                 onPageChanged: (index) {
@@ -42,57 +86,28 @@ class _DashboardPageState extends State<DashboardPage> {
                     currentIndex = index;
                   });
                 },
-                children: <Widget>[
-                  ScheduleCard(
-                    date: 'November 5, 2023',
-                    startTime: '10:00 AM',
-                    endTime: '12:00 PM',
-                    positionTitle: 'Host',
-                  ),
-                  ScheduleCard(
-                    date: 'November 6, 2023',
-                    startTime: '12:00 AM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Busser',
-                  ),
-                  ScheduleCard(),
-                  ScheduleCard(
-                    date: 'November 8, 2023',
-                    startTime: '2:00 PM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Host',
-                  ),
-                  ScheduleCard(
-                    date: 'November 9, 2023',
-                    startTime: '2:00 PM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Server',
-                  ),
-                  ScheduleCard(
-                    date: 'November 10, 2023',
-                    startTime: '2:00 PM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Carry Out',
-                  ),
-                  ScheduleCard(
-                    date: 'November 11, 2023',
-                    startTime: '2:00 PM',
-                    endTime: '4:00 PM',
-                    positionTitle: 'Conference Call 6',
-                  ),
-                ],
+                itemCount: _shifts.length,
+                itemBuilder: (context, index) {
+                  return ScheduleCard(
+                    shift: _shifts[index],
+                  );
+                },
               ),
             ),
+            // Add a counter widget here to display the total hours worked for the week
+            TotalHoursCounter(shifts: _shifts),
           ],
         ),
       ),
     );
   }
 }
+
 class DaySelector extends StatefulWidget {
   final PageController pageController;
+  final int currentIndex;
 
-  DaySelector({required this.pageController});
+  DaySelector({required this.pageController, required this.currentIndex});
 
   @override
   _DaySelectorState createState() => _DaySelectorState();
@@ -102,19 +117,17 @@ class _DaySelectorState extends State<DaySelector> {
   int selectedDayIndex = DateTime.now().weekday - 1;
 
   List<int> getDatesForWeek() {
-    final now = DateTime.now();
-    final dayIndex = now.weekday;
-    final currentDay = now.day;
+    DateTime today = DateTime.now();
+    DateTime sunday = today.weekday == 7 ? today : today.add(Duration(days: (-1 * today.weekday)));
 
-    final List<int> datesForWeek = List.generate(7, (index) {
-      final daysDifference = dayIndex - index;
-      final date = currentDay - daysDifference;
-      return date;
-    });
+    List<int> dates = [];
 
-    return datesForWeek;
+    for (int i = 0; i < 7; i++) {
+      dates.add(int.parse(DateFormat('dd').format(sunday.add(Duration(days: i)))));
+    }
+
+    return dates;
   }
-
 
   String getDayName(int dayIndex, int day) {
     switch (dayIndex) {
@@ -160,17 +173,108 @@ class _DaySelectorState extends State<DaySelector> {
               minimumSize: MaterialStateProperty.all(
                 Size(MediaQuery.of(context).size.width / 14, 80),
               ),
-              backgroundColor: MaterialStateProperty.all( Color(0xFFEDE7E3) ),
+              backgroundColor: MaterialStateProperty.all(
+                widget.currentIndex == i ? Color(0xFFB1947B) : Color(0xFFEDE7E3),
+              ),
+              elevation: MaterialStateProperty.all<double>(
+                widget.currentIndex == i ? 8.0 : 0.0, // Adjust the elevation value as needed
+              ),
             ),
             child: Text(
-                getDayName(i, datesForWeek[i]),
+              getDayName(i, datesForWeek[i]),
               style: TextStyle(
-                color: Color(0xFF6d6a68),
+                color: widget.currentIndex == i ? Colors.white : Color(0xFF6d6a68),
               ),
               textAlign: TextAlign.center,
             ),
           ),
       ],
     );
+  }
+}
+
+class SchedLogoImage extends StatelessWidget {
+  const SchedLogoImage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(left: 8.0),
+      child: Image.asset(
+        'assets/icon/Sched logo.png',
+        fit: BoxFit.contain,
+        width: 40.0, // Adjust the width to make the image smaller
+        height: 40.0, // Adjust the height to make the image smaller
+      ),
+    );
+  }
+}
+
+class Sched extends StatelessWidget {
+  const Sched({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(left: 8.0,top: 20),
+      child: const Text(
+        "Sched",
+        style: TextStyle(
+          fontFamily: 'Katibeh',
+          fontSize: 40.0, // Adjust the font size to make the text smaller
+          fontWeight: FontWeight.w400,
+          color: Color(0xFF49423E),
+        ),
+      ),
+    );
+  }
+}
+
+class TotalHoursCounter extends StatelessWidget {
+  final List<Shift> shifts;
+
+  const TotalHoursCounter({Key? key, required this.shifts}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Calculate total hours and format it as needed
+    double totalHours = calculateTotalHours(shifts);
+    String formattedHours = totalHours.toStringAsFixed(2);
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        'Total Hours: $formattedHours',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  double calculateTotalHours(List<Shift> shifts) {
+    // Implement your logic to calculate total hours
+    // Example: Sum up the duration of each shift
+    double hours = 0;
+    double minutes = 0;
+    for (Shift shift in shifts) {
+      if(shift.isWorking) {
+        int startH = int.parse(shift.startTime!.split(":")[0]);
+        int startM = int.parse(shift.startTime!.split(" ")[0].split(":")[1]);
+        int endH = int.parse(shift.endTime!.split(":")[0]);
+        int endM = int.parse(shift.endTime!.split(" ")[0].split(":")[1]);
+
+        hours += (endH-startH);
+        minutes += ((endM-startM)/60);
+      }
+    }
+    
+    while( minutes >= 60) {
+      hours++;
+      minutes -= 60;
+    }
+    
+    return (hours + minutes);
   }
 }
