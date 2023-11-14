@@ -5,7 +5,7 @@ class Shift {
   late final String? unformattedDate;
   final String? startTime;
   final String? endTime;
-  final String? positionTitle;
+  late String? positionTitle;
   late final String? printTime;
 
   Shift({
@@ -19,6 +19,7 @@ class Shift {
     this.date = _formatDate(this.rawDate);
     if(this.isWorking) {
       setPrintTime();
+      formatPositionTitle();
     }
   }
 
@@ -60,6 +61,16 @@ class Shift {
     }
 
     return "";
+  }
+
+  void formatPositionTitle() {
+    List<String> ogWords = this.positionTitle!.split(" ");
+    List<String> newWords = [];
+    for(String word in ogWords)
+    {
+      newWords.add(word[0].toUpperCase() + word.substring(1).toLowerCase());
+    }
+    this.positionTitle = newWords.join(" ");
   }
 }
 
