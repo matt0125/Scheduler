@@ -8,7 +8,6 @@ import { INITIAL_EVENTS, createEventId } from './event-utils'
 import "../styles/Dashboard.css";
 import logo from "../images/branding.png";
 import profile from "../images/profile-button.svg";
-import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
 import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
