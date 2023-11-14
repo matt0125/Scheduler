@@ -142,7 +142,7 @@ class APIService {
     {
       // Find day
       DateTime date = DateTime.parse(item['date']);
-      int index = date.difference(sDate).inDays;
+      int index = date.difference(sDate).inDays + 1;
 
       shifts[index] = Shift(
           rawDate: item['date'],

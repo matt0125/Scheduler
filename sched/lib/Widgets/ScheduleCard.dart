@@ -2,41 +2,13 @@ import 'package:flutter/material.dart';
 import '../Models/Shift.dart';
 
 class ScheduleCard extends StatelessWidget {
-  // final String? date;
-  // final String? unformattedDate;
-  // final String? startTime;
-  // final String? endTime;
-  // final String? positionTitle;
   final Shift shift;
 
   String? printTime;
 
   ScheduleCard({
-    // this.date,
-    // this.unformattedDate,
-    // this.startTime,
-    // this.endTime,
-    // this.positionTitle,
     required this.shift
-  }) {
-    // if(this.startTime != null && this.endTime != null)
-    //   {
-    //     int startH = int.parse(this.startTime!.split(":")[0]);
-    //     int endH = int.parse(this.endTime!.split(":")[0]);
-    //     int startM = int.parse(this.startTime!.split(":")[1]);
-    //     int endM = int.parse(this.endTime!.split(":")[1]);
-    //
-    //     String startAM = startH < 12 ? "AM" : "PM";
-    //     String endAM = endH < 12 ? "AM" : "PM";
-    //
-    //     if(startH > 12)
-    //       startH -= 12;
-    //     if(endH > 12)
-    //       endH -= 12;
-    //
-    //     this.printTime = "${startH}:${startM} ${startAM != endAM ? startAM : ""}- ${endH}:${endM} ${endAM}";
-    //   }
-  }
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +65,7 @@ class ScheduleCard extends StatelessWidget {
             padding: EdgeInsets.all(8.0),
             alignment: Alignment.bottomCenter,
             child: Text(
-              this.printTime!,
+              shift.printTime!,
               style: TextStyle(fontSize: 24),
             ),
           ),
