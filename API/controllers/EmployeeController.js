@@ -194,7 +194,7 @@ exports.getEmployeesByManager = async (req, res) => {
 
   catch (error) {
     res.status(500).json({ message: 'Error searching for employees', error: error.toString() });
-    console.error("There was an error:", err);
+    console.error("There was an error:", error);
   }
 }
 
@@ -217,7 +217,7 @@ exports.getManager = async (req, res) => {
 
   catch (error) {
     res.status(500).json({ message: 'Error searching for employees', error: error.toString() });
-    console.error("There was an error:", err);
+    console.error("There was an error:", error);
   }
 }
 
@@ -248,7 +248,7 @@ exports.getTeammates = async (req, res) => {
 
   catch (error) {
     res.status(500).json({ message: 'Error searching for employees', error: error.toString() });
-    console.error("There was an error:", err);
+    console.error("There was an error:", error);
   }
 }
 
