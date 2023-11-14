@@ -141,7 +141,7 @@ class APIService {
     for(final item in responseData["shifts"])
     {
       // Find day
-      DateTime date = item['date'];
+      DateTime date = DateTime.parse(item['date']);
       int index = date.difference(sDate).inDays;
 
       shifts[index] = Shift(
