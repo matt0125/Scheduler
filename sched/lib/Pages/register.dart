@@ -379,18 +379,16 @@ class LoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        // Handle back button press
+    return TextButton(
+      onPressed: () {
         Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/login',
-          ModalRoute.withName('/'),
+            context,
+            '/login',
+            ModalRoute.withName('/')
         );
-        return false;
       },
       child: const Text(
-        'Log in here',
+        'Login here',
         style: TextStyle(
           fontFamily: 'Katibeh',
           fontSize: 17.0,
@@ -403,3 +401,5 @@ class LoginButton extends StatelessWidget {
     );
   }
 }
+
+
