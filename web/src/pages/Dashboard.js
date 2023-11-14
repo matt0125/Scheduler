@@ -16,6 +16,7 @@ import { withRouter } from 'react-router-dom';
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
 
+
 export default class DemoApp extends React.Component {
   state = {
     weekendsVisible: true,
@@ -137,6 +138,33 @@ export default class DemoApp extends React.Component {
     this.setState({ selectMirrorEnabled: true });
   };
 
+  // Trying to get Emmployee info and use it in forms using get Employee API
+  handleProfileFormOpen = async () => {
+    this.setState({
+      isOpen: true,
+    });
+  
+    try {
+      let jwtToken = localStorage.getItem('token');
+      const response = await axios.get('http://large.poosd-project.com/api/employee/', {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+      alert('Employee GOT!');
+    } catch (error) {
+      alert(error);
+    }
+  };
+  
+
+  handleProfileFormClose = () => {
+    this.setState({
+      isOpen: false,
+    });
+  };
+  
+
   render() {
     return (
       <div className='demo-app'>
@@ -148,6 +176,7 @@ export default class DemoApp extends React.Component {
             <button onClick={this.handleSignOut}>Sign Out</button>
             <button onClick={this.handleEditProfile}>Edit Profile</button>
           </Modal>
+
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{

@@ -26,7 +26,7 @@ h1 {
 }
 
 .login-box {
-  padding: 10%;
+  padding-top: 5% 10% 5% 10%;
   border-radius: 5px;
   display: grid;
   align-self: center;
@@ -54,7 +54,7 @@ h1 {
   line-height: normal;
 }
 
-  input {
+  .login-box input {
   width: 200px;
   margin: 0 auto;
   background-color: #CDBFB6;
@@ -79,7 +79,6 @@ h1 {
 .login-register-url{
   text-decoration: none;
   color: #B1947B;
-  
 }
 
 .login-register-url:hover{
@@ -142,8 +141,8 @@ h1 {
   z-index: 0;
 }
 
-@media (min-width:576px){
-  body {
+@media (min-width: 650px){
+  #login-body {
     width: 100%;
     height: 100vh;
     background: linear-gradient(
@@ -156,26 +155,23 @@ h1 {
   }
   
   .title{
-    padding-left: 7%;
-    padding-right: 60%;
+    padding-left: 10%;
+    padding-right: 70%;
   }
 
   .main-column{
     flex: 50%;
-    margin-top: 2%;
     align-self: center;
     place-items: center;
   }
   .column{
     flex: 50%;
-    margin-top: 2%;
     align-self: center;
     place-items: center;
-    
   }
 }
 @media (min-width: 1100px) {
-  input {
+  .login-box input {
     width: 400px;
     margin: 0 auto;
     background-color: #CDBFB6;
@@ -225,9 +221,10 @@ h1 {
   }
 }
 
-@media (max-width: 576px) {
-  body {
+@media (max-width: 650px) {
+  #login-body {
     background-color: #F8F8F8;
+    height: 100vh;
   }
   .login-box {
     width: 100%;
@@ -237,13 +234,16 @@ h1 {
 
   .main-column{
     flex: 100%;
-    margin-top: 2%;
+    margin-top: 1%;
     align-self: center;
     place-items: center;
   }
   .column{
     flex: 0%;
-    
+  }
+  .title{
+    padding-left: 20%;
+    padding-right: 40%;
   }
   
 }

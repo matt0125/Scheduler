@@ -1,40 +1,297 @@
-.register-container {
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
+.row{
+  display: flex;
+}
+
+.input-font{
+  color: #49423E;
+  text-align: center;
+  font-family: Katibeh;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 10;
+  line-height: normal;
+  margin-bottom: 5px;
+}
+
+.email-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.email-input-group img {
+  position: absolute;
+  left: 10px;
+  top: 75%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+
+.email-input-group input {
+  padding-left: 40px;
+  z-index: 0;
+}
+
+.pass-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.pass-input-group img {
+  position: absolute;
+  left: 10px;
+  top: 75%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+
+.pass-input-group input {
+  padding-left: 40px;
+  z-index: 0;
+}
+
+.phone-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.phone-input-group img {
+  position: absolute;
+  left: 10px;
+  top: 75%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+
+.phone-input-group input {
+  padding-left: 40px;
+  z-index: 0;
+}
+
+.managerID-input-group input{
+  align-items: center;
+  text-align: center;
+}
+
+#radio-buttons{
+  margin-left: 15%;
+}
+
+
+
+@media (max-width: 650px) {
+
+  #register-body{
+    background-color: #F8F8F8;
   }
-  
-  .register-form div {
+  .register-box {
+    padding-top: 5% 10% 5% 10%;
+    border-radius: 5px;
+    display: grid;
+    align-self: center;
+    place-items: center;
+    position: relative;
+  }
+  .register-form {
+    display: grid;
+    place-items: center;
+  }
+  .register-box input {
+    width: 300px;
+    margin: 0 10px 0 0;
+    background-color: #CDBFB6;
+    border-radius: 10px;
+    padding: 10px 0px 10px 40px;
+    font-size: 20px;
+  }
+  .submit-button{
+    width: 400px;
+    height: 50px;
+    background-color: #B1947B;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 10px 40px 10px 40px;
+    font-size: 20px;
+  }
+  .login-register-p{
+    font-size: 20px;
+    margin-top: 5px;
     margin-bottom: 10px;
   }
-  
-  .register-title {
-    text-align: center;
+  .business-photo{
+    display: none;
   }
-  
-  .register-form label {
-    display: block;
-    font-weight: bold;
-  }
-  
-  .register-form input {
+
+}
+@media (min-width: 750px){
+  #register-body {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
+    height: 100%;
+    background-color:#ccc;
+    background: linear-gradient(
+      to right,
+      #EDE7E3 0%,
+      #EDE7E3 50%,
+      #F8F8F8 50%,
+      #F8F8F8 100%
+    )
   }
-  
-  .register-form button {
+  .register-box {
+    padding-top: 5% 10% 5% 10%;
+    border-radius: 5px;
+    display: grid;
+    align-self: center;
+    place-items: center;
+    position: relative;
+  }
+  .register-form {
+    display: grid;
+    place-items: center;
+  }
+  .register-box input {
+    width: 300px;
+    margin: 0 10px 0 0;
+    background-color: #CDBFB6;
+    border-radius: 10px;
+    padding: 10px 0px 10px 40px;
+    font-size: 20px;
+  }
+  .submit-button{
+    width: 400px;
+    height: 50px;
+    background-color: #B1947B;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 10px 40px 10px 40px;
+    font-size: 20px;
+  }
+  .login-register-p{
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+}
+@media (min-width: 650px){
+  #register-body {
     width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    cursor: pointer;
+    height: 100%;
+    background-color:#ccc;
+    background: linear-gradient(
+      to right,
+      #EDE7E3 0%,
+      #EDE7E3 50%,
+      #F8F8F8 50%,
+      #F8F8F8 100%
+    )
+  }
+  .register-box {
+    padding-top: 5% 10% 5% 10%;
+    border-radius: 5px;
+    display: grid;
+    align-self: center;
+    place-items: center;
+    position: relative;
+  }
+  .register-form {
+    display: grid;
+    place-items: center;
+  }
+  .register-box input {
+    width: 250px;
+    margin: 0 10px 0 0;
+    background-color: #CDBFB6;
+    border-radius: 10px;
+    padding: 10px 0px 10px 40px;
+    font-size: 20px;
+  }
+  .submit-button{
+    width: 300px;
+    height: 50px;
+    background-color: #B1947B;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 10px 40px 10px 40px;
+    font-size: 20px;
+  }
+  .login-register-p{
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+
+  .business-photo {
+    height: 70%;
+    width: 70%;
+    padding-left: 20%;
+    align-self: center;
+    place-items: center;
+  }
+}
+
+@media (min-width: 1450px) {
+  #register-body {
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(
+      to right,
+      #EDE7E3 0%,
+      #EDE7E3 50%,
+      #F8F8F8 50%,
+      #F8F8F8 100%
+    )
+  }
+  .register-box {
+    padding-top: 5% 10% 5% 10%;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: 50% 50%;
+    align-self: center;
+    place-items: center;
+    position: relative;
+  }
+  .register-form {
+    display: grid;
+    place-items: center;
   }
   
-  .register-form button:hover {
-    background-color: #0056b3;
+  .register-box input {
+    width: 300px;
+    margin: 0 10px 0 0;
+    background-color: #CDBFB6;
+    border-radius: 10px;
+    padding: 10px 0px 10px 40px;
+    font-size: 20px;
   }
-  
+  .submit-button{
+    width: 400px;
+    height: 50px;
+    background-color: #B1947B;
+    border-radius: 10px;
+    margin-top: 30px;
+    padding: 10px 40px 10px 40px;
+    font-size: 20px;
+  }
+  .login-register-p{
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  .business-photo {
+    height: 50%;
+    width: 70%;
+    padding-left: 20%;
+    align-self: center;
+    place-items: center;
+  }
+}
