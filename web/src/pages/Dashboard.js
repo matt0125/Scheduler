@@ -12,6 +12,7 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import { useNavigate } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
+import EditSTModal from '../components/EditSTModal';
 
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
@@ -22,18 +23,19 @@ export default class DemoApp extends React.Component {
     currentEvents: [],
     positions: [], // To store the list of positions
     selectedPositionId: null, // To store the selected position ID
-    showModal: false,  // Add this line
+    showPorfileModal: false,  // Add this line
+    showEditSTModal: false,
     shiftTemplates: [],
     selectMirrorEnabled: true,
   }
    // Function to handle opening the modal
-   openModal = () => {
-    this.setState({ showModal: true });
+   openProfileModal = () => {
+    this.setState({ showPorfileModal: true });
   }
 
   // Function to handle closing the modal
-  closeModal = () => {
-    this.setState({ showModal: false });
+  closeProfileModal = () => {
+    this.setState({ showPorfileModal: false });
   }
 
   // Function to handle sign out
@@ -50,6 +52,14 @@ export default class DemoApp extends React.Component {
     // Navigate to the EditProfile page with the employee ID
     this.props.navigate(`/edit-profile/${employeeId}`);
   };
+  
+  openEditSTModal = () => {
+    this.setState({ showEditSTModal: true });
+  }
+
+  closeEditSTModal = () => {
+    this.setState({ showEditSTModal: false });
+  }
 
 
   componentDidMount() {
@@ -143,11 +153,14 @@ export default class DemoApp extends React.Component {
         {this.FilterBar()}
         <div className='demo-app-main'>
         <img src={logo} alt="sched logo" className="logo"></img>
-        <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openModal} />
-        <Modal isOpen={this.state.showModal} onRequestClose={this.closeModal}>
+        <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
+        <Modal isOpen={this.state.showPorfileModal} onRequestClose={this.closeProfileModal}>
             <button onClick={this.handleSignOut}>Sign Out</button>
             <button onClick={this.handleEditProfile}>Edit Profile</button>
-          </Modal>
+        </Modal>
+        <Modal isOpen={this.state.showEditSTModal} onRequestClose={this.closeEditSTModal}> 
+            <EditSTModal />
+        </Modal>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{
@@ -298,8 +311,7 @@ l
   };
   
   handleEventEdit = (clickInfo) => {
-    if (window.confirm(`What employees do you want to add to this event "${clickInfo.title}"`)) {
-    }
+    this.openEditSTModal();
   };
 
   renderEventContent = (eventInfo) => {
