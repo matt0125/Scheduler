@@ -238,8 +238,8 @@ class TotalHoursCounter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculate total hours and format it as needed
-    int totalHours = calculateTotalHours(shifts);
-    String formattedHours = formatHours(totalHours);
+    double totalHours = calculateTotalHours(shifts);
+    String formattedHours = totalHours.toStringAsFixed(2);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -253,24 +253,28 @@ class TotalHoursCounter extends StatelessWidget {
     );
   }
 
-  int calculateTotalHours(List<Shift> shifts) {
+  double calculateTotalHours(List<Shift> shifts) {
     // Implement your logic to calculate total hours
     // Example: Sum up the duration of each shift
-    int totalHours = 0;
+    double hours = 0;
+    double minutes = 0;
     for (Shift shift in shifts) {
-      // Calculate hours based on startTime and endTime
-      if (shift.startTime != null && shift.endTime != null) {
-        DateTime start = DateTime.parse(shift.startTime!);
-        DateTime end = DateTime.parse(shift.endTime!);
-        totalHours += end.difference(start).inHours;
+      if(shift.isWorking) {
+        int startH = int.parse(shift.startTime!.split(":")[0]);
+        int startM = int.parse(shift.startTime!.split(" ")[0].split(":")[1]);
+        int endH = int.parse(shift.endTime!.split(":")[0]);
+        int endM = int.parse(shift.endTime!.split(" ")[0].split(":")[1]);
+
+        hours += (endH-startH);
+        minutes += ((endM-startM)/60);
       }
     }
-    return totalHours;
-  }
-
-  String formatHours(int totalHours) {
-    // Implement your logic to format hours as needed
-    // Example: Convert total hours to a string with specific formatting
-    return totalHours.toString();
+    
+    while( minutes >= 60) {
+      hours++;
+      minutes -= 60;
+    }
+    
+    return (hours + minutes);
   }
 }
