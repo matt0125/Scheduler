@@ -29,7 +29,7 @@ class ScheduleCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 46,),
+          SizedBox(height: 46),
           Text(
             'Not scheduled',
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
@@ -51,7 +51,7 @@ class ScheduleCard extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 40),
+          SizedBox(height: 10),
           Text(
             numHours(shift.startTime!, shift.endTime!),
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
@@ -60,9 +60,9 @@ class ScheduleCard extends StatelessWidget {
             '\n${shift.positionTitle}',
             style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 28),
+          SizedBox(height: 10),
           Container(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(1.0),
             alignment: Alignment.bottomCenter,
             child: Text(
               shift.printTime!,
