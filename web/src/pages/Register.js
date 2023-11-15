@@ -98,18 +98,25 @@ const Register = () => {
             </div>
             <div class="managerID-input-group">
             <h2 class="input-font">Are you a manager or an employee?</h2>
-            <div id="radio-buttons">
-            <input 
+            <div className="radio-toolbar">
+              <input 
+                type="radio" 
+                value="Manager" 
+                id="manager"
+                name="title"
+                />
+                <label for="manager" onClick={(e) => handleChange({ target: { name: 'managerIdent', value: true } })}>
+                  Manager
+                </label>
+              <input 
               type="radio" 
-              value="Manager" 
-              name="title" 
-              onChange={(e) => handleChange({ target: { name: 'managerIdent', value: e.target.checked } })}
-              /> Manager
-            <input 
-            type="radio" 
-            value="Employee" 
-            name="title" 
-            onChange={(e) => handleChange({ target: { name: 'managerIdent', value: false} })}/> Employee
+              value="Employee" 
+              id="employee"
+              name="title"
+              />
+              <label for="employee" onClick={(e) => handleChange({ target: { name: 'managerIdent', value: false } })}>
+                Employee
+              </label>
             </div>
             </div>
             <button type="submit" className="submit-button">Sign Up</button>
