@@ -437,51 +437,32 @@ async function formatShiftTemplatesForCalendar(shiftTemplates) {
 }
 
 function getNextFormattedDateForDayOfWeek(dayOfWeek, time) {
+  const currentDate = new Date();
 
-  const targetDay = dayOfWeek;
-  if (targetDay === undefined) {
-      throw new Error('Invalid day of the week');
-  }
+  // Set the current date to the nearest past Sunday
+  currentDate.setDate(currentDate.getDate() - currentDate.getDay());
+
+  // Calculate the date for the target dayOfWeek
+  currentDate.setDate(currentDate.getDate() + dayOfWeek);
 
   // Parse the time
   const [hours, minutes] = time.split(':').map(Number);
-  console.log(hours, minutes);
   if (isNaN(hours) || isNaN(minutes)) {
-      throw new Error('Invalid time format');
+    throw new Error('Invalid time format');
   }
-
-  // Get the current date and time
-  const currentDate = new Date();
-  console.log("date ", currentDate);
-  console.log("date ", currentDate.getDay());
-  console.log(targetDay);
-
-  // Calculate the difference between the current day and the target day
-  let dayDifference = targetDay - currentDate.getDay();
-  if (dayDifference < 0) {
-      // If target day is in the past of the current week, move to the next week
-      dayDifference += 7;
-  }
-  console.log("diff", dayDifference);
-
-  // Set the date to the next occurrence of the target day
-  currentDate.setDate(currentDate.getDate() + dayDifference);
-  console.log("date ", currentDate);
 
   // Set the time
   currentDate.setHours(hours, minutes, 0); // Setting seconds to 0
-  console.log("date ", currentDate);
 
   // Format the date in YYYY-MM-DDTHH:MM:SS format
   // Adjusting for local timezone offset
   const timezoneOffset = currentDate.getTimezoneOffset() * 60000; // offset in milliseconds
-  console.log("offset ", timezoneOffset);
   const localDate = new Date(currentDate.getTime() - timezoneOffset);
-  console.log("local date", localDate);
   let formattedDate = localDate.toISOString().replace(/:\d{2}\.\d{3}Z$/, '');
 
   return formattedDate;
 }
+
 
 // Example usage
 console.log(getNextFormattedDateForDayOfWeek(2, '15:30'));
