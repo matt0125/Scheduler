@@ -194,7 +194,7 @@ exports.getEmployeesByManager = async (req, res) => {
 
   catch (error) {
     res.status(500).json({ message: 'Error searching for employees', error: error.toString() });
-    console.error("There was an error:", err);
+    console.error("There was an error:", error);
   }
 }
 
@@ -217,7 +217,7 @@ exports.getManager = async (req, res) => {
 
   catch (error) {
     res.status(500).json({ message: 'Error searching for employees', error: error.toString() });
-    console.error("There was an error:", err);
+    console.error("There was an error:", error);
   }
 }
 
@@ -248,7 +248,7 @@ exports.getTeammates = async (req, res) => {
 
   catch (error) {
     res.status(500).json({ message: 'Error searching for employees', error: error.toString() });
-    console.error("There was an error:", err);
+    console.error("There was an error:", error);
   }
 }
 
@@ -560,10 +560,10 @@ exports.assignManager = async (req, res) => {
     }
 
     // Update the password in the database
-    employee.managerId = managerId;
+    employee.managedBy = managerId;
     await employee.save();
 
-    res.status(200).json({ message: 'Password updated successfully' });
+    res.status(200).json({ message: 'Manager assigned successfully!' });
   } catch (error) {
     res.status(500).json({ message: 'Error assigning manager', error: error.toString() });
     console.error("There was an error:", error);

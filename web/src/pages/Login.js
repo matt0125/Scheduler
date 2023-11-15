@@ -6,8 +6,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
-import logo from "../images/branding.png";
-//import MediaQuery from 'react-responsive'
+import logo from "../images/branding-notitle.png";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -64,7 +63,6 @@ const Login = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('id', id);
       navigate('/dashboard');
-      alert("Logged in");
     } else {
       // Login failed
       alert("Invalid username or password");
@@ -74,13 +72,14 @@ const Login = () => {
   let url = "/register";
   let url2 = "/dashboard";
   return (
+    <div id="login-body">
       <Container>
         <Row>
           <Col>
             <img src={logo} alt="sched logo" className="logo"></img>
           </Col>
           <Col className="title">
-            <h1>Name of WebApp</h1>
+            <h1>Sched</h1>
           </Col>
         </Row>
         <Row className="row"> 
@@ -121,6 +120,7 @@ const Login = () => {
           </Col>
         </Row>
       </Container>
+      </div>
   );
 };
 

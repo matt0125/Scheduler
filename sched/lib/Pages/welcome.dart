@@ -5,6 +5,7 @@ import 'package:sched/Services/APIService.dart';
 
 import '../Models/Employee.dart';
 import '../Models/Position.dart';
+import '../Widgets/popup.dart';
 import '../tabs.dart';
 
 
@@ -21,7 +22,8 @@ class _WelcomePageState extends State<WelcomePage> {
   bool _isVerified = false;
   List<Employee> _managers = [];
   List<Position> _positions = [];
-  int? _selectedIndex;
+  int? _selectedManagerIndex;
+  List<int> _selectedPositionIndex = [];
 
   APIService apiService = APIService();
 
@@ -112,17 +114,17 @@ class _WelcomePageState extends State<WelcomePage> {
                       return GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (_selectedIndex == index) {
-                                _selectedIndex = null;
+                              if (_selectedManagerIndex == index) {
+                                _selectedManagerIndex = null;
                               } else {
-                                _selectedIndex = index;
+                                _selectedManagerIndex = index;
                               }
                             });
                           },
                           child: ListTile(
                             title: Text(
                               _managers[index].fullName,
-                              style: TextStyle(fontWeight: (_selectedIndex == index) ? FontWeight.bold: FontWeight.normal ),
+                              style: TextStyle(fontWeight: (_selectedManagerIndex == index) ? FontWeight.bold: FontWeight.normal ),
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -133,12 +135,12 @@ class _WelcomePageState extends State<WelcomePage> {
                                     SizedBox(height: 12),
                                     Text(
                                       _managers[index].email,
-                                      style: TextStyle(fontWeight: (_selectedIndex == index) ? FontWeight.bold: FontWeight.normal ),
+                                      style: TextStyle(fontWeight: (_selectedManagerIndex == index) ? FontWeight.bold: FontWeight.normal ),
                                     ),
                                     // Add spacing here
                                     Text(
                                       _managers[index].phone,
-                                      style: TextStyle(fontWeight: (_selectedIndex == index) ? FontWeight.bold: FontWeight.normal ),
+                                      style: TextStyle(fontWeight: (_selectedManagerIndex == index) ? FontWeight.bold: FontWeight.normal ),
                                     ),
                                   ],
                                 ),
@@ -146,7 +148,7 @@ class _WelcomePageState extends State<WelcomePage> {
                             ),
                             subtitle: Text(
                               _managers[index].positionTitles.join(', '),
-                              style: TextStyle(fontWeight: (_selectedIndex == index) ? FontWeight.bold: FontWeight.normal ),
+                              style: TextStyle(fontWeight: (_selectedManagerIndex == index) ? FontWeight.bold: FontWeight.normal ),
                             ), // Display all positions
                           )
                       );
@@ -160,11 +162,37 @@ class _WelcomePageState extends State<WelcomePage> {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
-
-                    setState(() {
-                      _secondPage = false;
-                      _selectedIndex = null;
-                    });
+                    if (_selectedManagerIndex == null) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text("Uh oh!"),
+                            content: Text("Please select a manager"),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context); // Close the dialog
+                                },
+                                child: Text("OK"),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                      // Popup(
+                      //   message: "Please select a manager",
+                      //   title: "Uh oh!",
+                      // );
+                    }
+                    else {
+                      if ((await apiService.AssignManager(_managers[_selectedManagerIndex!].employeeId!)).success!) {
+                        setState(() {
+                          _secondPage = false;
+                          _selectedManagerIndex = null;
+                        });
+                      }
+                    }
                   },
                   child: Text('Submit'),
                 ),
@@ -188,17 +216,17 @@ class _WelcomePageState extends State<WelcomePage> {
                             return GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    if (_selectedIndex == index) {
-                                      _selectedIndex = null;
+                                    if (_selectedPositionIndex.contains(index)) {
+                                      _selectedPositionIndex.remove(index);
                                     } else {
-                                      _selectedIndex = index;
+                                      _selectedPositionIndex.add(index);
                                     }
                                   });
                                 },
                                 child: ListTile(
                                   title: Text(
                                     _positions[index].printName,
-                                    style: TextStyle(fontWeight: (_selectedIndex == index) ? FontWeight.bold: FontWeight.normal ),
+                                    style: TextStyle(fontWeight: (_selectedPositionIndex.contains(index)) ? FontWeight.bold: FontWeight.normal ),
                                   ),
                                 )
                             );

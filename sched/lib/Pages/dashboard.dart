@@ -57,7 +57,13 @@ class _DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Row(
+          children: [
+            SchedLogoImage(),
+            SizedBox(width: 8.0),
+            Sched(),
+          ],
+        ),
         automaticallyImplyLeading: false,
       ),
       body: Center(
@@ -65,14 +71,7 @@ class _DashboardPageState extends State<DashboardPage> {
           mainAxisAlignment: MainAxisAlignment.start, // Align content to the top
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0, left: 8.0), // Adjust top and left padding as needed
-              child: SchedLogoImage(),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0), // Adjust left padding as needed
-              child: Sched(),
-            ),
+            SizedBox(height: 50),
             DaySelector(pageController: _pageController, currentIndex: currentIndex),
             SizedBox(height: 20),
             Container(
@@ -194,50 +193,37 @@ class _DaySelectorState extends State<DaySelector> {
   }
 }
 
-class Sched extends StatelessWidget {
-  const Sched({Key? key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 50.0),
-      child: Align(
-        alignment: Alignment.center,
-        child: const Text(
-          "Sched",
-          style: TextStyle(
-            height: .05,
-            fontFamily: 'Katibeh',
-            fontSize: 100,
-            fontWeight: FontWeight.w400,
-            color: Color(0xFF49423E),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class SchedLogoImage extends StatelessWidget {
   const SchedLogoImage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        width: 90, // Set the desired width
-        height: 100, // Adjusted total height (including empty space and image height)
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end, // Align the image to the bottom of the container
-          children: [
-            Container(
-              height: 5, // Adjusted height for the empty space above the image
-            ),
-            Image.asset(
-              'assets/icon/Sched logo.png',
-              fit: BoxFit.contain, // You can adjust BoxFit to your needs
-            ),
-          ],
+    return Container(
+      padding: EdgeInsets.only(left: 8.0),
+      child: Image.asset(
+        'assets/icon/Sched logo.png',
+        fit: BoxFit.contain,
+        width: 40.0, // Adjust the width to make the image smaller
+        height: 40.0, // Adjust the height to make the image smaller
+      ),
+    );
+  }
+}
+
+class Sched extends StatelessWidget {
+  const Sched({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(left: 8.0,top: 20),
+      child: const Text(
+        "Sched",
+        style: TextStyle(
+          fontFamily: 'Katibeh',
+          fontSize: 40.0, // Adjust the font size to make the text smaller
+          fontWeight: FontWeight.w400,
+          color: Color(0xFF49423E),
         ),
       ),
     );
@@ -252,8 +238,8 @@ class TotalHoursCounter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Calculate total hours and format it as needed
-    int totalHours = calculateTotalHours(shifts);
-    String formattedHours = formatHours(totalHours);
+    double totalHours = calculateTotalHours(shifts);
+    String formattedHours = totalHours.toStringAsFixed(2);
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -267,24 +253,28 @@ class TotalHoursCounter extends StatelessWidget {
     );
   }
 
-  int calculateTotalHours(List<Shift> shifts) {
+  double calculateTotalHours(List<Shift> shifts) {
     // Implement your logic to calculate total hours
     // Example: Sum up the duration of each shift
-    int totalHours = 0;
+    double hours = 0;
+    double minutes = 0;
     for (Shift shift in shifts) {
-      // Calculate hours based on startTime and endTime
-      if (shift.startTime != null && shift.endTime != null) {
-        DateTime start = DateTime.parse(shift.startTime!);
-        DateTime end = DateTime.parse(shift.endTime!);
-        totalHours += end.difference(start).inHours;
+      if(shift.isWorking) {
+        int startH = int.parse(shift.startTime!.split(":")[0]);
+        int startM = int.parse(shift.startTime!.split(" ")[0].split(":")[1]);
+        int endH = int.parse(shift.endTime!.split(":")[0]);
+        int endM = int.parse(shift.endTime!.split(" ")[0].split(":")[1]);
+
+        hours += (endH-startH);
+        minutes += ((endM-startM)/60);
       }
     }
-    return totalHours;
-  }
-
-  String formatHours(int totalHours) {
-    // Implement your logic to format hours as needed
-    // Example: Convert total hours to a string with specific formatting
-    return totalHours.toString();
+    
+    while( minutes >= 60) {
+      hours++;
+      minutes -= 60;
+    }
+    
+    return (hours + minutes);
   }
 }
