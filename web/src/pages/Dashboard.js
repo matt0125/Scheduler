@@ -270,7 +270,7 @@ l
     alert(typeof clickInfo);
     if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
       alert(clickInfo.id);
-      const eventId = clickInfo.id; // Assuming the event ID is stored in clickInfo.event.id
+      const eventId = clickInfo.id.split('-')[0]; // Extract original template ID
       const url = `http://large.poosd-project.com/api/shift-templates/${eventId}`;
 
       // Retrieve the JWT from local storage
@@ -282,18 +282,17 @@ l
             contentType: 'application/json'
         }
       })
-            .then(response => {
-                // Handle the successful response here
-                console.log(response.data);
-                // You might want to remove the event from the calendar view here
-                clickInfo.remove();
-                alert("Event deleted successfully.");
-            })
-            .catch(error => {
-                // Handle any errors here
-                console.error('Error:', error);
-                alert("Failed to delete the event.," );
-            });
+      .then(response => {
+        // Filter out deleted events
+        const updatedShiftTemplates = this.state.shiftTemplates.filter(event => !event.id.startsWith(`${eventId}-`));
+        this.setState({ shiftTemplates: updatedShiftTemplates });
+    
+        alert("Event deleted successfully.");
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert("Failed to delete the event: " + error);
+      });
     }
   };
   
@@ -397,47 +396,42 @@ function getNextColor() {
   return color;
 }
 
-async function formatShiftTemplatesForCalendar(shiftTemplates) {
-  const formattedTemplates = {};
-  const positionColors = {}; // Initialize an object to store colors
+// Shift templatese now can be shown for 12 week, We can change this number if we want
+async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 12) {
+  const formattedTemplates = [];
+  const positionColors = {}; // Object to store colors for positions
 
   for (const template of shiftTemplates) {
     const positionId = template.positionId;
 
-    // Check if a color has already been assigned to this position
+    // Assign a color to the position if not already assigned
     if (!positionColors[positionId]) {
-      // If not, get the next color from the predefined choices and store it
       positionColors[positionId] = getNextColor();
     }
 
     const title = await getPositionTitle(positionId);
 
-    // No need to call toISOString again as getNextFormattedDateForDayOfWeek already returns an ISO string
-    const startDateTime = await getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime);
-    const endDateTime = await getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime);
+    // Loop over the number of weeks
+    for (let week = 0; week < numberOfWeeks; week++) {
+      const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime, week);
+      const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime, week);
 
-    // Add events to the same position in an array
-    if (!formattedTemplates[positionId]) {
-      formattedTemplates[positionId] = [];
+      formattedTemplates.push({
+        id: `${template._id}-${week}`, // Unique ID for each event
+        title: title,
+        start: startDateTime,
+        end: endDateTime,
+        color: positionColors[positionId] // Assign the color to the event
+      });
     }
-
-    formattedTemplates[positionId].push({
-      id: template._id,
-      title: title, // title fetched from getPositionTitle
-      start: startDateTime,
-      end: endDateTime,
-      color: positionColors[positionId], // Assign the color to the event
-    });
   }
 
-  // Flatten the formattedTemplates object into an array
-  const flattenedTemplates = Object.values(formattedTemplates).flat();
-
-  return flattenedTemplates;
+  return formattedTemplates;
 }
 
-function getNextFormattedDateForDayOfWeek(dayOfWeek, time) {
+function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {
   const currentDate = new Date();
+  currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 7 * weekOffset + dayOfWeek);
 
   // Set the current date to the nearest past Sunday
   currentDate.setDate(currentDate.getDate() - currentDate.getDay());
