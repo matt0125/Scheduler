@@ -1,41 +1,22 @@
 import React, { useState } from 'react';
+import '../styles/Dashboard.css';
+import ScrollableList from './ScrollableList';
 
 function EditSTModal() {
-    // State to store the list of employees
-    const [employees, setEmployees] = useState([]);
 
-    // State to store the selected employees
-    const [selectedEmployees, setSelectedEmployees] = useState([]);
-
-    // Function to handle adding a new employee
-    const addEmployee = () => {
-        const newEmployee = prompt("Enter the name of the new employee:");
-        if (newEmployee) {
-            setEmployees([...employees, newEmployee]);
-        }
-    };
-
-    // Function to handle selection
-    const handleSelect = (employee) => {
-        if (selectedEmployees.includes(employee)) {
-            setSelectedEmployees(selectedEmployees.filter(e => e !== employee));
-        } else {
-            setSelectedEmployees([...selectedEmployees, employee]);
-        }
-    };
+    const dummyList = [
+        { id: 1, name: 'Item 1' },
+        { id: 2, name: 'Item 2' },
+        { id: 3, name: 'Item 3' },
+        { id: 4, name: 'Item 4' },
+        { id: 5, name: 'Item 5' },
+    ];
 
     return (
-        <div>
-            <h1>Edit Staff</h1>
-            <ul>
-                {employees.map((employee, index) => (
-                    <li key={index} onClick={() => handleSelect(employee)} 
-                        style={{ cursor: 'pointer', color: selectedEmployees.includes(employee) ? 'blue' : 'black' }}>
-                        {employee}
-                    </li>
-                ))}
-            </ul>
-            <button onClick={addEmployee}>Add Employee</button>
+        <div className='editSTModal'>
+            <h3>Assign Shift Template</h3>
+            <ScrollableList items={dummyList} />
+            <button onClick={() => {console.log("dummy")}}>Assign Employee to Shift</button>
         </div>
     );
 }

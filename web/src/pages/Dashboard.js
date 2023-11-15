@@ -186,7 +186,10 @@ export default class DemoApp extends React.Component {
             <button onClick={this.handleSignOut}>Sign Out</button>
             <button onClick={this.handleEditProfile}>Edit Profile</button>
         </Modal>
-        <Modal isOpen={this.state.showEditSTModal} onRequestClose={this.closeEditSTModal}> 
+        <Modal 
+          isOpen={this.state.showEditSTModal} 
+          onRequestClose={this.closeEditSTModal}
+        > 
             <EditSTModal />
         </Modal>
           <FullCalendar
