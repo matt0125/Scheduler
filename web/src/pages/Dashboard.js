@@ -10,6 +10,10 @@ import logo from "../images/branding.png";
 import profile from "../images/profile-button.svg";
 import axios from 'axios';
 import Modal from 'react-modal';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 
@@ -62,12 +66,24 @@ export default class DemoApp extends React.Component {
 
   renderPositionSelect() {
     return (
-      <select onChange={this.handlePositionSelect} value={this.state.selectedPositionId || ''}>
-        <option value="">Select Position</option>
-        {this.state.positions.map(position => (
-          <option key={position._id} value={position._id}>{position.name}</option>
-        ))}
-      </select>
+      <FormControl fullWidth>
+        <InputLabel id="position-select-label">Position</InputLabel>
+        <Select
+          labelId="position-select-label"
+          value={this.state.selectedPositionId || ''}
+          onChange={this.handlePositionSelect}
+          label="Position"
+        >
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          {this.state.positions.map(position => (
+            <MenuItem key={position._id} value={position._id}>
+              {position.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     );
   }
 
@@ -78,7 +94,7 @@ export default class DemoApp extends React.Component {
     const jwtToken = localStorage.getItem('token');
     
     try {
-      const response = await axios.get(`http://localhost:3000/api/positions/${managerId}`, {
+      const response = await axios.get(`http://large.poosd-project.com/api/positions/${managerId}`, {
         headers: {
           contentType: 'application/json',
           Authorization: `Bearer ${jwtToken}`
