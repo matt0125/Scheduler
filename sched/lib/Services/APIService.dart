@@ -357,6 +357,12 @@ class APIService {
     return positions;
   }
 
+  Future<List<List<bool>>> GetAvailabilities() async {
+    final responseData = await getToEndpoint(null, 'employee/${DataService.readEmpId()}/availabilities');
+
+    return List<List<bool>>.from(responseData['availability'].map((day) => List<bool>.from(day)));
+  }
+
   Future<Response> updateAvailability(List<List<bool>> availability) async {
     final data = {
       'availability': availability,

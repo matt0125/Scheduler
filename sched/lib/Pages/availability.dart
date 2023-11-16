@@ -17,6 +17,8 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
 
   int selectedDayIndex = -1;
 
+  bool _loading = true;
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +32,8 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
       appBar: AppBar(
         title: Text('Select your availability', style: TextStyle(color: Color(0xFF49423E))),
       ),
-      body: Column(
+      body: _loading ? Center(child: CircularProgressIndicator()) :
+      Column(
         children: [
           // Days of the week row
           AnimatedContainer(
@@ -149,7 +152,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                         duration: Duration(milliseconds: 600),
                       ),
                     );
-                    saveAvailability();
+                    // saveAvailability();
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFB1947B), // Change this color to the desired one
@@ -203,18 +206,10 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
 
   // Load availability from SharedPreferences
   Future<void> loadAvailability() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    for (int i = 0; i < daysOfWeek.length; i++) {
-      List<String>? savedTimes = prefs.getStringList('$i');
-      if (savedTimes != null) {
-        selectedTimes[i] = savedTimes;
-        for (String time in savedTimes) {
-          int timeIndex = int.parse(time.split(':')[0]);
-          availability[i][timeIndex] = true;
-        }
-      }
-    }
-    setState(() {}); // Force a rebuild of the widget
+    availability = await apiService.GetAvailabilities();
+    setState(() {
+      _loading = false;
+    }); // Force a rebuild of the widget
   }
 
   // Clear all selected times
