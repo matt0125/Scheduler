@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Services/APIService.dart';
 
@@ -22,7 +21,6 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
   @override
   void initState() {
     super.initState();
-    // Load saved availability from SharedPreferences
     loadAvailability();
   }
 
@@ -196,15 +194,6 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
             (a, b) => int.parse(a.split(':')[0]).compareTo(int.parse(b.split(':')[0])));
   }
 
-  // Save availability to SharedPreferences
-  Future<void> saveAvailability() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    for (int i = 0; i < daysOfWeek.length; i++) {
-      prefs.setStringList('$i', selectedTimes[i]);
-    }
-  }
-
-  // Load availability from SharedPreferences
   Future<void> loadAvailability() async {
     availability = await apiService.GetAvailabilities();
     setState(() {
