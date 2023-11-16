@@ -6,6 +6,9 @@ const positionSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true, // if 'name' is always required, otherwise remove this line
+  },
+  managerId: {
+    type: String
   }
 });
 

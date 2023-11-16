@@ -190,7 +190,7 @@ export default class DemoApp extends React.Component {
           isOpen={this.state.showEditSTModal} 
           onRequestClose={this.closeEditSTModal}
         > 
-            <EditSTModal />
+            <EditSTModal isOpen={this.state.showEditSTModal} />
         </Modal>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
