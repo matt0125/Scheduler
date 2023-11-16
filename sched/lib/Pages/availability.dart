@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Services/APIService.dart';
+
 class AvailabilityScreen extends StatefulWidget {
   @override
   _AvailabilityScreenState createState() => _AvailabilityScreenState();
@@ -8,8 +10,10 @@ class AvailabilityScreen extends StatefulWidget {
 
 class _AvailabilityScreenState extends State<AvailabilityScreen> {
   List<String> daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  List<List<bool>> availability = List.generate(7, (index) => List.filled(24, false));
+  List<List<bool>> availability = List.generate(7, (index) => List.filled(24, true));
   List<List<String>> selectedTimes = List.generate(7, (index) => []);
+
+  APIService apiService = APIService();
 
   int selectedDayIndex = -1;
 
@@ -30,7 +34,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
         children: [
           // Days of the week row
           AnimatedContainer(
-            duration: Duration(milliseconds: 500),
+            duration: Duration(milliseconds: 225),
             height: selectedDayIndex != -1 ? 50 : 150, // Adjusted height for animation
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -50,7 +54,10 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                     border: Border.all(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(entry.value, style: TextStyle(fontFamily: 'Katibeh', fontSize: 20, color: Colors.black)),
+                  child: Text(
+                    entry.value,
+                    style: TextStyle(fontFamily: 'Katibeh', fontSize: 20, color: Colors.black),
+                  ),
                 ),
               ))
                   .toList(),
@@ -59,70 +66,115 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
           // Selected day hours
           if (selectedDayIndex != -1)
             Expanded(
-              child: SingleChildScrollView(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-                  itemCount: 24,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          availability[selectedDayIndex][index] = !availability[selectedDayIndex][index];
-                          if (availability[selectedDayIndex][index]) {
-                            updateSelectedTimes(selectedDayIndex, index, true);
-                          } else {
-                            updateSelectedTimes(selectedDayIndex, index, false);
-                          }
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            color: availability[selectedDayIndex][index] ? Color(0xFFCDBFB6) : Colors.white),
-                        child: Center(
-                          child: Text(
-                            '${index % 12 == 0 ? 12 : index % 12}:00 ${index < 12 ? 'AM' : 'PM'}',
-                            style: TextStyle(fontSize: 14, color: Colors.black),
+              flex: 31,
+              child: PageView.builder(
+                itemCount: daysOfWeek.length,
+                controller: PageController(initialPage: selectedDayIndex),
+                onPageChanged: (int page) {
+                  setState(() {
+                    selectedDayIndex = page;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return SingleChildScrollView(
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+                      itemCount: 24,
+                      shrinkWrap: true,
+                      itemBuilder: (context, timeIndex) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              availability[selectedDayIndex][timeIndex] =
+                              !availability[selectedDayIndex][timeIndex];
+                              if (availability[selectedDayIndex][timeIndex]) {
+                                updateSelectedTimes(selectedDayIndex, timeIndex, true);
+                              } else {
+                                updateSelectedTimes(selectedDayIndex, timeIndex, false);
+                              }
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                color: availability[selectedDayIndex][timeIndex]
+                                    ? Color(0xFFCDBFB6)
+                                    : Colors.white),
+                            child: Center(
+                              child: Text(
+                                '${timeIndex % 12 == 0 ? 12 : timeIndex % 12}:00 ${timeIndex < 12 ? 'AM' : 'PM'}',
+                                style: TextStyle(fontSize: 14, color: Colors.black),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
+                        );
+                      },
+                    ),
+                  );
+                },
               ),
             ),
           // Selected times for each day
           Expanded(
-            child: ListView.builder(
-              itemCount: daysOfWeek.length,
+            child: ListView.separated(
+              itemCount: 7, // Set the itemCount to the number of days
+              separatorBuilder: (context, index) => SizedBox(height: 16.0), // Adjust the height for vertical spacing
               itemBuilder: (context, dayIndex) {
-                return ListTile(
-                  title: Text(
-                    '${daysOfWeek[dayIndex]}: ${formatSelectedTimes(selectedTimes[dayIndex])}',
-                    style: TextStyle(fontSize: 16),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0), // Adjust the horizontal spacing as needed
+                  child: ListTile(
+                    title: Text(
+                      formatSelectedTimesForDay(availability[dayIndex], daysOfWeek[dayIndex]),
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
                 );
               },
             ),
           ),
           // Save and Clear All Availability buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  saveAvailability();
-                },
-                child: Text('Save'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  clearAllAvailability();
-                },
-                child: Text('Clear All Availability'),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 45.0), // Adjust the padding as needed
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    await apiService.updateAvailability(availability);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Availability has been set.',
+                        ),
+                        duration: Duration(milliseconds: 600),
+                      ),
+                    );
+                    saveAvailability();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFB1947B), // Change this color to the desired one
+                  ),
+                  child: Text('Save'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'All availability has been cleared.',
+                        ),
+                        duration: Duration(milliseconds: 600),
+                      ),
+                    );
+                    clearAllAvailability();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFB1947B), // Change this color to the desired one
+                  ),
+                  child: Text('Clear All Availability'),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -131,36 +183,14 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
 
   void updateSelectedTimes(int dayIndex, int timeIndex, bool isAdding) {
     if (isAdding) {
-      selectedTimes[dayIndex].add('${timeIndex % 12 == 0 ? 12 : timeIndex % 12}:00 ${timeIndex < 12 ? 'AM' : 'PM'}');
+      selectedTimes[dayIndex].add(
+          '${timeIndex % 12 == 0 ? 12 : timeIndex % 12}:00 ${timeIndex < 12 ? 'AM' : 'PM'}');
     } else {
-      selectedTimes[dayIndex].remove('${timeIndex % 12 == 0 ? 12 : timeIndex % 12}:00 ${timeIndex < 12 ? 'AM' : 'PM'}');
+      selectedTimes[dayIndex].remove(
+          '${timeIndex % 12 == 0 ? 12 : timeIndex % 12}:00 ${timeIndex < 12 ? 'AM' : 'PM'}');
     }
-    selectedTimes[dayIndex].sort((a, b) => int.parse(a.split(':')[0]).compareTo(int.parse(b.split(':')[0])));
-  }
-
-  String formatSelectedTimes(List<String> times) {
-    if (times.isEmpty) return 'No selected times';
-    List<String> formattedTimes = [];
-    int start = 0, end = 0;
-    for (int i = 1; i < times.length; i++) {
-      if (int.parse(times[i - 1].split(':')[0]) + 1 == int.parse(times[i].split(':')[0]) &&
-          times[i - 1].split(' ')[1] == times[i].split(' ')[1]) {
-        end = i;
-      } else {
-        if (start == end) {
-          formattedTimes.add(times[start]);
-        } else {
-          formattedTimes.add('${times[start]}-${times[end]}');
-        }
-        start = end = i;
-      }
-    }
-    if (start == end) {
-      formattedTimes.add(times[start]);
-    } else {
-      formattedTimes.add('${times[start]}-${times[end]}');
-    }
-    return formattedTimes.join(', ');
+    selectedTimes[dayIndex].sort(
+            (a, b) => int.parse(a.split(':')[0]).compareTo(int.parse(b.split(':')[0])));
   }
 
   // Save availability to SharedPreferences
@@ -196,6 +226,41 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
       }
     }
     setState(() {});
+  }
+}
+
+String formatSelectedTimesForDay(List<bool> availabilityForDay, String dayOfWeek) {
+  List<String> timesForDay = [];
+  bool isInRange = false;
+  int startHour = 0;
+
+  for (int timeIndex = 0; timeIndex < 24; timeIndex++) {
+    if (availabilityForDay[timeIndex]) {
+      if (!isInRange) {
+        // Start of a new range
+        startHour = timeIndex;
+        isInRange = true;
+      }
+    } else if (isInRange) {
+      // End of the current range
+      int endHour = timeIndex - 1;
+      timesForDay.add(
+          '${startHour == endHour ? '${endHour % 12 == 0 ? 12 : endHour % 12}:00 ${endHour < 12 ? 'AM' : 'PM'}' : '${startHour % 12 == 0 ? 12 : startHour % 12}:00 ${startHour < 12 ? 'AM' : 'PM'}-${endHour % 12 == 0 ? 12 : endHour % 12}:00 ${endHour < 12 ? 'AM' : 'PM'}'}');
+      isInRange = false;
+    }
+  }
+
+  // Check for a range that extends to the end of the day
+  if (isInRange) {
+    int endHour = 23;
+    timesForDay.add(
+        '${startHour % 12 == 0 ? 12 : startHour % 12}:00 ${startHour < 12 ? 'AM' : 'PM'}-${endHour % 12 == 0 ? 12 : endHour % 12}:00 ${endHour < 12 ? 'AM' : 'PM'}');
+  }
+
+  if (timesForDay.isNotEmpty) {
+    return '$dayOfWeek: ${timesForDay.join(', ')}';
+  } else {
+    return '$dayOfWeek: Not available';
   }
 }
 
