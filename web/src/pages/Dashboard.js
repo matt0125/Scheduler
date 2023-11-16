@@ -10,6 +10,10 @@ import logo from "../images/branding.png";
 import profile from "../images/profile-button.svg";
 import axios from 'axios';
 import Modal from 'react-modal';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 import EditSTModal from '../components/EditSTModal';
@@ -28,6 +32,7 @@ export default class DemoApp extends React.Component {
     showEditSTModal: false,
     shiftTemplates: [],
     selectMirrorEnabled: true,
+    showPositionModal: false,
   }
    // Function to handle opening the modal
    openProfileModal = () => {
@@ -71,12 +76,24 @@ export default class DemoApp extends React.Component {
 
   renderPositionSelect() {
     return (
-      <select onChange={this.handlePositionSelect} value={this.state.selectedPositionId || ''}>
-        <option value="">Select Position</option>
-        {this.state.positions.map(position => (
-          <option key={position._id} value={position._id}>{position.name}</option>
-        ))}
-      </select>
+      <FormControl fullWidth>
+        <InputLabel id="position-select-label">Position</InputLabel>
+        <Select
+          labelId="position-select-label"
+          value={this.state.selectedPositionId || ''}
+          onChange={this.handlePositionSelect}
+          label="Position"
+        >
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          {this.state.positions.map(position => (
+            <MenuItem key={position._id} value={position._id}>
+              {position.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     );
   }
 
@@ -87,7 +104,7 @@ export default class DemoApp extends React.Component {
     const jwtToken = localStorage.getItem('token');
     
     try {
-      const response = await axios.get(`http://localhost:3000/api/positions/${managerId}`, {
+      const response = await axios.get(`http://large.poosd-project.com/api/positions/${managerId}`, {
         headers: {
           contentType: 'application/json',
           Authorization: `Bearer ${jwtToken}`
@@ -173,12 +190,30 @@ export default class DemoApp extends React.Component {
       isOpen: false,
     });
   };
+
+  renderPositionModal() {
+    return (
+      <Modal 
+        isOpen={this.state.showPositionModal} 
+        onRequestClose={() => this.setState({ showPositionModal: false })}
+        // Add any additional modal properties you need
+      >
+        {this.renderPositionSelect()}
+        <button onClick={() => this.handlePositionSubmit()}>Submit</button>
+      </Modal>
+    );
+  }
+
+  handlePositionSubmit = () => {
+    this.handleDateSelect(this.state.selectInfo);
+    this.setState({ showPositionModal: false });
+  }
   
 
   render() {
     return (
       <div className='demo-app'>
-        {this.FilterBar()}
+        {this.renderPositionModal()}
         <div className='demo-app-main'>
         <img src={logo} alt="sched logo" className="logo"></img>
         <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
@@ -209,7 +244,7 @@ export default class DemoApp extends React.Component {
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
             events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
-            select={this.handleDateSelect}
+            select={this.triggerHandleDateSelect}
             eventContent={this.renderEventContent} // custom render function
             eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
             dateClick={this.handleDateClick}
@@ -223,16 +258,6 @@ export default class DemoApp extends React.Component {
       </div>
     )
   }
-
-  // Login as empployee
-  // Call get JWT API
-  // Save empployee object (whole thing) in a JWT
-  // Gets shifts by managerID
-l
-  // Login as mangager
-
-
-  // Gets shifts by manager
 
 
   // Add FilterBar here
@@ -250,14 +275,18 @@ l
     })
   }
 
+  triggerHandleDateSelect = (selectInfo) => {
+    // You can add additional logic here if needed
+    this.setState({ selectInfo, showPositionModal: true });
+  }
+
   handleDateSelect = async (selectInfo) => {
     // Disable selectMirror temporarily
-    let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
 
-    if (title && this.state.selectedPositionId) {
+    if (this.state.selectedPositionId) {
       try {
         const jwtToken = localStorage.getItem('token');
         console.log(convertToStandardTime(selectInfo.startStr));
