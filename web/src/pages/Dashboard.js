@@ -26,6 +26,7 @@ export default class DemoApp extends React.Component {
     showModal: false,  // Add this line
     shiftTemplates: [],
     selectMirrorEnabled: true,
+    showPositionModal: false,
   }
    // Function to handle opening the modal
    openModal = () => {
@@ -163,12 +164,30 @@ export default class DemoApp extends React.Component {
       isOpen: false,
     });
   };
+
+  renderPositionModal() {
+    return (
+      <Modal 
+        isOpen={this.state.showPositionModal} 
+        onRequestClose={() => this.setState({ showPositionModal: false })}
+        // Add any additional modal properties you need
+      >
+        {this.renderPositionSelect()}
+        <button onClick={() => this.handlePositionSubmit()}>Submit</button>
+      </Modal>
+    );
+  }
+
+  handlePositionSubmit = () => {
+    this.handleDateSelect(this.state.selectInfo);
+    this.setState({ showPositionModal: false });
+  }
   
 
   render() {
     return (
       <div className='demo-app'>
-        {this.FilterBar()}
+        {this.renderPositionModal()}
         <div className='demo-app-main'>
         <img src={logo} alt="sched logo" className="logo"></img>
         <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openModal} />
@@ -194,7 +213,7 @@ export default class DemoApp extends React.Component {
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
             events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
-            select={this.handleDateSelect}
+            select={this.triggerHandleDateSelect}
             eventContent={this.renderEventContent} // custom render function
             eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
             dateClick={this.handleDateClick}
@@ -208,16 +227,6 @@ export default class DemoApp extends React.Component {
       </div>
     )
   }
-
-  // Login as empployee
-  // Call get JWT API
-  // Save empployee object (whole thing) in a JWT
-  // Gets shifts by managerID
-l
-  // Login as mangager
-
-
-  // Gets shifts by manager
 
 
   // Add FilterBar here
@@ -235,14 +244,18 @@ l
     })
   }
 
+  triggerHandleDateSelect = (selectInfo) => {
+    // You can add additional logic here if needed
+    this.setState({ selectInfo, showPositionModal: true });
+  }
+
   handleDateSelect = async (selectInfo) => {
     // Disable selectMirror temporarily
-    let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
 
-    if (title && this.state.selectedPositionId) {
+    if (this.state.selectedPositionId) {
       try {
         const jwtToken = localStorage.getItem('token');
         console.log(convertToStandardTime(selectInfo.startStr));
