@@ -77,10 +77,12 @@ app.get('/api/manager/allmanagers', employeeController.getAllManagers);
 app.post('/api/employee/:employeeId/assign/manager', employeeController.assignManager);
 
 // availabilities
-app.post('/api/employee/:employeeId/availability', employeeController.createAvailability);
-app.put('/api/employee/:employeeId/availability/:availabilityId', employeeController.updateAvailability);
-app.delete('/api/employee/:employeeId/availability/:availabilityId', employeeController.deleteAvailability);
+app.post('/api/employee/:employeeId/availability', employeeController.addAvailability);
 app.get('/api/employee/:employeeId/availabilities', employeeController.getAvailabilities);
+
+app.put('/api/employee/:employeeId/availabilityByString', employeeController.updateAvailability);
+app.put('/api/employee/:employeeId/availabilityByArray', employeeController.setAvailability);
+app.delete('/api/employee/:employeeId/availabilityByString', employeeController.deleteAvailability);
 
 // positions
 app.post('/api/position', PositionController.createPosition);
@@ -118,7 +120,7 @@ app.post('/api/positions/manager', positionController.createPositionByManager);
 // Update employee
 app.put('/api/employee/:employeeId/password', employeeController.updatePassword);
 app.put('/updateEmployee/:employeeId', employeeController.updateEmployeeProfile);
-
+app.get('/api/employee/position/:positionId', employeeController.getEmployeesByPosition);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

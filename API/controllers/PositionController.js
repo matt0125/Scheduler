@@ -91,27 +91,20 @@ const PositionController = {
   createPositionByManager: async (req, res) => {
     try {
       console.log("HERE23");
+      console.log(req.body);
       const { name, managerId } = req.body; // Assuming the manager's ID is sent in the request body
 
-      // Check if position with the same name already exists
-      const existingPosition = await Position.findOne({ name: name });
-      if (existingPosition) {
-        return res.status(400).json({ message: 'A position with this name already exists.' });
-      }
 
-      const newPosition = new Position({ _id: new mongoose.Types.ObjectId(), name });
+      const newPosition = new Position({ _id: new mongoose.Types.ObjectId(), name, managerId });
       await newPosition.save();
   
       const manager = await Employee.findOne({ _id: managerId, managerIdent: true });
       if (!manager) {
-        return res.status(404).json({ message: 'Manager not found' });
+        return res.status(404).json({ message: 'Manager does not exist' });
       }
   
-      manager.positions.push(newPosition._id); // Add the new position's ID to the manager's positions array
-      await manager.save();
-  
       console.log('newPosition:', newPosition);
-      res.status(201).json({ newPosition, manager });
+      res.status(201).json({ newPosition, manager, managerId });
     } catch (error) {
       console.log("ERROR HERE");
       console.log(error);
@@ -125,20 +118,8 @@ const PositionController = {
       // Mongoose's populate method to automatically replace the position IDs 
       // in the positions array with the actual position documents from the database.
       const manager = await Employee.findById(managerId).populate('positions');
-      if (!manager) {
-        return res.status(404).json({ message: 'Manager not found' });
-      }
-      if (!manager.managerIdent) {
-        return res.status(400).json({ message: 'Provided ID does not belong to a manager' });
-      }
-      
-      const positions = manager.positions; // This will contain full position documents due to .populate()
-      
-      if (positions.length === 0) {
-        return res.status(404).json({ message: 'No positions found for this manager' });
-      }
-      
-      res.status(200).json(positions);
+      const positions = await Position.find({ managerId: managerId });
+      res.json(positions);
     } catch (error) {
       res.status(400).json({ message: 'Failed to get positions by manager', error });
       console.log("Here: ", error.message);
