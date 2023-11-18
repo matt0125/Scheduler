@@ -3,6 +3,7 @@ const sinon = require('sinon');
 const mongoose = require('mongoose');
 const PositionController = require('../controllers/PositionController');
 const Position = require('../models/Position');
+const Employee = require('../models/Employee');
 
 const { expect } = chai;
 
@@ -190,3 +191,238 @@ describe('getAllPositions', () => {
         expect(errorResponse).to.have.property('error');
     });
 });
+
+// updatePosition
+describe('updatePosition', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+        req = {
+            params: { id: '123' },
+            body: { name: 'Updated Position' },
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.spy(),
+        };
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should update a position successfully', async () => {
+        // Mock Position.findByIdAndUpdate to simulate updating a position
+        const updatedPosition = { _id: '123', name: 'Updated Position', managerId: '456' };
+        const findByIdAndUpdateStub = sinon.stub(Position, 'findByIdAndUpdate');
+        findByIdAndUpdateStub.resolves(updatedPosition);
+
+        // Call the updatePosition method with the mocked request and response
+        await PositionController.updatePosition(req, res);
+
+        // Assertions
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+        expect(res.json.firstCall.args[0]).to.deep.equal(updatedPosition);
+    });
+
+    it('should handle errors during updatePosition', async () => {
+        // Mock Position.findByIdAndUpdate to simulate an error
+        const findByIdAndUpdateStub = sinon.stub(Position, 'findByIdAndUpdate');
+        findByIdAndUpdateStub.rejects(new Error('Simulated error during update'));
+
+        // Call the updatePosition method with the mocked request and response
+        await PositionController.updatePosition(req, res);
+
+        // Assertions
+        expect(res.status.calledWith(400)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+
+        const errorResponse = res.json.firstCall.args[0];
+        expect(errorResponse).to.have.property('message', 'Failed to update position');
+        expect(errorResponse).to.have.property('error');
+    });
+
+    it('should handle position not found during updatePosition', async () => {
+        // Mock Position.findByIdAndUpdate to simulate updating a non-existent position
+        const findByIdAndUpdateStub = sinon.stub(Position, 'findByIdAndUpdate');
+        findByIdAndUpdateStub.resolves(null);
+
+        // Call the updatePosition method with the mocked request and response
+        await PositionController.updatePosition(req, res);
+
+        // Assertions
+        expect(res.status.calledWith(404)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+
+        const notFoundResponse = res.json.firstCall.args[0];
+        expect(notFoundResponse).to.have.property('message', 'Position not found');
+    });
+});
+
+// deletePosition
+describe('deletePosition', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+        req = {
+            params: { id: '123' },
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.spy(),
+        };
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should delete a position successfully', async () => {
+        // Mock Position.findByIdAndDelete to simulate deleting a position
+        const deletedPosition = { _id: '123', name: 'Deleted Position', managerId: '456' };
+        const findByIdAndDeleteStub = sinon.stub(Position, 'findByIdAndDelete');
+        findByIdAndDeleteStub.resolves(deletedPosition);
+
+        // Call the deletePosition method with the mocked request and response
+        await PositionController.deletePosition(req, res);
+
+        // Assertions
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+        expect(res.json.firstCall.args[0]).to.deep.equal({ message: 'Position deleted successfully' });
+    });
+
+    it('should handle errors during deletePosition', async () => {
+        // Mock Position.findByIdAndDelete to simulate an error
+        const findByIdAndDeleteStub = sinon.stub(Position, 'findByIdAndDelete');
+        findByIdAndDeleteStub.rejects(new Error('Simulated error during delete'));
+
+        // Call the deletePosition method with the mocked request and response
+        await PositionController.deletePosition(req, res);
+
+        // Assertions
+        expect(res.status.calledWith(400)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+
+        const errorResponse = res.json.firstCall.args[0];
+        expect(errorResponse).to.have.property('message', 'Failed to delete position');
+        expect(errorResponse).to.have.property('error');
+    });
+
+    it('should handle position not found during deletePosition', async () => {
+        // Mock Position.findByIdAndDelete to simulate deleting a non-existent position
+        const findByIdAndDeleteStub = sinon.stub(Position, 'findByIdAndDelete');
+        findByIdAndDeleteStub.resolves(null);
+
+        // Call the deletePosition method with the mocked request and response
+        await PositionController.deletePosition(req, res);
+
+        // Assertions
+        expect(res.status.calledWith(404)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+
+        const notFoundResponse = res.json.firstCall.args[0];
+        expect(notFoundResponse).to.have.property('message', 'Position not found');
+    });
+});
+
+// getPositionByName
+describe('getPositionByName', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+        req = {
+            params: { name: 'TestPosition' },
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.spy(),
+        };
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should get a position by name successfully', async () => {
+        // Mock Position.findOne to simulate finding a position
+        const foundPosition = { _id: '123', name: 'TestPosition', managerId: '456' };
+        const findOneStub = sinon.stub(Position, 'findOne');
+        findOneStub.resolves(foundPosition);
+
+        // Call the getPositionByName method with the mocked request and response
+        await PositionController.getPositionByName(req, res);
+
+        // Assertions
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+        expect(res.json.firstCall.args[0]).to.deep.equal(foundPosition);
+    });
+
+    it('should handle errors during getPositionByName', async () => {
+        // Mock Position.findOne to simulate an error
+        const findOneStub = sinon.stub(Position, 'findOne');
+        findOneStub.rejects(new Error('Simulated error during getPositionByName'));
+
+        // Call the getPositionByName method with the mocked request and response
+        await PositionController.getPositionByName(req, res);
+
+        // Assertions
+        expect(res.status.calledWith(400)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+
+        const errorResponse = res.json.firstCall.args[0];
+        expect(errorResponse).to.have.property('message', 'Failed to get position by name');
+        expect(errorResponse).to.have.property('error');
+    });
+
+    it('should handle position not found during getPositionByName', async () => {
+        // Mock Position.findOne to simulate not finding a position
+        const findOneStub = sinon.stub(Position, 'findOne');
+        findOneStub.resolves(null);
+
+        // Call the getPositionByName method with the mocked request and response
+        await PositionController.getPositionByName(req, res);
+
+        // Assertions
+        expect(res.status.calledWith(404)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+
+        const notFoundResponse = res.json.firstCall.args[0];
+        expect(notFoundResponse).to.have.property('message', 'Position not found');
+    });
+});
+
+// createPositionByManager
+
+// describe('createPositionByManager', () => {
+//     let req;
+//     let res;
+
+//     beforeEach(() => {
+
+//     });
+
+//     afterEach(() => {
+//         sinon.restore();
+//     });
+
+//     it('should create a new position by manager successfully', async () => {
+
+//     });
+
+//     it('should handle errors during createPositionByManager', async () => {
+
+//     });
+
+//     it('should handle manager not found during createPositionByManager', async () => {
+ 
+//     });
+// });
+
+// getPositionsByManager
+
