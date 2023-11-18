@@ -1,0 +1,61 @@
+.update-availability {
+    background-color: #EDE7E3;
+    font-family: Katibeh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 10vh;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.dropdown-container {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.update-availability h2 {
+    font-size: 50px;
+    color: #47413d;
+}
+
+.update-availability form {
+    color: #000000;
+
+}
+
+.update-availability div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.update-availability label {
+    margin-right: 10px;
+}
+
+.update-availability select {
+    width: 80px;
+    margin-right: 10px;
+}
+
+.update-availability::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.update-availability select {
+    width: 150px;
+    margin-bottom: 10px;
+}
+
+.update-availability select[name="position"] {
+    margin-left: 10px;
+}
