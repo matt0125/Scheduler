@@ -1,4 +1,5 @@
 const Employee = require('../models/Employee');
+const Position = require('../models/Position');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // for bcrypt password hashing
@@ -678,3 +679,35 @@ exports.getEmployeesByPosition = async (req, res) => {
     console.error('There was an error fetching employees by position:', error);
   }
 };
+
+exports.addPositionToEmployee = async (req, res) => {
+  try {
+    const { employeeId, positionId } = req.params; // or from req.body
+
+    // Find the employee
+    const employee = await Employee.findById(employeeId);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Check if the position already exists in the employee's positions
+    if (employee.positions.includes(positionId)) {
+      return res.status(400).json({ message: 'Position already assigned to this employee' });
+    }
+
+    // Find the position
+    const position = await Position.findById(positionId);
+    if (!position) {
+      return res.status(404).json({ message: 'Position not found' });
+    }
+
+    // Add position to the employee's positions array
+    employee.positions.push(positionId);
+    await employee.save();
+
+    res.status(200).json({ message: 'Position added to employee successfully', employee });
+  } catch (error) {
+    res.status(400).json({ message: 'Failed to add position to employee', error });
+    console.log('There was an error adding position to employee:', error);
+  }
+}

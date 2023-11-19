@@ -62,6 +62,7 @@ app.get('/', (req, res) => {
 // employee
 app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
+app.put('/api/employee/:employeeId/position/:positionId', employeeController.addPositionToEmployee);
 
 // Protected routes below this line
 app.use(authenticateJWT);

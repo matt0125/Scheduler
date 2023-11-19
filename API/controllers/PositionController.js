@@ -125,6 +125,6 @@ const PositionController = {
       console.log("Here: ", error.message);
     }
   },
-};
+}
 
 module.exports = PositionController;

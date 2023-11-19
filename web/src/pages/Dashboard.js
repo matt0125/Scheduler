@@ -28,6 +28,9 @@ export default class DemoApp extends React.Component {
     showEditSTModal: false,
     shiftTemplates: [],
     selectMirrorEnabled: true,
+    selectedShiftTemplateId: null,
+    shiftTemplatePositionId: null, // For storing the position ID of the shift template being edited, NOT created
+    selectedShiftTemplate: null,
   }
    // Function to handle opening the modal
    openProfileModal = () => {
@@ -54,8 +57,9 @@ export default class DemoApp extends React.Component {
     this.props.navigate(`/edit-profile/${employeeId}`);
   };
   
-  openEditSTModal = () => {
+  openEditSTModal = (id) => {
     this.setState({ showEditSTModal: true });
+    this.setState({ shiftTemplatePositionId: id });
   }
 
   closeEditSTModal = () => {
@@ -190,7 +194,13 @@ export default class DemoApp extends React.Component {
           isOpen={this.state.showEditSTModal} 
           onRequestClose={this.closeEditSTModal}
         > 
-            <EditSTModal isOpen={this.state.showEditSTModal} />
+            <EditSTModal 
+              isOpen={this.state.showEditSTModal} 
+              positionId={this.state.shiftTemplatePositionId}
+              templateId={this.state.selectedShiftTemplateId}
+              empId={localStorage.getItem('id')}
+              template={this.state.selectedShiftTemplate}
+            />
         </Modal>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -341,7 +351,10 @@ l
   };
   
   handleEventEdit = (clickInfo) => {
-    this.openEditSTModal();
+    console.log("The clikc info is: ", clickInfo);
+    this.setState({ selectedShiftTemplateId: clickInfo.id.substring(0,24) });
+    this.setState({ selectedShiftTemplate: clickInfo});
+    this.openEditSTModal(clickInfo._def.extendedProps.positionId.substring(0, 24));
   };
 
   renderEventContent = (eventInfo) => {
@@ -463,8 +476,9 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
         id: `${template._id}-${week}`, // Unique ID for each event
         title: title,
         start: startDateTime,
-        end: endDateTime,
-        color: positionColors[positionId] // Assign the color to the event
+        end: endDateTime, 
+        color: positionColors[positionId], // Assign the color to the event
+        positionId: positionId
       });
     }
   }
