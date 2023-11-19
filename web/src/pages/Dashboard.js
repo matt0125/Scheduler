@@ -10,9 +10,14 @@ import logo from "../images/branding.png";
 import profile from "../images/profile-button.svg";
 import axios from 'axios';
 import Modal from 'react-modal';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 import EditSTModal from '../components/EditSTModal';
+import PositionList from '../components/PositionList';
 
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
@@ -31,6 +36,7 @@ export default class DemoApp extends React.Component {
     selectedShiftTemplateId: null,
     shiftTemplatePositionId: null, // For storing the position ID of the shift template being edited, NOT created
     selectedShiftTemplate: null,
+    showPositionModal: false,
   }
    // Function to handle opening the modal
    openProfileModal = () => {
@@ -75,30 +81,49 @@ export default class DemoApp extends React.Component {
 
   renderPositionSelect() {
     return (
-      <select onChange={this.handlePositionSelect} value={this.state.selectedPositionId || ''}>
-        <option value="">Select Position</option>
-        {this.state.positions.map(position => (
-          <option key={position._id} value={position._id}>{position.name}</option>
-        ))}
-      </select>
+      <FormControl fullWidth>
+        <InputLabel id="position-select-label">Position</InputLabel>
+        <Select
+          labelId="position-select-label"
+          value={this.state.selectedPositionId || ''}
+          onChange={(event) => this.handlePositionSelect(event)} // Update this line
+          label="Position"
+        >
+          <MenuItem value=""><em>None</em></MenuItem>
+          {this.state.positions.map((position) => (
+            <MenuItem key={position.id} value={position.id}>
+              {position.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     );
   }
+  
+  
+  
 
   fetchPositions = async () => {
-    // Fetch the positions based on the manager ID
-    // The manager ID should ideally come from a logged-in manager's data
     const managerId = localStorage.getItem('id');
     const jwtToken = localStorage.getItem('token');
     
     try {
-      const response = await axios.get(`http://localhost:3000/api/positions/${managerId}`, {
+      const response = await axios.get(`http://large.poosd-project.com/api/positions/${managerId}`, {
         headers: {
           contentType: 'application/json',
           Authorization: `Bearer ${jwtToken}`
         }
       });
-
-      this.setState({ positions: response.data });
+  
+      // Create a new array that includes the position ID and other details
+      const positionsWithIds = response.data.map(position => ({
+        id: position._id, // Assuming the ID is under the property _id
+        name: position.name,
+        checked: false // Default to unchecked
+      }));
+  
+      // Set the new array in the state
+      this.setState({ positions: positionsWithIds });
     } catch (error) {
       alert('Failed to fetch positions: ' + error.message);
       console.log(error);
@@ -144,8 +169,16 @@ export default class DemoApp extends React.Component {
   
 
   handlePositionSelect = (event) => {
-    this.setState({ selectedPositionId: event.target.value });
-  }
+    const selectedId = event.target.value;
+    console.log('Selected position ID:', selectedId); // Should log the selected position's ID
+  
+    if (selectedId) {
+      this.setState({ selectedPositionId: selectedId });
+    } else {
+      console.log('No position ID found');
+    }
+  };
+  
 
   handleDateClick = () => {
     // Enable selectMirror when starting selection
@@ -177,12 +210,94 @@ export default class DemoApp extends React.Component {
       isOpen: false,
     });
   };
+
+  renderPositionModal() {
+    return (
+      <Modal 
+        isOpen={this.state.showPositionModal} 
+        onRequestClose={() => this.setState({ showPositionModal: false })}
+        // Add any additional modal properties you need
+      >
+        {this.renderPositionSelect()}
+        <button onClick={() => this.handlePositionSubmit()}>Submit</button>
+      </Modal>
+    );
+  }
+
+  handlePositionSubmit = () => {
+    this.handleDateSelect(this.state.selectInfo);
+    this.setState({ showPositionModal: false });
+  }
+
+  // Adds position to manager
+  addPosition = async (positionName) => {
+    const jwtToken = localStorage.getItem('token');
+    const managerId = localStorage.getItem('id');
+  
+    try {
+      await axios.post(`http://localhost:3000/api/positions/manager`, {
+        name: positionName,
+        managerId: managerId
+      }, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        },
+      });
+  
+      this.fetchPositions(); // Refresh the positions list
+    } catch (error) {
+      console.error('Failed to add position:', error);
+      alert('Failed to add position: ' + error.message);
+    }
+  };
+  
+  
+  
+  
+  
+  // Deletes position connected to manager
+  deletePosition = async (positionId) => {
+    const jwtToken = localStorage.getItem('token');
+  
+    try {
+      await axios.delete(`http://localhost:3000/api/position/${positionId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        },
+      });
+  
+      // Use the callback form of setState to ensure the state updates correctly
+      this.setState(prevState => ({
+        positions: prevState.positions.filter(position => position.id !== positionId),
+      }), () => {
+        // Callback to ensure the state is updated before fetching templates
+        this.fetchShiftTemplates();
+      });
+  
+    } catch (error) {
+      alert('Failed to delete position: ' + error.message);
+      console.error(error);
+    }
+  };
+
+  togglePosition = (positionId) => {
+    this.setState(prevState => ({
+      positions: prevState.positions.map(position => {
+        if (position.id === positionId) {
+          return { ...position, checked: !position.checked };
+        }
+        return position;
+      }),
+    }));
+  };
   
 
   render() {
     return (
       <div className='demo-app'>
-        {this.FilterBar()}
+        {this.renderPositionModal()}
         <div className='demo-app-main'>
         <img src={logo} alt="sched logo" className="logo"></img>
         <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
@@ -219,7 +334,7 @@ export default class DemoApp extends React.Component {
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
             events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
-            select={this.handleDateSelect}
+            select={this.triggerHandleDateSelect}
             eventContent={this.renderEventContent} // custom render function
             eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
             dateClick={this.handleDateClick}
@@ -229,20 +344,19 @@ export default class DemoApp extends React.Component {
             eventRemove={function(){}}
             */
           />
+          <div className='demo-app-sidebar'>
+            <PositionList
+              key={this.state.positions.length}
+              positions={this.state.positions}
+              onToggle={this.togglePosition}
+              onAddPosition={this.addPosition}
+              onDeletePosition={this.deletePosition}
+            />
+          </div>
         </div>
       </div>
     )
   }
-
-  // Login as empployee
-  // Call get JWT API
-  // Save empployee object (whole thing) in a JWT
-  // Gets shifts by managerID
-l
-  // Login as mangager
-
-
-  // Gets shifts by manager
 
 
   // Add FilterBar here
@@ -260,14 +374,18 @@ l
     })
   }
 
+  triggerHandleDateSelect = (selectInfo) => {
+    // You can add additional logic here if needed
+    this.setState({ selectInfo, showPositionModal: true });
+  }
+
   handleDateSelect = async (selectInfo) => {
     // Disable selectMirror temporarily
-    let title = prompt('Please enter a new title for your event')
     let calendarApi = selectInfo.view.calendar
 
     calendarApi.unselect() // clear date selection
 
-    if (title && this.state.selectedPositionId) {
+    if (this.state.selectedPositionId) {
       try {
         const jwtToken = localStorage.getItem('token');
         console.log(convertToStandardTime(selectInfo.startStr));

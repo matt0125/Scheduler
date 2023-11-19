@@ -450,9 +450,9 @@ exports.getAvailabilities = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found'});
     }
 
-    res.status(200).json(employee.availability);
+    res.status(200).json({availability: employee.availability});
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching availabilities', error });
+    res.status(500).json({ message: 'Error fetching availabilities', error: error.toString() });
     console.error('There was an error fetching availabilities', error );
   }
 };

@@ -56,7 +56,7 @@ const EmployeeSchema = new Schema({
       message: props =>
         `${props.value} must be a 2D array with dimensions 7x24!`, // Custom error message
     },
-    default: () => new Array(7).fill().map(() => new Array(24).fill(false)), // Default value
+    default: () => new Array(7).fill().map(() => new Array(24).fill(true)), // Default value
   },
   isValidated: { type: Boolean, default: false },
   positions: [{ type: Schema.Types.ObjectId, ref: 'Position' }],

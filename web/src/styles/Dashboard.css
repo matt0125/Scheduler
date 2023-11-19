@@ -39,6 +39,7 @@ body
 
 /* Modal Content */
 .ReactModal__Content {
+    background-color: #add8e6;
     position: relative;
     top: auto;
     left: auto;
