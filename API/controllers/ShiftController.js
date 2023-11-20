@@ -5,6 +5,7 @@ const ShiftTemplate = require('../models/ShiftTemplate');
 const Position  = require('../models/Position');
 
 exports.createShift = async (req, res) => {
+  
   try {
     console.log('Creating shift...');
     console.log('Type of Employee in controller:', typeof Employee);
@@ -222,7 +223,7 @@ exports.getShiftByEmployeeAndDate = async (req, res) => {
   try {
     console.log('Fetching for shifts by employee ID and date...');
     
-    var { startDate, endDate, empId } = req.body;
+    const { startDate, endDate, empId } = req.body;
 
     for(i = 0; i < 2; i++)
     {
@@ -265,14 +266,6 @@ exports.getShiftByEmployeeAndDate = async (req, res) => {
     });
 
     if (!shifts || shifts.length === 0) {
-
-
-    res.status(400).json({date: {
-      $gte: startDate,
-      $lte: endDate,
-    },empId: empId, shifts: shifts
-  });
-
       return res.status(404).json({ message: 'No shifts found for the specified employee ID' });
     }
 
@@ -315,12 +308,3 @@ exports.getShiftByManager = async (req, res) => {
   }
 };
 
-exports.deleteShiftByEmployee = async (req, res) => {
-  try {
-
-  }
-
-  catch (error) {
-
-  }
-};
