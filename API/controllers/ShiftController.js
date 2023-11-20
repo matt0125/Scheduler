@@ -5,7 +5,6 @@ const ShiftTemplate = require('../models/ShiftTemplate');
 const Position  = require('../models/Position');
 
 exports.createShift = async (req, res) => {
-  
   try {
     console.log('Creating shift...');
     console.log('Type of Employee in controller:', typeof Employee);
@@ -308,3 +307,12 @@ exports.getShiftByManager = async (req, res) => {
   }
 };
 
+exports.deleteShiftByEmployee = async (req, res) => {
+  try {
+
+  }
+
+  catch (error) {
+
+  }
+};
