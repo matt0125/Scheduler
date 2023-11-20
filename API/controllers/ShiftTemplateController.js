@@ -7,7 +7,7 @@ exports.createShiftTemplate = async (req, res) => {
   try {
     console.log("Creating shift template...");
 
-    const { dayOfWeek, startTime, endTime, positionId, managerId } = req.body;
+    const { dayOfWeek, startTime, endTime, color, positionId, managerId } = req.body;
 
     // Create a new shift template
     const newShiftTemplate = new ShiftTemplate({
@@ -15,6 +15,7 @@ exports.createShiftTemplate = async (req, res) => {
       dayOfWeek,
       startTime,
       endTime,
+      color,
       positionId,
       managerId,
     });
@@ -74,7 +75,7 @@ exports.editShiftTemplate = async (req, res) => {
     console.log('Request body:', req.body);
 
     const { id } = req.params;
-    const { dayOfWeek, startTime, endTime, positionId, managerId } = req.body;
+    const { dayOfWeek, startTime, endTime, positionId, managerId, color } = req.body;
 
     console.log('Shift template id:', id);
 
