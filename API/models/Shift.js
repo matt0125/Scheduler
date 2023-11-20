@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 // Define the schema for the 'Shift' collection
 const shiftSchema = new Schema({
   _id: Schema.Types.ObjectId,
-  date: Date,
+  date: mongoose.date,
   empId: {
     type: Schema.Types.ObjectId,
     ref: 'Employee'
