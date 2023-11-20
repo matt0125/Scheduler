@@ -253,12 +253,6 @@ exports.getShiftByEmployeeAndDate = async (req, res) => {
     startDate += "T00:00:00.000+00:00";
     endDate += "T00:00:00.000+00:00";
 
-    res.status(400).json({date: {
-      $gte: startDate,
-      $lte: endDate,
-    },empId: empId
-  })
-
     const shifts = await Shift.find({
       empId: empId,
       date: {
