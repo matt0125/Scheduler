@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import "../styles/UpdateAvailability.css";
+import logo from "../images/branding-notitle.png";
+
 
 const generateTimeSlots = (interval = 30) => {
     const times = [];
@@ -93,12 +96,23 @@ const UpdateAvailability = () => {
   return (
     <div className="update-availability">
       <h2>Update Availability</h2>
+      <img src={logo} alt="sched logo" className="logo"></img>
       <form onSubmit={handleSubmit}>
         {/* Dropdown for manager name */}
-        <select name="managerName" onChange={handleSelectChange}>
-          <option value="">Select Manager...</option>
-          {/* Populate with actual manager names */}
-        </select>
+        <div className="dropdown-container">
+          <select name="managerName" onChange={handleSelectChange}>
+            <option value="">Select Manager...</option>
+            {/* Populate with actual manager names */}
+          </select>
+
+          {/* Dropdown for position */}
+          <select name="position" onChange={handleSelectChange}>
+            <option value="">Select Position...</option>
+            {/* Populate with actual positions */}
+          </select>
+        </div>
+
+        <h3>What days are you available?</h3>
 
         {/* Availability for each day */}
         {Object.keys(availability.days).map((day) => (
@@ -131,12 +145,12 @@ const UpdateAvailability = () => {
         ))}
 
         {/* Dropdown for position */}
-        <select name="position" onChange={handleSelectChange}>
+        {/* <select name="position" onChange={handleSelectChange}>
           <option value="">Select Position...</option>
-          {/* Populate with actual positions */}
-        </select>
+          {Populate with actual positions }
+        </select> */}
 
-        <button type="submit">Update Availability</button>
+        <button type="submit" className="button-container">Update Availability</button>
       </form>
     </div>
   );
