@@ -112,6 +112,7 @@ app.put('/api/shift-templates/:id', shiftTemplateController.editShiftTemplate);
 app.delete('/api/shift-templates/:id', shiftTemplateController.deleteShiftTemplate);
 
 app.get('/api/shift-templates/manager/:managerId', shiftTemplateController.getShiftTemplateByManager);
+app.delete('/api/shift-templates/position/:positionId', shiftTemplateController.deleteShiftTemplatesByPosition);
 
 // Positions
 app.get('/api/position/:positionId', positionController.getPosition);
