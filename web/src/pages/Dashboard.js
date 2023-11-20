@@ -108,7 +108,7 @@ export default class DemoApp extends React.Component {
     const jwtToken = localStorage.getItem('token');
     
     try {
-      const response = await axios.get(`http://large.poosd-project.com/api/positions/${managerId}`, {
+      const response = await axios.get(`http://localhost:3000/api/positions/${managerId}`, {
         headers: {
           contentType: 'application/json',
           Authorization: `Bearer ${jwtToken}`
@@ -116,14 +116,14 @@ export default class DemoApp extends React.Component {
       });
   
       // Create a new array that includes the position ID and other details
-      const positionsWithIds = response.data.map(position => ({
-        id: position._id, // Assuming the ID is under the property _id
+      const positionsWithIdsAndColors = response.data.map((position, index) => ({
+        id: position._id,
         name: position.name,
-        checked: false // Default to unchecked
+        color: colorChoices[index % colorChoices.length], // Cycle through the colors for each position
+        checked: false
       }));
-  
-      // Set the new array in the state
-      this.setState({ positions: positionsWithIds });
+    
+      this.setState({ positions: positionsWithIdsAndColors });
     } catch (error) {
       alert('Failed to fetch positions: ' + error.message);
       console.log(error);
@@ -193,7 +193,7 @@ export default class DemoApp extends React.Component {
   
     try {
       let jwtToken = localStorage.getItem('token');
-      const response = await axios.get('http://large.poosd-project.com/api/employee/', {
+      const response = await axios.get('http://localhost:3000/api/employee/', {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -261,6 +261,13 @@ export default class DemoApp extends React.Component {
     const jwtToken = localStorage.getItem('token');
   
     try {
+        // Then, delete all shift templates associated with this position
+      await axios.delete(`http://localhost:3000/api/shift-templates/position/${positionId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        },
+      });
       await axios.delete(`http://localhost:3000/api/position/${positionId}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
@@ -414,8 +421,6 @@ export default class DemoApp extends React.Component {
         };
 
         // calendarApi.addEvent(event);
-        alert('New shift template created!');
-        alert('Fetching events!');
         this.fetchShiftTemplates();
       } catch (error) {
         alert(error);
@@ -439,11 +444,10 @@ export default class DemoApp extends React.Component {
 
   // Make this be able to add employees to shift temmplates 
   handleEventDelete = (clickInfo) => {
-    alert(typeof clickInfo);
     if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
-      alert(clickInfo.id);
+      console.log(clickInfo.id);
       const eventId = clickInfo.id.split('-')[0]; // Extract original template ID
-      const url = `http://large.poosd-project.com/api/shift-templates/${eventId}`;
+      const url = `http://localhost:3000/api/shift-templates/${eventId}`;
 
       // Retrieve the JWT from local storage
       const jwtToken = localStorage.getItem("token");

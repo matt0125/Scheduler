@@ -28,14 +28,24 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
       <List style={listStyle}>
         {positions.map((position) => (
           <ListItem key={position.id} dense button>
-            <Checkbox
-              edge="start"
-              checked={position.checked || false}
-              tabIndex={-1}
-              disableRipple
-              onClick={() => onToggle(position.id)}
+            <div
+              style={{
+                width: '20px',
+                height: '20px',
+                backgroundColor: position.color,
+                borderRadius: '50%',
+                marginRight: '10px'
+              }}
             />
-            <ListItemText primary={position.name} />
+            <ListItemText 
+              primary={position.name} 
+              style={{
+                maxWidth: 'calc(100% - 60px)', // Adjust the value as needed
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            />
             <IconButton
               edge="end"
               aria-label="delete"
