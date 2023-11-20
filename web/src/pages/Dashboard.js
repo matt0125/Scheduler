@@ -444,9 +444,8 @@ export default class DemoApp extends React.Component {
 
   // Make this be able to add employees to shift temmplates 
   handleEventDelete = (clickInfo) => {
-    alert(typeof clickInfo);
     if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
-      alert(clickInfo.id);
+      console.log(clickInfo.id);
       const eventId = clickInfo.id.split('-')[0]; // Extract original template ID
       const url = `http://localhost:3000/api/shift-templates/${eventId}`;
 
