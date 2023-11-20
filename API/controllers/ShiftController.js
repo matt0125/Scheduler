@@ -250,9 +250,6 @@ exports.getShiftByEmployeeAndDate = async (req, res) => {
       }
     }
 
-    startDate += "T00:00:00.000+00:00";
-    endDate += "T00:00:00.000+00:00";
-
     const shifts = await Shift.find({
       empId: empId,
       date: {
@@ -268,6 +265,14 @@ exports.getShiftByEmployeeAndDate = async (req, res) => {
     });
 
     if (!shifts || shifts.length === 0) {
+
+
+    res.status(400).json({date: {
+      $gte: startDate,
+      $lte: endDate,
+    },empId: empId, shifts: shifts
+  });
+
       return res.status(404).json({ message: 'No shifts found for the specified employee ID' });
     }
 
