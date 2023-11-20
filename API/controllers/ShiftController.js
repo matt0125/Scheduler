@@ -248,6 +248,11 @@ exports.getShiftByEmployeeAndDate = async (req, res) => {
       if (!(shiftDate instanceof Date && !isNaN(shiftDate))) {
         return res.status(400).json({ message: 'Invalid date' });
       }
+
+      if(i==0)
+        startDate = date;
+      else
+        endDate = date;
     }
 
     res.status(400).json({date: {
