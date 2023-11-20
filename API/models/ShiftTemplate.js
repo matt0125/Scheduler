@@ -7,6 +7,7 @@ const shiftTemplateSchema = new Schema({
   dayOfWeek: Number,
   startTime: String,
   endTime: String,
+  color: String,
   positionId: {
     type: Schema.Types.ObjectId,
     ref: 'Position'
