@@ -261,6 +261,13 @@ export default class DemoApp extends React.Component {
     const jwtToken = localStorage.getItem('token');
   
     try {
+        // Then, delete all shift templates associated with this position
+      await axios.delete(`http://localhost:3000/api/shift-templates/position/${positionId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        },
+      });
       await axios.delete(`http://localhost:3000/api/position/${positionId}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
