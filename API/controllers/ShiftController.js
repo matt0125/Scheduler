@@ -252,7 +252,7 @@ exports.getShiftByEmployeeAndDate = async (req, res) => {
     }
 
     const shifts = await Shift.find({
-      empId,
+      empId: empId,
       date: {
         $gte: startDate,
         $lte: endDate,
