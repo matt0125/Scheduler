@@ -68,10 +68,13 @@ app.put('/api/employee/:employeeId/position/:positionId', employeeController.add
 app.use(authenticateJWT);
 
 app.get('/api/employee/:id', employeeController.getEmployee);
-app.get('/api/employee/:employeeId/manager', employeeController.getManager);
-app.get('/api/manager/:id/employees', employeeController.getEmployeesByManager);
 app.get('/api/employee/:employeeId/teammates', employeeController.getTeammates);
 app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
+
+app.get('/api/employee/:employeeId/manager', employeeController.getManager);
+app.get('/api/manager/name', employeeController.getManagerByName);
+app.get('/api/manager/:id/employees', employeeController.getEmployeesByManager);
+app.delete('/api/employee/:employeeId/manager', employeeController.removeManagerFromEmployee);
 
 // post register
 app.get('/api/manager/allmanagers', employeeController.getAllManagers);
@@ -85,14 +88,6 @@ app.put('/api/employee/:employeeId/availabilityByString', employeeController.upd
 app.put('/api/employee/:employeeId/availabilityByArray', employeeController.setAvailability);
 app.delete('/api/employee/:employeeId/availabilityByString', employeeController.deleteAvailability);
 
-// positions
-app.post('/api/position', PositionController.createPosition);
-app.get('/api/position/:id', PositionController.getPosition);
-app.get('/api/position', PositionController.getAllPositions);
-app.get('/api/position/:name', PositionController.getPositionByName);
-app.put('/api/position/:id', PositionController.updatePosition);
-app.delete('/api/position/:id', PositionController.deletePosition);
-
 // shifts
 app.post('/api/shifts', shiftController.createShift);
 app.get('/api/shifts/:id', shiftController.getShift);
@@ -104,6 +99,7 @@ app.post('/api/shifts/empbydates', shiftController.getShiftByEmployeeAndDate);
 app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
 app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
+app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftByEmployee);
 
 // shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
@@ -115,9 +111,17 @@ app.get('/api/shift-templates/manager/:managerId', shiftTemplateController.getSh
 app.delete('/api/shift-templates/position/:positionId', shiftTemplateController.deleteShiftTemplatesByPosition);
 
 // Positions
+app.post('/api/position', PositionController.createPosition);
+app.get('/api/position/:id', PositionController.getPosition);
+app.get('/api/position', PositionController.getAllPositions);
+app.get('/api/position/:name', PositionController.getPositionByName);
+app.put('/api/position/:id', PositionController.updatePosition);
+app.delete('/api/position/:id', PositionController.deletePosition);
+
 app.get('/api/position/:positionId', positionController.getPosition);
 app.get('/api/positions/:managerId', positionController.getPositionsByManager);
 app.post('/api/positions/manager', positionController.createPositionByManager);
+app.delete('/api/position/:empId', PositionController.removePositionFromEmployee);
 
 // Update employee
 app.put('/api/employee/:employeeId/password', employeeController.updatePassword);

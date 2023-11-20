@@ -15,6 +15,16 @@ const PositionController = {
     }
   },
 
+  createMultiplePositions: async (req, res) => {
+    try {
+
+    }
+
+    catch (error) {
+      
+    }
+  },
+
   // Read (get) a single Position by ID
   getPosition: async (req, res) => {
     try {
@@ -125,6 +135,16 @@ const PositionController = {
       console.log("Here: ", error.message);
     }
   },
-}
+
+  removePositionFromEmployee: async (req, res) => {
+    try {
+
+    }
+
+    catch (error) {
+
+    }
+  },
+};
 
 module.exports = PositionController;

@@ -220,7 +220,6 @@ exports.getEmployeesByManager = async (req, res) => {
   }
 }
 
-
 // Given an employee, get their teammates (other employees) that are managed by the same person
 exports.getManager = async (req, res) => {
   try {
@@ -242,7 +241,6 @@ exports.getManager = async (req, res) => {
     console.error("There was an error:", error);
   }
 }
-
 
 // Given an employee, get their teammates (other employees) that are managed by the same person
 exports.getTeammates = async (req, res) => {
@@ -308,7 +306,6 @@ exports.setAvailability = async (req, res) => {
     console.error("There was an error:", err);
   }
 }
-
 
 exports.addAvailability = async (req, res) => {
   try {
@@ -551,7 +548,6 @@ exports.updateEmployeeProfile = async (req, res) => {
   }
 };
 
-
 exports.updateEmployeeProfile = async (req, res) => {
   try {
     const { employeeId } = req.params;
@@ -589,7 +585,6 @@ exports.updateEmployeeProfile = async (req, res) => {
   }
 };
 
-
 exports.updateEmployeeProfile = async (req, res) => {
   try {
     const { employeeId } = req.params;
@@ -626,7 +621,6 @@ exports.updateEmployeeProfile = async (req, res) => {
     console.error("There was an error:", err);
   }
 };
-
 
 exports.getAllManagers = async (req, res) => {
   try {
@@ -731,4 +725,24 @@ exports.addPositionToEmployee = async (req, res) => {
     res.status(400).json({ message: 'Failed to add position to employee', error });
     console.log('There was an error adding position to employee:', error);
   }
-}
+};
+
+exports.removeManagerFromEmployee = async (req, res) => {
+  try {
+
+  }
+
+  catch (error) {
+
+  }
+};
+
+exports.getManagerByName = async (req, res) => {
+  try {
+
+  }
+
+  catch (error) {
+
+  }
+};
