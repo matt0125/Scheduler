@@ -141,4 +141,28 @@ exports.getShiftTemplateByManager = async (req, res) => {
   }
 };
 
+exports.deleteShiftTemplatesByPosition = async (req, res) => {
+  try {
+    console.log("Deleting shift templates for position...");
+
+    const { positionId } = req.params; // Assuming positionId is passed as a URL parameter
+
+    // Validate if the position exists
+    const positionExists = await Position.findById(positionId);
+    if (!positionExists) {
+      return res.status(404).json({ message: 'Position not found' });
+    }
+
+    // Delete all shift templates for the given position
+    await ShiftTemplate.deleteMany({ positionId });
+
+    res.status(200).json({ message: `Shift templates for position ${positionId} deleted successfully` });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete shift templates', error });
+    console.error('There was an error deleting shift templates by position', error);
+  }
+};
+
+
+
 
