@@ -123,6 +123,38 @@
   background-color: #b8a189;
 }
 
+.register-box {
+  position: relative;
+}
+
+.user-popup{
+  position: absolute;
+  top: 67%;
+  left: 0%;
+  background-color: #ff9999;
+  color: #333;
+  padding: 8px;
+  border: 1px solid #cc6666;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ff9999;
+  color: #333;
+  padding: 8px;
+  border: 1px solid #cc6666;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1;
+}
+
+
+
 @media (max-width: 650px) {
 
   #register-body{
