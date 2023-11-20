@@ -112,7 +112,7 @@ exports.loginEmployee = async (req, res) => {
     }
 
     // If the password matches, create a JWT token
-    const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: '2h' }); // Expires in 2 hours
+    const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
 
     // If the password matches, proceed to login
     return res.json({ message: 'Login successful', id: user._id, token: token });
