@@ -329,7 +329,7 @@ export default class DemoApp extends React.Component {
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+              right: 'timeGridWeek,timeGridDay'
             }}
             allDaySlot={false}
             height={520}
