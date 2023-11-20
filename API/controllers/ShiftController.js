@@ -222,7 +222,7 @@ exports.getShiftByEmployeeAndDate = async (req, res) => {
   try {
     console.log('Fetching for shifts by employee ID and date...');
     
-    const { startDate, endDate, empId } = req.body;
+    var { startDate, endDate, empId } = req.body;
 
     for(i = 0; i < 2; i++)
     {
