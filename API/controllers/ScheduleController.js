@@ -9,8 +9,8 @@ exports.generateSchedule = async (req, res) => {
     try {
         const { managerId, startDate, endDate } = req.body;
     
-        if (!managerId || !empId || !templateId) {
-          return res.status(400).json({ message: 'Missing required fields: \'managerId\',' });
+        if (!managerId, !startDate, !endDate) {
+          return res.status(400).json({ message: 'Missing required fields' });
         }
 
         for(i = 0; i < 2; i++)
