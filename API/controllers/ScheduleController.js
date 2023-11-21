@@ -87,7 +87,12 @@ exports.generateSchedule = async (req, res) => {
                     }
                   ]);
 
-                emps.push(["0"]);
+                if (getEmployeesByPosition.length === 0) {
+                    emps.push(["0"]);
+                }
+                else {
+                    emps.push(employees);
+                }
             }
 
             while(emps.length != 0) {
