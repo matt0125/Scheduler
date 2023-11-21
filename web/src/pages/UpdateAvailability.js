@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import "../styles/UpdateAvailability.css";
 import logo from "../images/branding-notitle.png";
+import { Container, Row, Col } from "react-bootstrap";
 
 
 const generateTimeSlots = (interval = 30) => {
@@ -94,65 +95,76 @@ const UpdateAvailability = () => {
   };
 
   return (
-    <div className="update-availability">
-      <h2>Update Availability</h2>
-      <img src={logo} alt="sched logo" className="logo"></img>
-      <form onSubmit={handleSubmit}>
-        {/* Dropdown for manager name */}
-        <div className="dropdown-container">
-          <select name="managerName" onChange={handleSelectChange}>
-            <option value="">Select Manager...</option>
-            {/* Populate with actual manager names */}
-          </select>
+    <container>
+      <div className="logo-container">
+        <h1>Sched</h1>
+        <img src={logo} alt="sched logo" className="logo"></img>
+      </div>
+      <div className="background-square">
+        <Col>
+          <h2 className="update-title">Update Availability</h2>
+          <form onSubmit={handleSubmit}>
+              {/* Dropdown for manager name */}
+              <div className="dropdown-container">
+                <select name="managerName" onChange={handleSelectChange}>
+                  <option value="">Select Manager...</option>
+                  {/* Populate with actual manager names */}
+                </select>
 
-          {/* Dropdown for position */}
-          <select name="position" onChange={handleSelectChange}>
-            <option value="">Select Position...</option>
-            {/* Populate with actual positions */}
-          </select>
+                {/* Dropdown for position */}
+                <select name="position" onChange={handleSelectChange}>
+                  <option value="">Select Position...</option>
+                  {/* Populate with actual positions */}
+                </select>
+              </div>
+              <h3>What days are you available?</h3>
+            {/* Availability for each day */}
+            <div className="availabilities">
+            {Object.keys(availability.days).map((day) => (
+              <div key={day}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={availability.days[day].available}
+                    onChange={() => handleCheckboxChange(day)}
+                  />
+                  {day}:
+                </label>
+                <div className="time-selects"> 
+                  <select
+                    value={availability.days[day].startTime}
+                    onChange={(e) => handleTimeChange(day, true, e.target.value)}
+                  >
+                    {timeOptions.map(time => (
+                      <option key={`${day}-start-${time}`} value={time}>{time}</option>
+                    ))}
+                  </select>
+                  <select
+                    value={availability.days[day].endTime}
+                    onChange={(e) => handleTimeChange(day, false, e.target.value)}
+                  >
+                  {timeOptions.map(time => (
+                      <option key={`${day}-end-${time}`} value={time}>{time}</option>
+                  ))}
+                  </select>
+                </div>
+              </div>
+            ))}
+            </div>
+            {/* Dropdown for position */}
+            {/* <select name="position" onChange={handleSelectChange}>
+              <option value="">Select Position...</option>
+              {Populate with actual positions }
+            </select> */}
+            <Row>
+              <button type="button" className="button-container" onClick={() => window.history.back()}>Back</button>
+              <button type="submit" className="button-container">Update Availability</button>
+            </Row>
+            </form>
+        </Col>
         </div>
-
-        <h3>What days are you available?</h3>
-
-        {/* Availability for each day */}
-        {Object.keys(availability.days).map((day) => (
-          <div key={day}>
-            <label>
-              <input
-                type="checkbox"
-                checked={availability.days[day].available}
-                onChange={() => handleCheckboxChange(day)}
-              />
-              {day}:
-            </label>
-            <select
-              value={availability.days[day].startTime}
-              onChange={(e) => handleTimeChange(day, true, e.target.value)}
-            >
-              {timeOptions.map(time => (
-                <option key={`${day}-start-${time}`} value={time}>{time}</option>
-              ))}
-            </select>
-            <select
-              value={availability.days[day].endTime}
-              onChange={(e) => handleTimeChange(day, false, e.target.value)}
-            >
-              {timeOptions.map(time => (
-                <option key={`${day}-end-${time}`} value={time}>{time}</option>
-              ))}
-            </select>
-          </div>
-        ))}
-
-        {/* Dropdown for position */}
-        {/* <select name="position" onChange={handleSelectChange}>
-          <option value="">Select Position...</option>
-          {Populate with actual positions }
-        </select> */}
-
-        <button type="submit" className="button-container">Update Availability</button>
-      </form>
-    </div>
+      </container>
+    // </container>
   );
 };
 
