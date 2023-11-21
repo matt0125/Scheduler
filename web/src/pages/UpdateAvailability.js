@@ -1,171 +1,168 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import "../styles/UpdateAvailability.css";
-import logo from "../images/branding-notitle.png";
-import { Container, Row, Col } from "react-bootstrap";
+body, html {
+    background-color: #EDE7E3;
+    font-family: Katibeh;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    height: 10vh;
+}
+
+.update-title {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+h1 {
+    color: #49423E;
+    text-align: left;
+    font-family: Katibeh;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin: 0;
+}
+
+h2 {
+    font-size: 50px;
+    color: #47413d;
+    font-family: Katibeh;
+    margin-top: 0;
+    margin-bottom: auto;
+    text-align: center;
+}
+
+h3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 25px;
+}
+
+.logo-container {
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+.logo {
+    width: 50px;
+    height: auto;
+    margin-left: 10px;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.dropdown-container {
+    display: flex;
+    margin-bottom: 20px;
+}
 
 
-const generateTimeSlots = (interval = 30) => {
-    const times = [];
-    let currentTime = new Date().setHours(0, 0, 0, 0); // Start at midnight
-  
-    while (currentTime <= new Date().setHours(23, 59, 0, 0)) {
-      let time = new Date(currentTime);
-      times.push(time.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }));
-      currentTime += interval * 60 * 1000; // Add interval minutes
-    }
-  
-    return times;
-  };
+form {
+    color: #000000;
+}
 
-// Default interval of 30 minutes
-const timeOptions = generateTimeSlots();
-const UpdateAvailability = () => {
-  // State to keep track of the availability
-  const [availability, setAvailability] = useState({
-    managerName: '',
-    position: '',
-    days: {
-      Mon: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Tue: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Wed: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Thu: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Fri: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Sat: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Sun: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-    },
-  });
+.availabilities div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
-  // Function to handle availability checkbox change
-  const handleCheckboxChange = (day) => {
-    setAvailability((prevAvailability) => ({
-      ...prevAvailability,
-      days: {
-        ...prevAvailability.days,
-        [day]: {
-          ...prevAvailability.days[day],
-          available: !prevAvailability.days[day].available,
-        },
-      },
-    }));
-  };
+label {
+    margin-right: 10px;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+}
 
-  // Function to handle time change
-  const handleTimeChange = (day, isStart, time) => {
-    setAvailability((prevAvailability) => ({
-      ...prevAvailability,
-      days: {
-        ...prevAvailability.days,
-        [day]: {
-          ...prevAvailability.days[day],
-          ...(isStart ? { startTime: time } : { endTime: time }),
-        },
-      },
-    }));
-  };
+::after {
+    content: "";
+    display: table;
+    clear: both;
+}
 
-  // Function to handle manager name and position change
-  const handleSelectChange = (e) => {
-    setAvailability((prevAvailability) => ({
-      ...prevAvailability,
-      [e.target.name]: e.target.value,
-    }));
-  };
+select {
+    width: 150px;
+    margin-bottom: 5px;
+    margin-top: 2px;
+    margin-right: 5px;
+    background-color: #CDBFB6;
+    color: #49423E;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: Katibeh;
+    font-size: 15px;
+}
 
-  // Function to submit the form
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Construct the payload, you might need to adjust this based on your API requirements
-    const payload = {
-      managerName: availability.managerName,
-      position: availability.position,
-      days: availability.days,
-    };
+select[name="position"] {
+    margin-left: 10px;
+}
 
-    try {
-      // Replace 'YOUR_API_ENDPOINT' with the actual endpoint of your backend
-      const response = await axios.post('YOUR_API_ENDPOINT', payload);
-      // Handle the response as needed
-      console.log(response.data);
-      alert('Availability updated successfully!');
-    } catch (error) {
-      console.error('There was an error updating the availability:', error);
-      alert('Failed to update availability.');
-    }
-  };
+select, input[type="checkbox"] {
+    margin-right: 10px;
+}
 
-  return (
-    <container>
-      <div className="logo-container">
-        <h1>Sched</h1>
-        <img src={logo} alt="sched logo" className="logo"></img>
-      </div>
-      <div className="background-square">
-        <Col>
-          <h2 className="update-title">Update Availability</h2>
-          <form onSubmit={handleSubmit}>
-              {/* Dropdown for manager name */}
-              <div className="dropdown-container">
-                <select name="managerName" onChange={handleSelectChange}>
-                  <option value="">Select Manager...</option>
-                  {/* Populate with actual manager names */}
-                </select>
+/* checkbox */
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 30px;
+    height: 30px;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    background-color: #CDBFB6;
+    margin-right: 5px;
+}
 
-                {/* Dropdown for position */}
-                <select name="position" onChange={handleSelectChange}>
-                  <option value="">Select Position...</option>
-                  {/* Populate with actual positions */}
-                </select>
-              </div>
-              <h3>What days are you available?</h3>
-            {/* Availability for each day */}
-            <div className="availabilities">
-            {Object.keys(availability.days).map((day) => (
-              <div key={day}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={availability.days[day].available}
-                    onChange={() => handleCheckboxChange(day)}
-                  />
-                  {day}:
-                </label>
-                <div className="time-selects"> 
-                  <select
-                    value={availability.days[day].startTime}
-                    onChange={(e) => handleTimeChange(day, true, e.target.value)}
-                  >
-                    {timeOptions.map(time => (
-                      <option key={`${day}-start-${time}`} value={time}>{time}</option>
-                    ))}
-                  </select>
-                  <select
-                    value={availability.days[day].endTime}
-                    onChange={(e) => handleTimeChange(day, false, e.target.value)}
-                  >
-                  {timeOptions.map(time => (
-                      <option key={`${day}-end-${time}`} value={time}>{time}</option>
-                  ))}
-                  </select>
-                </div>
-              </div>
-            ))}
-            </div>
-            {/* Dropdown for position */}
-            {/* <select name="position" onChange={handleSelectChange}>
-              <option value="">Select Position...</option>
-              {Populate with actual positions }
-            </select> */}
-            <Row>
-              <button type="button" className="button-container" onClick={() => window.history.back()}>Back</button>
-              <button type="submit" className="button-container">Update Availability</button>
-            </Row>
-            </form>
-        </Col>
-        </div>
-      </container>
-    // </container>
-  );
-};
+input[type="checkbox"]:checked::before {
+    content: '\2714';
+    font-size: 20px;
+    color: #000000;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
-export default UpdateAvailability;
+.dropdown-container {
+    display: flex;
+    justify-content: center;
+}
+
+button {
+    background-color: #B1947B;
+    color: #000000;
+    font-family: Katibeh;
+    font-size: 15px;
+    border-radius: 5px;
+    border: 2px solid #000000;
+    margin: 20px auto;
+    width: 200px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    line-height: 35px;
+}
+
+.background-square {
+    background-color: #F8F8F8;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    max-width: 600px;
+    box-shadow: 5px 0 10px rgba(0, 0, 0, 0.1);
+} 
