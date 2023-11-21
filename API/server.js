@@ -70,11 +70,12 @@ app.use(authenticateJWT);
 app.get('/api/employee/:id', employeeController.getEmployee);
 app.get('/api/employee/:employeeId/teammates', employeeController.getTeammates);
 app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
+app.get('/api/manager/:id/employees', employeeController.getEmployeesByManager);
 
 app.get('/api/employee/:employeeId/manager', employeeController.getManager);
 app.get('/api/manager/:managerName', employeeController.getManagerByName);
-app.get('/api/manager/:id/employees', employeeController.getEmployeesByManager);
 app.delete('/api/employee/:empId/removeManager', employeeController.removeManagerFromEmployee);
+app.delete('/api/employee/:empId/position/:positionId', employeeController.removePositionFromEmployee);
  
 // post register
 app.get('/api/manager/allmanagers', employeeController.getAllManagers);
@@ -121,7 +122,6 @@ app.delete('/api/position/:id', PositionController.deletePosition);
 app.get('/api/position/:positionId', positionController.getPosition);
 app.get('/api/positions/:managerId', positionController.getPositionsByManager);
 app.post('/api/positions/manager', positionController.createPositionByManager);
-app.delete('/api/position/:empId', PositionController.removePositionFromEmployee);
 
 // Update employee
 app.put('/api/employee/:employeeId/password', employeeController.updatePassword);

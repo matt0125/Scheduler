@@ -135,16 +135,7 @@ const PositionController = {
       console.log("Here: ", error.message);
     }
   },
-
-  removePositionFromEmployee: async (req, res) => {
-    try {
-
-    }
-
-    catch (error) {
-
-    }
-  },
+  
 };
 
 module.exports = PositionController;

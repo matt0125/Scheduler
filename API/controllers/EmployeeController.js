@@ -786,3 +786,28 @@ exports.getManagerByName = async (req, res) => {
     console.error('There was an error while fetching manager by name', error);
   }
 };
+
+exports.removePositionFromEmployee = async (req, res) => {
+  try {
+    const { empId, positionId } = req.params;
+
+    const employee = await Employee.findById(empId);
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Remove the specified position from the employee's positions array
+    employee.positions.pull(positionId);
+
+    // Save the updated employee
+    const updatedEmployee = await employee.save();
+
+    res.status(200).json(updatedEmployee);
+  }
+
+  catch (error) {
+    res.status(500).json({ message: 'An error occurred while removing a position from an employee', error: error.toString() });
+    console.error('There was an error while removing a position from an employee', error);
+  }
+}
