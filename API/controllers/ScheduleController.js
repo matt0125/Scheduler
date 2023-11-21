@@ -66,6 +66,9 @@ exports.generateSchedule = async (req, res) => {
                 continue;
             }
 
+            res.status(200).json({message: templates});
+
+
             let emps = []
 
             for (const template of templates) {
