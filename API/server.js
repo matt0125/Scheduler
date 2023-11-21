@@ -10,6 +10,7 @@ const positionController = require('./controllers/PositionController');
 const { create } = require('domain');
 const jwt = require('jsonwebtoken');
 const PositionController = require('./controllers/PositionController');
+const scheduleController = require('./controllers/ScheduleController');
 const secretKey = process.env.JWT_SECRET_KEY;
 
 // Middleware to authenticate and protect routes
@@ -130,6 +131,8 @@ app.post('/api/positions/manager', positionController.createPositionByManager);
 app.put('/api/employee/:employeeId/password', employeeController.updatePassword);
 app.put('/updateEmployee/:employeeId', employeeController.updateEmployeeProfile);
 app.get('/api/employee/position/:positionId', employeeController.getEmployeesByPosition);
+
+app.post('/api/schedule/generate', scheduleController.generateSchedule);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
