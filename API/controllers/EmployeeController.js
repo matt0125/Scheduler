@@ -767,6 +767,7 @@ exports.getManagerByName = async (req, res) => {
           $or: [
             { firstName: new RegExp(managerName, 'i') },
             { lastName: new RegExp(managerName, 'i') },
+            { username: new RegExp(managerName, 'i') },
           ],
         },
       ],
