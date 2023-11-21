@@ -727,22 +727,61 @@ exports.addPositionToEmployee = async (req, res) => {
   }
 };
 
+// given an employee, remove its manager
 exports.removeManagerFromEmployee = async (req, res) => {
   try {
+    const empId = req.params.empId; // Assuming the employee ID is passed in the request parameters
 
-  }
+    const employee = await Employee.findById(empId);
 
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    if (employee.managedBy === null) {
+      return res.status(400).json({ message: 'Employee does not have a manager' });
+    }
+
+    employee.managedBy = null;
+    
+    await employee.save();
+
+    res.status(200).json({ message: 'Manager removed successfully', employee: employee });
+  } 
+  
   catch (error) {
-
+    res.status(500).json({ message: 'An error occurred while removing the manager from the employee', error: error.toString() });
+    console.error('There was an error while trying to remove a manager from an employee', error);
   }
 };
 
 exports.getManagerByName = async (req, res) => {
   try {
+    const managerName = req.params.managerName; // Assuming the manager name is provided in the request parameters
 
-  }
+    // Find the manager(s) with the specified name
+    const managers = await Employee.find({
+      $and: [
+        { managerIdent: true }, // Assuming managers have managerIdent set to true
+        {
+          $or: [
+            { firstName: new RegExp(managerName, 'i') },
+            { lastName: new RegExp(managerName, 'i') },
+          ],
+        },
+      ],
+    });
 
+    // Check if any managers were found
+    if (managers.length === 0) {
+      return res.status(404).json({ message: 'Manager not found' });
+    }
+
+    res.status(200).json({ managers: managers });
+  } 
+  
   catch (error) {
-
+    res.status(500).json({ message: 'An error occurred while fetching manager by name', error: error.toString() });
+    console.error('There was an error while fetching manager by name', error);
   }
 };

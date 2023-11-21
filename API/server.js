@@ -72,10 +72,10 @@ app.get('/api/employee/:employeeId/teammates', employeeController.getTeammates);
 app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
 
 app.get('/api/employee/:employeeId/manager', employeeController.getManager);
-app.get('/api/manager/name', employeeController.getManagerByName);
+app.get('/api/manager/:managerName', employeeController.getManagerByName);
 app.get('/api/manager/:id/employees', employeeController.getEmployeesByManager);
-app.delete('/api/employee/:employeeId/manager', employeeController.removeManagerFromEmployee);
-
+app.delete('/api/employee/:empId/removeManager', employeeController.removeManagerFromEmployee);
+ 
 // post register
 app.get('/api/manager/allmanagers', employeeController.getAllManagers);
 app.post('/api/employee/:employeeId/assign/manager', employeeController.assignManager);
