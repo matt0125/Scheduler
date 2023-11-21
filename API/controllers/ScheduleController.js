@@ -62,12 +62,10 @@ exports.generateSchedule = async (req, res) => {
                 dayOfWeek: dayOfWeek
             });
 
+            res.status(200).json({message: `${dayOfWeek} ${managerId}`});
             if(templates.length === 0) {
                 continue;
             }
-
-            res.status(200).json({message: templates});
-
 
             let emps = []
 
