@@ -176,16 +176,21 @@ class APIService {
       print(e);
     }
 
-    for(final item in responseData["shifts"])
-    {
-      shifts.add(FullShift(
+    for (final item in responseData["shifts"]) {
+      try {
+        shifts.add(FullShift(
           startTime: item['templateId']['startTime'],
           endTime: item['templateId']['endTime'],
           positionTitle: item['templateId']['positionId']['name'],
           firstName: item['empId']['firstName'],
           lastName: item['empId']['lastName'],
-      ));
+        ));
+      } catch (e) {
+        // Handle the exception, e.g., print an error message or provide a default value.
+        print('Error processing item: $e');
+      }
     }
+
 
     return shifts;
   }
