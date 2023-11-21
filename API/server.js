@@ -113,9 +113,12 @@ app.delete('/api/shift-templates/position/:positionId', shiftTemplateController.
 
 // Positions
 app.post('/api/position', PositionController.createPosition);
+app.post('/api/positions', PositionController.createMultiplePositions);
+
 app.get('/api/position/:id', PositionController.getPosition);
 app.get('/api/position', PositionController.getAllPositions);
 app.get('/api/position/:name', PositionController.getPositionByName);
+
 app.put('/api/position/:id', PositionController.updatePosition);
 app.delete('/api/position/:id', PositionController.deletePosition);
 

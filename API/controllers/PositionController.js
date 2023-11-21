@@ -17,11 +17,26 @@ const PositionController = {
 
   createMultiplePositions: async (req, res) => {
     try {
+      const positions = req.body;
 
-    }
+      // Validate that the request body is an array
+      if (!Array.isArray(positions)) {
+        return res.status(400).json({ message: 'Request body must be an array of positions' });
+      }
 
+      // Validate that each position in the array has the required 'name' property
+      if (positions.some(position => !position.name)) {
+        return res.status(400).json({ message: 'Each position must have a "name" property' });
+      }
+
+      const createdPositions = await Position.insertMany(positions);
+
+      res.status(201).json(createdPositions);
+    } 
+    
     catch (error) {
-      
+      res.status(500).json({ message: 'An error occurred while creating multiple positions', error: error.toString() });
+      console.error('There was an error while creating multiple positions', error);
     }
   },
 
