@@ -6,6 +6,7 @@ import 'package:sched/Widgets/popup.dart';
 import 'package:flutter/services.dart'; // Import for TextInputFormatter
 
 
+
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
@@ -451,7 +452,7 @@ class BubbleText2 extends StatelessWidget {
           obscureText: obscureText,
           suffixIcon: suffixIcon,
           isError: isError,
-          inputFormatter: inputFormatter, // Pass the inputFormatter property to BubbleContainer
+          inputFormatter: [PhoneNumberTextInputFormatter()], // Use PhoneNumberTextInputFormatter
         ),
       ],
     );
@@ -504,5 +505,46 @@ class LoginButton extends StatelessWidget {
     );
   }
 }
+
+class PhoneNumberTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    if (newValue.text.length > oldValue.text.length) {
+      final newText = StringBuffer();
+      int charIndex = 0;
+
+      // Extract only digits from the new value
+      for (int i = 0; i < newValue.text.length; i++) {
+        if (RegExp(r'\d').hasMatch(newValue.text[i])) {
+          // Insert formatting characters at the appropriate positions
+          if (charIndex == 0) {
+            newText.write('(');
+          } else if (charIndex == 3) {
+            newText.write(') ');
+          } else if (charIndex == 6) {
+            newText.write('-');
+          }
+
+          if (charIndex < 10) {
+            newText.write(newValue.text[i]);
+            charIndex++;
+          }
+        }
+      }
+
+      return newValue.copyWith(
+        text: newText.toString(),
+        selection: TextSelection.collapsed(offset: newText.length),
+      );
+    }
+
+    return newValue;
+  }
+}
+
+
 
 
