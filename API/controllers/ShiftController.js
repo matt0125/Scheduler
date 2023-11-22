@@ -55,30 +55,13 @@ exports.createShift = async (req, res) => {
     }
 
     // Validate employee's availability
-    const isAvailable = employee.availability.some(avail => {
-      // Debugging: log the availability and template times
-      console.log(`Checking availability for dayOfWeek: ${avail.dayOfWeek} with template dayOfWeek: ${dayOfWeek}`);
-      console.log(`Employee Start Time: ${avail.startTime}, Template Start Time: ${template.startTime}`);
-      console.log(`Employee End Time: ${avail.endTime}, Template End Time: ${template.endTime}`);
+    tStartHour = template.startTime.split(":")[0];
+    tEndHour = template.endTime.split(":")[0];
 
-      const dayOfWeekMatch = parseInt(avail.dayOfWeek) === parseInt(template.dayOfWeek);
-      console.log('Day of week match?', dayOfWeekMatch);
-      
-    
-      const startTimeMatch = convertTimeToMinutes(avail.startTime) <= convertTimeToMinutes(template.startTime);
-      console.log('Start time match?', startTimeMatch);
-    
-      const endTimeMatch = convertTimeToMinutes(avail.endTime) >= convertTimeToMinutes(template.endTime);
-      console.log('End time match?', endTimeMatch);
-
-      const isAvailable = dayOfWeekMatch && startTimeMatch && endTimeMatch;
-      console.log('Is available?', isAvailable);
-
-      return isAvailable;
-    });
-
-    if (!isAvailable) {
-      return res.status(400).json({ message: 'Employee is not available at this time' });
+    for(i = tStartHour; i <= tEndHour; i++) {
+      if (!employee.availability[dayOfWeek][i]) {
+        return res.status(400).json({ message: 'Employee is not available at this time' });
+      }
     }
     
     // Create a new shift

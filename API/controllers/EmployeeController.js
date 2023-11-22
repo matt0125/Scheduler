@@ -1,4 +1,5 @@
 const Employee = require('../models/Employee');
+const Position = require('../models/Position');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // for bcrypt password hashing
@@ -254,31 +255,75 @@ exports.getTeammates = async (req, res) => {
 
 // Availabilities are stored as an array of objects in the Employee model
 
-exports.createAvailability = async (req, res) => {
+exports.setAvailability = async (req, res) => {
+  try {
+    const { employeeId } = req.params; // Get the employee ID from the request parameters
+    const { availability } = req.body; // Get the availability details from the request body
+
+    // Check for required availability details
+    if (availability === undefined) {
+      return res.status(400).json({ message: '\'availability\' is required for creating availability' });
+    }
+
+    // Find the employee by ID and add the new availability to the array
+    const employee = await Employee.findById( employeeId );
+
+    // Check if the update was successful
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    employee.availability = availability;
+
+    employee.save();
+
+    // Send the updated availability array back to the client
+    res.status(200).json({
+      message: 'Availability added successfully',
+      availability: updatedEmployee.availability
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Error creating availability', err });
+    console.error("There was an error:", err);
+  }
+}
+
+
+exports.addAvailability = async (req, res) => {
   try {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
     const { dayOfWeek, startTime, endTime } = req.body; // Get the availability details from the request body
 
     // Check for required availability details
     if (dayOfWeek === undefined || startTime === undefined || endTime === undefined) {
-      return res.status(400).json({ message: 'All fields are required for creating availability' });
+      return res.status(400).json({ message: '\'dayOfWeek\', \'startTime\', \'endTime\' are required for creating availability' });
+    }
+
+    try {
+      if(startTime.split(" ")[1] != null || endTime.split(" ")[1] != null) {
+        return res.status(400).json({ message: 'startTime and endTime should be 0:00 - 23:00' });
+      }
+    }
+    catch (err) {
+
     }
 
     // Find the employee by ID and add the new availability to the array
-    const updatedEmployee = await Employee.findByIdAndUpdate(
-      employeeId,
-      {
-        $push: {
-          availability: { dayOfWeek, startTime, endTime } // Push the new availability object into the availability array
-        }
-      },
-      { new: true, runValidators: true } // Return the updated document and run validators defined in the schema
-    );
+    const employee = await Employee.findById( employeeId );
 
     // Check if the update was successful
-    if (!updatedEmployee) {
+    if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
+
+    const startIndex = startTime.split(":")[0];
+    const endIndex = endTime.split(":")[0];
+
+    for (let i = startIndex; i <= endIndex; i++) {
+      employee.availability[dayOfWeek][i] = true;
+    }
+
+    employee.save();
 
     // Send the updated availability array back to the client
     res.status(200).json({
@@ -294,34 +339,54 @@ exports.createAvailability = async (req, res) => {
 // Update an employee's availability
 exports.updateAvailability = async (req, res) => {
   try {
-    const { employeeId, availabilityId } = req.params; // You'll need to pass the specific availability ID
-    const { dayOfWeek, startTime, endTime } = req.body;
-    console.log('employeeId:', employeeId);
-    console.log('availabilityId:', availabilityId);
+    const { employeeId } = req.params; // You'll need to pass the specific availability ID
+    const { dayOfWeek, oldStartTime, oldEndTime, newStartTime, newEndTime } = req.body;
 
-    // Find the employee and update the specific availability entry
-    const updatedEmployee = await Employee.findOneAndUpdate(
-      { "_id": employeeId, "availability._id": availabilityId },
-      {
-        $set: {
-          "availability.$.dayOfWeek": dayOfWeek,
-          "availability.$.startTime": startTime,
-          "availability.$.endTime": endTime
-        }
-      },
-      { new: true }
-    );
-
-    if (!updatedEmployee) {
-      return res.status(404).json({ message: 'Employee or availability not found' });
+    // Check for required availability details
+    if (dayOfWeek === undefined || oldStartTime === undefined || oldEndTime === undefined || newStartTime === undefined || newEndTime === undefined) {
+      return res.status(400).json({ message: '\'dayOfWeek\', \'oldStartTime\', \'oldEndTime\', \'newStartTime\', \'newEndTime\' are required for creating availability' });
     }
 
+    try {
+      if(oldStartTime.split(" ")[1] != null || oldEndTime.split(" ")[1] != null || newStartTime.split(" ")[1] != null || newEndTime.split(" ")[1] != null) {
+        return res.status(400).json({ message: '\'oldStartTime\', \'oldEndTime\', \'newStartTime\' and \'newEndTime\' should be 0:00 - 23:00' });
+      }
+    }
+    catch (err) {
+
+    }
+
+    // Find the employee by ID and add the new availability to the array
+    const employee = await Employee.findById( employeeId );
+
+    // Check if the update was successful
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    const startIndex = oldStartTime.split(":")[0];
+    const endIndex = oldEndTime.split(":")[0];
+
+    for (let i = startIndex; i <= endIndex; i++) {
+      employee.availability[dayOfWeek][i] = false;
+    }
+
+    startIndex = newStartTime.split(":")[0];
+    endIndex = newEndTime.split(":")[0];
+
+    for (let i = startIndex; i <= endIndex; i++) {
+      employee.availability[dayOfWeek][i] = true;
+    }
+
+    employee.save();
+
+    // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability updated successfully',
       availability: updatedEmployee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error updating availability', err });
+    res.status(500).json({ message: 'Error creating availability', err });
     console.error("There was an error:", err);
   }
 };
@@ -329,28 +394,47 @@ exports.updateAvailability = async (req, res) => {
 // Delete an employee's availability
 exports.deleteAvailability = async (req, res) => {
   try {
-    const { employeeId, availabilityId } = req.params;
+    const { employeeId } = req.params; // Get the employee ID from the request parameters
+    const { dayOfWeek, startTime, endTime } = req.body; // Get the availability details from the request body
 
-    const updatedEmployee = await Employee.findByIdAndUpdate(
-      employeeId,
-      {
-        $pull: {
-          availability: { _id: availabilityId } // Remove the availability with the given ID
-        }
-      },
-      { new: true }
-    );
-
-    if (!updatedEmployee) {
-      return res.status(404).json({ message: 'Employee or availability not found' });
+    // Check for required availability details
+    if (dayOfWeek === undefined || startTime === undefined || endTime === undefined) {
+      return res.status(400).json({ message: '\'dayOfWeek\', \'startTime\', \'endTime\' are required for creating availability' });
     }
 
+    try {
+      if(startTime.split(" ")[1] != null || endTime.split(" ")[1] != null) {
+        return res.status(400).json({ message: 'startTime and endTime should be 0:00 - 23:00' });
+      }
+    }
+    catch (err) {
+
+    }
+
+    // Find the employee by ID and add the new availability to the array
+    const employee = await Employee.findById( employeeId );
+
+    // Check if the update was successful
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    const startIndex = startTime.split(":")[0];
+    const endIndex = endTime.split(":")[0];
+
+    for (let i = startIndex; i <= endIndex; i++) {
+      employee.availability[dayOfWeek][i] = false;
+    }
+
+    employee.save();
+
+    // Send the updated availability array back to the client
     res.status(200).json({
-      message: 'Availability deleted successfully',
+      message: 'Availability removed successfully',
       availability: updatedEmployee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error deleting availability', err });
+    res.status(500).json({ message: 'Error creating availability', err });
     console.error("There was an error:", err);
   }
 };
@@ -366,9 +450,9 @@ exports.getAvailabilities = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found'});
     }
 
-    res.status(200).json(employee.availability);
+    res.status(200).json({availability: employee.availability});
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching availabilities', error });
+    res.status(500).json({ message: 'Error fetching availabilities', error: error.toString() });
     console.error('There was an error fetching availabilities', error );
   }
 };
@@ -569,3 +653,61 @@ exports.assignManager = async (req, res) => {
     console.error("There was an error:", error);
   }
 };
+
+exports.getEmployeesByPosition = async (req, res) => {
+  try {
+    // Extract the position ID from the request parameters or body
+    const { positionId } = req.params; // or req.body, depending on how you want to pass the position ID
+
+    // Validate the positionId if necessary
+
+    // Find employees who have the specified positionId in their 'positions' array
+    const employees = await Employee.find({
+      positions: { $in: [positionId] } // Assuming 'positions' is an array of ObjectId references
+    });
+
+    if (employees.length === 0) {
+      // No employees found with the specified position
+      return res.status(404).json({ message: 'No employees found for the given position' });
+    }
+
+    // Return the list of employees
+    res.status(200).json({ employees });
+  } catch (error) {
+    // Handle any errors that occur during the process
+    res.status(500).json({ message: 'Error fetching employees by position', error: error.toString() });
+    console.error('There was an error fetching employees by position:', error);
+  }
+};
+
+exports.addPositionToEmployee = async (req, res) => {
+  try {
+    const { employeeId, positionId } = req.params; // or from req.body
+
+    // Find the employee
+    const employee = await Employee.findById(employeeId);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Check if the position already exists in the employee's positions
+    if (employee.positions.includes(positionId)) {
+      return res.status(400).json({ message: 'Position already assigned to this employee' });
+    }
+
+    // Find the position
+    const position = await Position.findById(positionId);
+    if (!position) {
+      return res.status(404).json({ message: 'Position not found' });
+    }
+
+    // Add position to the employee's positions array
+    employee.positions.push(positionId);
+    await employee.save();
+
+    res.status(200).json({ message: 'Position added to employee successfully', employee });
+  } catch (error) {
+    res.status(400).json({ message: 'Failed to add position to employee', error });
+    console.log('There was an error adding position to employee:', error);
+  }
+}

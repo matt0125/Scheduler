@@ -39,6 +39,25 @@ body
 
 /* Modal Content */
 .ReactModal__Content {
+    background-color: #add8e6;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 10px; /* Rounded corners */
+    outline: none;
+    padding: 20px;
+    width: 30%; /* Set to a percentage of the screen width */
+    max-width: 500px; /* Maximum width of the modal */
+    height: 50%; /* Set to a percentage of the screen width */
+    max-height: 500px; /* Maximum width of the modal */
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2); /* Shadow for pop effect */
+}
+
+.centered-modal {
     position: relative;
     top: auto;
     left: auto;
@@ -54,4 +73,10 @@ body
     height: 15%; /* Set to a percentage of the screen width */
     max-height: 250px; /* Maximum width of the modal */
     box-shadow: 0 5px 10px rgba(0,0,0,0.2); /* Shadow for pop effect */
-}
+  }
+
+  .editSTModal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
