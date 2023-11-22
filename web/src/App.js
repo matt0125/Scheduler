@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import EditProfile from './pages/EditProfile'; // Import EditProfile
 import ChangePassword from './pages/ChangePassword'; // Import ChangePassword
 import UpdateAvailability from './pages/UpdateAvailability'; // Import UpdateAvailability
+import VerifyEmail from './pages/VerifyEmail';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/edit-profile/:employeeId" element={<EditProfile/>} /> {/* Add this line */}
         <Route path="/change-password/:employeeId" element={<ChangePassword />} />
         <Route path="/update-availability/:employeeId" element={<UpdateAvailability/>} />
+        <Route path="/verify-email" element={<VerifyEmail/>} />
       </Routes>
     </Router>
   );

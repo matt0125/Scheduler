@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import "../styles/Register.css";
 import { Container, Row, Col } from "react-bootstrap";
@@ -11,6 +12,7 @@ import phoneIcon from "../images/phone.png";
 
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -26,6 +28,9 @@ const Register = () => {
     startAvail: 'NULL',
     managerIdent: false
   });
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationStatus, setVerificationStatus] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,13 +43,33 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://large.poosd-project.com/api/register', formData);
+      const response = await axios.post('http://localhost:3000/api/register', formData);
       console.log('Registration successful:', response.data);
-      alert("Registered successfully.")
+      console.log("Registered successfully.");
+      setShowEmailVerification(true);
+      // Redirect to a new page or show a modal informing about email verification
+      navigate('/verify-email');
     } catch (err) {
       console.log('Error during registration:', err);
     }
   };
+
+  const handleVerificationCodeChange = (e) => {
+    setVerificationCode(e.target.value);
+  };
+
+  const handleEmailVerification = async (e) => {
+    e.preventDefault();
+    try {
+      // Assuming your backend API endpoint for verifying the code is '/api/verify-email'
+      const response = await axios.get(`http://localhost:3000/api/verify-email/${verificationCode}`);
+      setVerificationStatus('Verification successful. You can now login.');
+    } catch (error) {
+      console.error('Error during email verification:', error);
+      setVerificationStatus('Verification failed. Please check the code and try again.');
+    }
+  };
+
 
 
   let url = "/";
@@ -112,12 +137,31 @@ const Register = () => {
             onChange={(e) => handleChange({ target: { name: 'managerIdent', value: false} })}/> Employee
             </div>
             </div>
-            <button type="submit" className="submit-button">Sign Up</button>
+            <button type="submit" className="submit-button">Verify Email</button>
             <p className="login-register-p">Have an account?  <a href={url} className="login-register-url">log in</a></p>
             </div>
             </form>
           </Col>
         </Row>
+        {showEmailVerification && (
+          <Row>
+            <Col>
+              <div className="email-verification-section">
+                <h2>Verify Your Email</h2>
+                <form onSubmit={handleEmailVerification}>
+                  <input
+                    type="text"
+                    value={verificationCode}
+                    onChange={handleVerificationCodeChange}
+                    placeholder="Enter verification code"
+                  />
+                  <button type="submit">Verify Email</button>
+                </form>
+                {verificationStatus && <p>{verificationStatus}</p>}
+              </div>
+            </Col>
+          </Row>
+        )}
       </Container>
     </div>
   );
