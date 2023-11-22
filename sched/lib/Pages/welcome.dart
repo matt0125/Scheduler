@@ -191,96 +191,16 @@ class _WelcomePageState extends State<WelcomePage> {
                                 ],
                               ),
                             ],
-                          );
-                        },
-                      );
-                      // Popup(
-                      //   message: "Please select a manager",
-                      //   title: "Uh oh!",
-                      // );
-                    }
-                    else {
-                      if ((await apiService.AssignManager(_managers[_selectedManagerIndex!].employeeId!)).success!) {
-                        _positions = await apiService.GetManagerPositions(_managers[_selectedManagerIndex!].employeeId!);
-                        setState(() {
-                          _secondPage = false;
-                          _selectedManagerIndex = null;
-                        });
-                      }
-                    }
-                  },
-                  child: Text('Submit'),
-                ),
-              ],
-            )
-        ) : ( _thirdPage ? (
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'What positions do you work?',
-                  style: TextStyle(fontSize: 24),
-                ),
-                SizedBox(height: 20),
-                _positions.length != 0 ? (
-                    Container(
-                        height: .6 * MediaQuery.of(context).size.height,
-                        child: ListView.builder(
-                          itemCount: _positions.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    if (_selectedPositionIndex.contains(index)) {
-                                      _selectedPositionIndex.remove(index);
-                                    } else {
-                                      _selectedPositionIndex.add(index);
-                                    }
-                                  });
-                                },
-                                child: ListTile(
-                                  title: Text(
-                                    _positions[index].printName,
-                                    style: TextStyle(fontWeight: (_selectedPositionIndex.contains(index)) ? FontWeight.bold: FontWeight.normal ),
-                                  ),
-                                )
-                            );
-                          },
-                        )
-                    )
-
-                ) : (
-                    CircularProgressIndicator()
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    for(int i in _selectedPositionIndex) {
-                      await apiService.AddPosition(_positions[i].id);
-                    }
-                    // set positions
-                    setState(() {
-                      _thirdPage = false;
-                    });
-                    },
-                  child: Text('Submit'),
-                ),
-              ],
-            )
-        ) : (
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Welcome to Sched!',
-                  style: TextStyle(fontSize: 24),
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(context,
-                      MaterialPageRoute(
-                        builder: (context) => TabsPage(), // Pass the user ID if needed
+                          ),
+                          subtitle: Text(
+                            _managers[index].positionTitles.join(', '),
+                            style: TextStyle(
+                              fontWeight: _selectedManagerIndex == index
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ), // Display all positions
+                        ),
                       ),
                       if (index < _managers.length - 1)
                         Container(
@@ -324,9 +244,8 @@ class _WelcomePageState extends State<WelcomePage> {
                     },
                   );
                 } else {
-                  if ((await apiService.AssignManager(
-                      _managers[_selectedManagerIndex!].employeeId!))
-                      .success!) {
+                  if ((await apiService.AssignManager( _managers[_selectedManagerIndex!].employeeId!)).success!) {
+                    _positions = await apiService.GetManagerPositions(_managers[_selectedManagerIndex!].employeeId!);
                     setState(() {
                       _secondPage = false;
                       _selectedManagerIndex = null;
@@ -395,6 +314,9 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
               onPressed: () async {
                 // set positions
+                for(int i in _selectedPositionIndex) {
+                  await apiService.AddPosition(_positions[i].id);
+                }
                 setState(() {
                   _thirdPage = false;
                 });
