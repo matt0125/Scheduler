@@ -79,7 +79,7 @@ app.delete('/api/employee/:empId/removeManager', employeeController.removeManage
 app.delete('/api/employee/:empId/position/:positionId', employeeController.removePositionFromEmployee);
  
 // post register
-// app.get('/api/manager/allmanagers', employeeController.getAllManagers);
+app.get('/api/managers', employeeController.getAllManagers);
 app.post('/api/employee/:employeeId/assign/manager', employeeController.assignManager);
 
 // availabilities
