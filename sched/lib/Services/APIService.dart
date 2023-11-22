@@ -50,14 +50,14 @@ class APIService {
     }
   }
 
-  Future<Map<String, dynamic>> putToEndpoint(Map<String, dynamic> data, String endpoint) async {
+  Future<Map<String, dynamic>> putToEndpoint(Map<String, dynamic>? data, String endpoint) async {
     final response = await http.put(
       Uri.parse('$baseUrl/$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${DataService.readJWT()}',
       },
-      body: json.encode(data),
+      body: data != null ? json.encode(data) : null,
     );
     try {
       return json.decode(response.body);
@@ -371,6 +371,35 @@ class APIService {
     return positions;
   }
 
+  Future<List<Position>> GetManagerPositions ( String managerId ) async {
+    final responseData = await getToEndpoint(null, 'positions/${managerId}');
+
+    try{
+      if(responseData['message'] != null)
+      {
+        print(responseData['message']);
+      }
+    }
+    catch(e)
+    {
+      print(e);
+    }
+
+    List<Position> positions = [];
+
+    for(final item in responseData["positions"])
+    {
+      positions.add(
+          Position(
+              id: item['_id'],
+              name: item['name']
+          )
+      );
+    }
+
+    return positions;
+  }
+
   Future<List<List<bool>>> GetAvailabilities() async {
     final responseData = await getToEndpoint(null, 'employee/${DataService.readEmpId()}/availabilities');
 
@@ -390,6 +419,17 @@ class APIService {
     );
   }
 
+  Future<Response> AddPosition(String positionId) async {
+
+    final responseData = await putToEndpoint(null, 'employee/${DataService.readEmpId()}/position/${positionId}');
+
+    if (responseData['message'] != "Position added to employee successfully") {
+      print("${responseData['message']}: ${responseData['error']}");
+    }
+
+    // Check if the response body indicates success
+    return Response(message: responseData['message']);
+  }
 
 }
 
