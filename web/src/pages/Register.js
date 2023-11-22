@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import "../styles/Register.css";
-import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col } from "react-bootstrap";
 import vector from "../images/table-meeting.png";
 import logo from "../images/branding-notitle.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import phoneIcon from "../images/phone.png";
-
 
 
 
@@ -92,20 +90,13 @@ const Register = () => {
     });
   };
 
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/api/register', formData);
+      const response = await axios.post('http://large.poosd-project.com/api/register', formData);
       console.log('Registration successful:', response.data);
       setShowPopup(true);
-      // Redirect based on the role
-      if (formData.managerIdent) {
-        navigate('/'); // if the user is a manager
-      } else {
-        navigate('/employee-registration'); // if the user is an employee
-      }
     } catch (err) {
       console.log('Error during registration:', err);
       setFailPopup(true);
@@ -206,7 +197,7 @@ const Register = () => {
               {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
             </div>
             </div>
-            <button type="submit" className="submit-button" >Sign Up</button>
+            <button type="submit" className="submit-button">Sign Up</button>
             <p className="login-register-p">Have an account?  <a href={url} className="login-register-url">log in</a></p>
             </div>
             </form>
