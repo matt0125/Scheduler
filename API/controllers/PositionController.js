@@ -144,7 +144,7 @@ const PositionController = {
       // in the positions array with the actual position documents from the database.
       const manager = await Employee.findById(managerId).populate('positions');
       const positions = await Position.find({ managerId: managerId });
-      res.status(400).json({positions: positions});
+      res.status(200).json({positions: positions});
     } catch (error) {
       res.status(400).json({ message: 'Failed to get positions by manager', error });
       console.log("Here: ", error.message);

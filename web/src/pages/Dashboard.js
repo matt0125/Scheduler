@@ -115,20 +115,34 @@ export default class DemoApp extends React.Component {
         }
       });
   
-      // Create a new array that includes the position ID and other details
-      const positionsWithIdsAndColors = response.data.map((position, index) => ({
-        id: position._id,
-        name: position.name,
-        color: colorChoices[index % colorChoices.length], // Cycle through the colors for each position
-        checked: false
-      }));
-    
+      let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
+  
+      const positionsWithIdsAndColors = response.data.positions.map((position, index) => {
+        // Assign a color only if it's not already stored
+        if (!positionColors[position._id]) {
+          positionColors[position._id] = colorChoices[index % colorChoices.length];
+        }
+  
+        return {
+          id: position._id,
+          name: position.name,
+          color: positionColors[position._id],
+          checked: false
+        };
+      });
+  
+      // Update local storage with new color mapping
+      localStorage.setItem('positionColors', JSON.stringify(positionColors));
+  
       this.setState({ positions: positionsWithIdsAndColors });
     } catch (error) {
       alert('Failed to fetch positions: ' + error.message);
       console.log(error);
     }
   }
+  
+  
+  
 
   fetchShiftTemplates = async () => {
     const managerId = localStorage.getItem('id');
@@ -577,29 +591,22 @@ function getNextColor() {
 // Shift templatese now can be shown for 12 week, We can change this number if we want
 async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 12) {
   const formattedTemplates = [];
-  const positionColors = {}; // Object to store colors for positions
+  const positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
 
   for (const template of shiftTemplates) {
-    const positionId = template.positionId;
-
-    // Assign a color to the position if not already assigned
-    if (!positionColors[positionId]) {
-      positionColors[positionId] = getNextColor();
-    }
-
+    const positionId = template.positionId; 
     const title = await getPositionTitle(positionId);
 
-    // Loop over the number of weeks
     for (let week = 0; week < numberOfWeeks; week++) {
       const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime, week);
       const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime, week);
 
       formattedTemplates.push({
-        id: `${template._id}-${week}`, // Unique ID for each event
+        id: `${template._id}-${week}`,
         title: title,
         start: startDateTime,
-        end: endDateTime, 
-        color: positionColors[positionId], // Assign the color to the event
+        end: endDateTime,
+        color: positionColors[positionId], // Use the color from local storage
         positionId: positionId
       });
     }
@@ -607,6 +614,7 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
 
   return formattedTemplates;
 }
+
 
 function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {
   const currentDate = new Date();
