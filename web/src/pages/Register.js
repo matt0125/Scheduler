@@ -194,6 +194,7 @@ const Register = () => {
               <label for="employee" onClick={(e) => handleChange({ target: { name: 'managerIdent', value: false } })}>
                 Employee
               </label>
+              {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
             </div>
             </div>
             <button type="submit" className="submit-button">Sign Up</button>
