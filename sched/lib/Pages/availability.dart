@@ -67,7 +67,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
           // Selected day hours
           if (selectedDayIndex != -1)
             Expanded(
-              flex: 31,
+              flex: 50,
               child: PageView.builder(
                 itemCount: daysOfWeek.length,
                 controller: PageController(initialPage: selectedDayIndex),
@@ -162,7 +162,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          'All availability has been cleared.',
+                          'Availability has been reset.',
                         ),
                         duration: Duration(milliseconds: 600),
                       ),
@@ -172,7 +172,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFB1947B), // Change this color to the desired one
                   ),
-                  child: Text('Clear All Availability'),
+                  child: Text('Reset availability'),
                 ),
               ],
             ),
@@ -206,7 +206,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
     for (int i = 0; i < daysOfWeek.length; i++) {
       selectedTimes[i].clear();
       for (int j = 0; j < 24; j++) {
-        availability[i][j] = false;
+        availability[i][j] = true;
       }
     }
     setState(() {});
@@ -214,6 +214,11 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
 }
 
 String formatSelectedTimesForDay(List<bool> availabilityForDay, String dayOfWeek) {
+  if (availabilityForDay.every((timeSelected) => timeSelected)) {
+    // All times are selected for the day
+    return '$dayOfWeek: Available all day';
+  }
+
   List<String> timesForDay = [];
   bool isInRange = false;
   int startHour = 0;
@@ -229,7 +234,8 @@ String formatSelectedTimesForDay(List<bool> availabilityForDay, String dayOfWeek
       // End of the current range
       int endHour = timeIndex - 1;
       timesForDay.add(
-          '${startHour == endHour ? '${endHour % 12 == 0 ? 12 : endHour % 12}:00 ${endHour < 12 ? 'AM' : 'PM'}' : '${startHour % 12 == 0 ? 12 : startHour % 12}:00 ${startHour < 12 ? 'AM' : 'PM'}-${endHour % 12 == 0 ? 12 : endHour % 12}:00 ${endHour < 12 ? 'AM' : 'PM'}'}');
+        '${startHour == endHour ? '${endHour % 12 == 0 ? 12 : endHour % 12}:00 ${endHour < 12 ? 'AM' : 'PM'}' : '${startHour % 12 == 0 ? 12 : startHour % 12}:00 ${startHour < 12 ? 'AM' : 'PM'}-${endHour % 12 == 0 ? 12 : endHour % 12}:00 ${endHour < 12 ? 'AM' : 'PM'}'}',
+      );
       isInRange = false;
     }
   }
@@ -238,7 +244,8 @@ String formatSelectedTimesForDay(List<bool> availabilityForDay, String dayOfWeek
   if (isInRange) {
     int endHour = 23;
     timesForDay.add(
-        '${startHour % 12 == 0 ? 12 : startHour % 12}:00 ${startHour < 12 ? 'AM' : 'PM'}-${endHour % 12 == 0 ? 12 : endHour % 12}:00 ${endHour < 12 ? 'AM' : 'PM'}');
+      '${startHour % 12 == 0 ? 12 : startHour % 12}:00 ${startHour < 12 ? 'AM' : 'PM'}-${endHour % 12 == 0 ? 12 : endHour % 12}:00 ${endHour < 12 ? 'AM' : 'PM'}',
+    );
   }
 
   if (timesForDay.isNotEmpty) {
