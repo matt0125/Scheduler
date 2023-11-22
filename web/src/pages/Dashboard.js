@@ -584,22 +584,21 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
 
     // Assign a color to the position if not already assigned
     if (!positionColors[positionId]) {
-      positionColors[positionId] = getNextColor();
+      positionColors[positionId] = colorChoices[Object.keys(positionColors).length % colorChoices.length];
     }
 
     const title = await getPositionTitle(positionId);
 
-    // Loop over the number of weeks
     for (let week = 0; week < numberOfWeeks; week++) {
       const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime, week);
       const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime, week);
 
       formattedTemplates.push({
-        id: `${template._id}-${week}`, // Unique ID for each event
+        id: `${template._id}-${week}`,
         title: title,
         start: startDateTime,
-        end: endDateTime, 
-        color: positionColors[positionId], // Assign the color to the event
+        end: endDateTime,
+        color: positionColors[positionId], // Use the assigned color for the position
         positionId: positionId
       });
     }
@@ -607,6 +606,7 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
 
   return formattedTemplates;
 }
+
 
 function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {
   const currentDate = new Date();

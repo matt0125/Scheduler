@@ -32,7 +32,7 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
               style={{
                 width: '20px',
                 height: '20px',
-                backgroundColor: position.color,
+                backgroundColor: position.color, // Use color from props
                 borderRadius: '50%',
                 marginRight: '10px'
               }}
