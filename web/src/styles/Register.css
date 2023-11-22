@@ -1,5 +1,10 @@
 .row{
   display: flex;
+  
+}
+
+.main-column{
+  position: relative;
 }
 
 .input-font{
@@ -90,6 +95,10 @@
   margin-left: 11%;
 }
 
+.radio-toolbar:required {
+  border-color: #cc6666;
+}
+
 .radio-toolbar input[type="radio"] {
   opacity: 0;
   position: fixed;
@@ -127,9 +136,50 @@
   position: relative;
 }
 
+#good-top-popup{
+  position: absolute;
+  top: -10%;
+  left: 37.5%;
+  background-color: #a0ff99;
+  color: #333;
+  padding: 8px;
+  border: 1px solid #66cc81;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: bold;
+  z-index: 1;
+}
+
+#bad-top-popup{
+  position: absolute;
+  top: -10%;
+  left: 37.5%;
+  background-color: #ff9999;
+  color: #333;
+  padding: 8px;
+  border: 1px solid #cc6666;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 1;
+}
+
 .user-popup{
   position: absolute;
   top: 67%;
+  left: 0%;
+  background-color: #ff9999;
+  color: #333;
+  padding: 8px;
+  border: 1px solid #cc6666;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.pass-popup{
+  position: absolute;
+  top: 101%;
   left: 0%;
   background-color: #ff9999;
   color: #333;

@@ -36,6 +36,9 @@ const Register = () => {
     phone: '',
   });
 
+  const [showPopup, setShowPopup] = useState(false);
+  const [showFailPopup, setFailPopup] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -50,8 +53,8 @@ const Register = () => {
     let error = '';
 
     if (name === 'username') {
-      if (value.length < 2) {
-        error = 'Username must be at least 2 characters long.';
+      if (value.length < 2 || value.length > 20) {
+        error = 'Username must be between 2 to 20 characters';
       }
     } 
     if (name === 'email') {
@@ -61,6 +64,24 @@ const Register = () => {
         error = 'Enter a valid email address.';
       }
     }
+    if (name === 'password') {
+      if (value.length < 8) {
+        error = 'Password must be at least 8 characters long.';
+      }
+      if (!/[A-Z]/.test(value)) {
+        error = 'Password must contain at least one uppercase letter';
+      }
+      if (!/[a-z]/.test(value)) {
+        error = 'Password must contain at least one lowercase letter';
+      }
+      if (!/[0-9]/.test(value)) {
+        error = 'Password must contain at least one number';
+      }
+      if (!/[^A-Za-z0-9]/.test(value)) {
+        error = 'Password must contain at least one special character';
+      }
+    } 
+    
 
     // Update the form errors
     setFormErrors({
@@ -69,15 +90,23 @@ const Register = () => {
     });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('http://large.poosd-project.com/api/register', formData);
       console.log('Registration successful:', response.data);
-      alert("Registered successfully.")
+      setShowPopup(true);
     } catch (err) {
       console.log('Error during registration:', err);
+      setFailPopup(true);
     }
+  };
+
+  const handleClosePopup = () => {
+    // Close the popup
+    setShowPopup(false);
+    setFailPopup(false);
   };
 
  
@@ -99,6 +128,14 @@ const Register = () => {
             <img src={vector} className="business-photo" alt="business vector"/>
           </Col>
           <Col className="main-column">            
+            {showPopup && (<div id="good-top-popup" onClick={handleClosePopup}>
+                <p>Registered Successfully!</p>
+              </div>
+            )}
+            {showFailPopup && (<div id="bad-top-popup" onClick={handleClosePopup}>
+                <p>Register was unsuccessful.</p>
+              </div>
+            )}
             <form id ="myForm" onSubmit={handleSubmit}>
             <div className='register-form'>
             <h1 class="font-family-katibeh">Register</h1>
@@ -120,6 +157,7 @@ const Register = () => {
               <h2 class="input-font">Password</h2>
               <img src={passIcon} alt="pass icon" /> 
                 <input type="password" name="password" placeholder="" required onChange={handleChange} />
+                {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
               </div>
               <div class="email-input-group">
               <h2 class="input-font">Email</h2>
@@ -151,6 +189,7 @@ const Register = () => {
               value="Employee" 
               id="employee"
               name="title"
+              required
               />
               <label for="employee" onClick={(e) => handleChange({ target: { name: 'managerIdent', value: false } })}>
                 Employee
