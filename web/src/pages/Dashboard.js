@@ -115,14 +115,16 @@ export default class DemoApp extends React.Component {
         }
       });
   
-      // Create a new array that includes the position ID and other details
-      const positionsWithIdsAndColors = response.data.positions.map((position, index) => ({
+      const { data } = response;
+      const positionsFromAPI = data.positions || [];
+  
+      const positionsWithIdsAndColors = positionsFromAPI.map((position, index) => ({
         id: position._id,
         name: position.name,
-        color: colorChoices[index % colorChoices.length], // Cycle through the colors for each position
+        color: colorChoices[index % colorChoices.length],
         checked: false
       }));
-    
+  
       this.setState({ positions: positionsWithIdsAndColors });
     } catch (error) {
       alert('Failed to fetch positions: ' + error.message);
