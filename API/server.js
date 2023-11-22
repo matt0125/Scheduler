@@ -104,7 +104,6 @@ app.post('/api/shifts/empbydates', shiftController.getShiftByEmployeeAndDate);
 app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
 app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
-app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftByEmployee);
 
 app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftsByEmployee);
 
@@ -137,11 +136,7 @@ app.put('/api/employee/:employeeId/password', employeeController.updatePassword)
 app.put('/updateEmployee/:employeeId', employeeController.updateEmployeeProfile);
 app.get('/api/employee/position/:positionId', employeeController.getEmployeesByPosition);
 
-<<<<<<< HEAD
-
-=======
 app.post('/api/schedule/generate', scheduleController.generateSchedule);
->>>>>>> main
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
