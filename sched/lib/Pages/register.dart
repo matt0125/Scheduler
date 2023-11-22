@@ -146,7 +146,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         isError: !fieldValidation['email']!,
                       ),
                       const SizedBox(height: 10.0),
-                      BubbleText(
+                      BubbleText2(
                         labelText: 'Phone number',
                         controller: phoneNumberController,
                         isError: !fieldValidation['phoneNumber']!,
@@ -354,6 +354,109 @@ class BubbleContainer extends StatelessWidget {
   }
 }
 
+class BubbleContainer2 extends StatelessWidget {
+  final TextEditingController controller;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final bool isError;
+  final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
+
+  const BubbleContainer2({
+    required this.controller,
+    required this.obscureText,
+    this.suffixIcon,
+    this.isError = false,
+    this.inputFormatter, // Initialize the inputFormatter property
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 275,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(60),
+        color: const Color(0xFFCDBFB6),
+        border: Border.all(
+          color: isError ? Colors.red : Colors.black,
+          width: 2.0,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 1.0),
+            blurRadius: 5.0,
+            spreadRadius: 1.0,
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        inputFormatters: inputFormatter, // Apply the inputFormatter here
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+          hintStyle: const TextStyle(
+            fontFamily: 'Katibeh',
+            color: Color(0xFF49423E),
+          ),
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          suffixIcon: suffixIcon,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
+class BubbleText2 extends StatelessWidget {
+  final String labelText;
+  final TextEditingController controller;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final bool isError;
+  final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
+
+  const BubbleText2({
+    required this.labelText,
+    required this.controller,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.isError = false,
+    this.inputFormatter, // Initialize the inputFormatter property
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              labelText,
+              style: const TextStyle(
+                fontFamily: 'Katibeh',
+                fontSize: 25,
+                color: Color(0xFF49423E),
+              ),
+            ),
+          ],
+        ),
+        BubbleContainer2(
+          controller: controller,
+          obscureText: obscureText,
+          suffixIcon: suffixIcon,
+          isError: isError,
+          inputFormatter: inputFormatter, // Pass the inputFormatter property to BubbleContainer
+        ),
+      ],
+    );
+  }
+}
 
 class AccountText extends StatelessWidget {
   const AccountText({Key? key});
