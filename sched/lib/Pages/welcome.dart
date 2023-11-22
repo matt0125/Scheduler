@@ -32,7 +32,7 @@ class _WelcomePageState extends State<WelcomePage> {
     super.initState();
     verifyEmail();
     populateManagers();
-    populatePositions();
+    // populatePositions();
   }
 
   Future<void> verifyEmail() async {
@@ -196,6 +196,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     }
                     else {
                       if ((await apiService.AssignManager(_managers[_selectedManagerIndex!].employeeId!)).success!) {
+                        _positions = await apiService.GetManagerPositions(_managers[_selectedManagerIndex!].employeeId!);
                         setState(() {
                           _secondPage = false;
                           _selectedManagerIndex = null;
@@ -249,6 +250,9 @@ class _WelcomePageState extends State<WelcomePage> {
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
+                    for(int i in _selectedPositionIndex) {
+                      await apiService.AddPosition(_positions[i].id);
+                    }
                     // set positions
                     setState(() {
                       _thirdPage = false;
