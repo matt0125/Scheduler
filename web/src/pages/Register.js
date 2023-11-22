@@ -10,7 +10,6 @@ import passIcon from "../images/password.png";
 import phoneIcon from "../images/phone.png";
 
 
-
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
