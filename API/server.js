@@ -64,6 +64,9 @@ app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
 app.put('/api/employee/:employeeId/position/:positionId', employeeController.addPositionToEmployee);
 
+// Email verification
+app.get('/api/verify-email/:token', employeeController.verifyEmail);
+
 // Protected routes below this line
 app.use(authenticateJWT);
 
@@ -105,6 +108,8 @@ app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
 app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
 
+app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftsByEmployee);
+
 // shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
 app.get('/api/shift-templates/:id', shiftTemplateController.getShiftTemplate);
@@ -123,6 +128,8 @@ app.post('/api/positions/manager', positionController.createPositionByManager);
 app.put('/api/employee/:employeeId/password', employeeController.updatePassword);
 app.put('/updateEmployee/:employeeId', employeeController.updateEmployeeProfile);
 app.get('/api/employee/position/:positionId', employeeController.getEmployeesByPosition);
+
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

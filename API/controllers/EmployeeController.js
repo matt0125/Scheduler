@@ -6,6 +6,9 @@ const saltRounds = 10; // for bcrypt password hashing
 const jwt = require('jsonwebtoken');
 const e = require('express');
 const secretKey = process.env.JWT_SECRET_KEY;
+const emailPassword = process.env.EMAIL_PASSWORD;
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 // Was used for unique index testing
 
@@ -93,6 +96,13 @@ exports.registerEmployee = async (req, res) => {
       preference, // as above, validate structure before saving
       __v: 0 // typically this is handled by Mongoose and does not need to be set manually
     });
+
+    // Generate verification token
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+    newEmployee.verificationToken = verificationToken;
+
+    // Send verification email (pseudo-code, replace with your email service)
+    sendVerificationEmail(email, verificationToken);
 
     const savedEmployee = await newEmployee.save();
     console.log('Saved employee with ID:', savedEmployee._id);
@@ -730,5 +740,68 @@ exports.addPositionToEmployee = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: 'Failed to add position to employee', error });
     console.log('There was an error adding position to employee:', error);
+  }
+}
+
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    // Find employee with the token
+    const employee = await Employee.findOne({ verificationToken: token });
+    console.log(employee);
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Invalid or expired verification token' });
+    }
+
+    // Update employee as verified
+    employee.isValidated = true;
+    employee.verificationToken = ''; // Clear the token
+    await employee.save();
+
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.log('Error verifying email:', error);
+    res.status(500).json({ message: 'Error verifying email', error });
+  }
+};
+
+async function sendVerificationEmail(email, token) {
+  // Use your email service to send an email
+  // The email should contain a link to your frontend which calls the verifyEmail endpoint
+  // Example link: https://yourfrontend.com/verify-email?token=xxx
+  // Create reusable transporter object using SMTP transport
+  console.log("password is", emailPassword);
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // Replace with your email provider
+    auth: {
+      user: 'poosdproject@gmail.com', // Replace with your email
+      pass: emailPassword // Replace with your email password
+    }
+  });
+
+  // Email content
+  const mailOptions = {
+    from: '"Sched" <poosdproject@gmail.com>', // sender address
+    to: email, // list of receivers
+    subject: `${token} is your Sched activation code`, // Subject line
+    html: `
+              <p>Hello,</p>
+              <p>Your Sched activation code is: <strong>${token}</strong></p>
+              <p>You can also activate your account by clicking on the link below:</p>
+              <a href="https://large.poosd-project.com/verify-email/${token}">Verify Email</a>
+              <p>If you did not request this, please ignore this email.</p>
+              <p>Best regards,</p>
+              <p>The Sched Team</p>
+          ` // HTML body
+  };
+
+  // Send email
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: %s', info.messageId);
+  } catch (error) {
+    console.error('Error sending email: ', error);
   }
 }
