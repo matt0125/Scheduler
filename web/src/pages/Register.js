@@ -9,7 +9,6 @@ import passIcon from "../images/password.png";
 import phoneIcon from "../images/phone.png";
 
 
-
 const Register = () => {
   const [formData, setFormData] = useState({
     username: '',
