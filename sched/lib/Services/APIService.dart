@@ -284,41 +284,50 @@ class APIService {
     return team;
   }
 
-  Future<List<Employee>> GetAllManagers () async {
+  Future<List<Employee>> GetAllManagers() async {
     final responseData = await getToEndpoint(null, 'manager/allmanagers');
 
-    try{
-      if(responseData['message'] != null)
-      {
+    if (responseData == null) {
+      // Handle the case where responseData is null, e.g., return an empty list
+      print('Error: Null response data');
+      return [];
+    }
+
+    try {
+      if (responseData['message'] != null) {
         print(responseData['message']);
       }
-    }
-    catch(e)
-    {
-      print(e);
+    } catch (e) {
+      print('Error in message check: $e');
     }
 
     List<Employee> managers = [];
 
-    for(final item in responseData["managers"])
-    {
-      List<String> positions = [];
-      for(final position in item['positions'])
-      {
-        positions.add(position['name']);
+    if (responseData["managers"] != null) {
+      for (final item in responseData["managers"]) {
+        List<String> positions = [];
+        if (item['positions'] != null) {
+          for (final position in item['positions']) {
+            positions.add(position['name']);
+          }
+        }
+
+        managers.add(Employee(
+          employeeId: item['_id'],
+          firstName: item['firstName'],
+          lastName: item['lastName'],
+          email: item['email'],
+          phone: item['phone'],
+          positionTitles: positions,
+        ));
       }
-      managers.add(Employee(
-        employeeId: item['_id'],
-        firstName: item['firstName'],
-        lastName: item['lastName'],
-        email: item['email'],
-        phone: item['phone'],
-        positionTitles: positions,
-      ));
+    } else {
+      print('Error: "managers" key is null or not present in response data');
     }
 
     return managers;
   }
+
 
   Future<Response> AssignManager ( String managerId ) async {
     final data = {
