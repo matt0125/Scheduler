@@ -732,7 +732,7 @@ exports.addPositionToEmployee = async (req, res) => {
 
     res.status(200).json({ message: 'Position added to employee successfully', employee });
   } catch (error) {
-    res.status(400).json({ message: 'Failed to add position to employee', error });
+    res.status(400).json({ message: 'Failed to add position to employee', error: error.toString() });
     console.log('There was an error adding position to employee:', error);
   }
 };

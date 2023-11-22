@@ -6,6 +6,7 @@ import 'package:sched/Widgets/popup.dart';
 import 'package:flutter/services.dart'; // Import for TextInputFormatter
 
 
+
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
@@ -146,7 +147,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         isError: !fieldValidation['email']!,
                       ),
                       const SizedBox(height: 10.0),
-                      BubbleText(
+                      BubbleText2(
                         labelText: 'Phone number',
                         controller: phoneNumberController,
                         isError: !fieldValidation['phoneNumber']!,
@@ -354,6 +355,109 @@ class BubbleContainer extends StatelessWidget {
   }
 }
 
+class BubbleContainer2 extends StatelessWidget {
+  final TextEditingController controller;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final bool isError;
+  final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
+
+  const BubbleContainer2({
+    required this.controller,
+    required this.obscureText,
+    this.suffixIcon,
+    this.isError = false,
+    this.inputFormatter, // Initialize the inputFormatter property
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 275,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(60),
+        color: const Color(0xFFCDBFB6),
+        border: Border.all(
+          color: isError ? Colors.red : Colors.black,
+          width: 2.0,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 1.0),
+            blurRadius: 5.0,
+            spreadRadius: 1.0,
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        inputFormatters: inputFormatter, // Apply the inputFormatter here
+        keyboardType: TextInputType.number,
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+          hintStyle: const TextStyle(
+            fontFamily: 'Katibeh',
+            color: Color(0xFF49423E),
+          ),
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          suffixIcon: suffixIcon,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
+class BubbleText2 extends StatelessWidget {
+  final String labelText;
+  final TextEditingController controller;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final bool isError;
+  final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
+
+  const BubbleText2({
+    required this.labelText,
+    required this.controller,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.isError = false,
+    this.inputFormatter, // Initialize the inputFormatter property
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              labelText,
+              style: const TextStyle(
+                fontFamily: 'Katibeh',
+                fontSize: 25,
+                color: Color(0xFF49423E),
+              ),
+            ),
+          ],
+        ),
+        BubbleContainer2(
+          controller: controller,
+          obscureText: obscureText,
+          suffixIcon: suffixIcon,
+          isError: isError,
+          inputFormatter: [PhoneNumberTextInputFormatter()], // Use PhoneNumberTextInputFormatter
+        ),
+      ],
+    );
+  }
+}
 
 class AccountText extends StatelessWidget {
   const AccountText({Key? key});
@@ -401,5 +505,46 @@ class LoginButton extends StatelessWidget {
     );
   }
 }
+
+class PhoneNumberTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    if (newValue.text.length > oldValue.text.length) {
+      final newText = StringBuffer();
+      int charIndex = 0;
+
+      // Extract only digits from the new value
+      for (int i = 0; i < newValue.text.length; i++) {
+        if (RegExp(r'\d').hasMatch(newValue.text[i])) {
+          // Insert formatting characters at the appropriate positions
+          if (charIndex == 0) {
+            newText.write('(');
+          } else if (charIndex == 3) {
+            newText.write(') ');
+          } else if (charIndex == 6) {
+            newText.write('-');
+          }
+
+          if (charIndex < 10) {
+            newText.write(newValue.text[i]);
+            charIndex++;
+          }
+        }
+      }
+
+      return newValue.copyWith(
+        text: newText.toString(),
+        selection: TextSelection.collapsed(offset: newText.length),
+      );
+    }
+
+    return newValue;
+  }
+}
+
+
 
 
