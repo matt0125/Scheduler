@@ -285,7 +285,7 @@ class APIService {
   }
 
   Future<List<Employee>> GetAllManagers() async {
-    final responseData = await getToEndpoint(null, 'manager/allmanagers');
+    final responseData = await getToEndpoint(null, 'managers');
 
     if (responseData == null) {
       // Handle the case where responseData is null, e.g., return an empty list
