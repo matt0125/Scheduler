@@ -49,10 +49,19 @@ class _WelcomePageState extends State<WelcomePage> {
   }
 
   Future<void> populateManagers() async {
-
     await Future.delayed(Duration(seconds: 1));
-    _managers = await apiService.GetAllManagers();
+
+    // Ensure that the result of GetAllManagers is not null before assigning it to _managers
+    List<Employee> managers = await apiService.GetAllManagers();
+
+    if (managers != null) {
+      _managers = managers;
+    } else {
+      // Handle the case where GetAllManagers returns null
+      print('Error: GetAllManagers returned null');
+    }
   }
+
 
   Future<void> populatePositions() async {
     await Future.delayed(Duration(seconds: 2));

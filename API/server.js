@@ -10,6 +10,7 @@ const positionController = require('./controllers/PositionController');
 const { create } = require('domain');
 const jwt = require('jsonwebtoken');
 const PositionController = require('./controllers/PositionController');
+const scheduleController = require('./controllers/ScheduleController');
 const secretKey = process.env.JWT_SECRET_KEY;
 
 // Middleware to authenticate and protect routes
@@ -71,13 +72,17 @@ app.get('/api/verify-email/:token', employeeController.verifyEmail);
 app.use(authenticateJWT);
 
 app.get('/api/employee/:id', employeeController.getEmployee);
-app.get('/api/employee/:employeeId/manager', employeeController.getManager);
-app.get('/api/manager/:id/employees', employeeController.getEmployeesByManager);
 app.get('/api/employee/:employeeId/teammates', employeeController.getTeammates);
 app.post('/api/employee/availability', employeeController.getEmployeeByAvailability);
+app.get('/api/manager/:id/employees', employeeController.getEmployeesByManager);
 
+app.get('/api/employee/:employeeId/manager', employeeController.getManager);
+app.get('/api/manager/:managerName', employeeController.getManagerByName);
+app.delete('/api/employee/:empId/removeManager', employeeController.removeManagerFromEmployee);
+app.delete('/api/employee/:empId/position/:positionId', employeeController.removePositionFromEmployee);
+ 
 // post register
-app.get('/api/manager/allmanagers', employeeController.getAllManagers);
+app.get('/api/managers', employeeController.getAllManagers);
 app.post('/api/employee/:employeeId/assign/manager', employeeController.assignManager);
 
 // availabilities
@@ -87,14 +92,6 @@ app.get('/api/employee/:employeeId/availabilities', employeeController.getAvaila
 app.put('/api/employee/:employeeId/availabilityByString', employeeController.updateAvailability);
 app.put('/api/employee/:employeeId/availabilityByArray', employeeController.setAvailability);
 app.delete('/api/employee/:employeeId/availabilityByString', employeeController.deleteAvailability);
-
-// positions
-app.post('/api/position', PositionController.createPosition);
-app.get('/api/position/:id', PositionController.getPosition);
-app.get('/api/position', PositionController.getAllPositions);
-app.get('/api/position/:name', PositionController.getPositionByName);
-app.put('/api/position/:id', PositionController.updatePosition);
-app.delete('/api/position/:id', PositionController.deletePosition);
 
 // shifts
 app.post('/api/shifts', shiftController.createShift);
@@ -107,6 +104,7 @@ app.post('/api/shifts/empbydates', shiftController.getShiftByEmployeeAndDate);
 app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
 app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
+app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftByEmployee);
 
 app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftsByEmployee);
 
@@ -120,6 +118,16 @@ app.get('/api/shift-templates/manager/:managerId', shiftTemplateController.getSh
 app.delete('/api/shift-templates/position/:positionId', shiftTemplateController.deleteShiftTemplatesByPosition);
 
 // Positions
+app.post('/api/position', PositionController.createPosition);
+app.post('/api/positions', PositionController.createMultiplePositions);
+
+app.get('/api/position/:id', PositionController.getPosition);
+app.get('/api/position', PositionController.getAllPositions);
+app.get('/api/position/:name', PositionController.getPositionByName);
+
+app.put('/api/position/:id', PositionController.updatePosition);
+app.delete('/api/position/:id', PositionController.deletePosition);
+
 app.get('/api/position/:positionId', positionController.getPosition);
 app.get('/api/positions/:managerId', positionController.getPositionsByManager);
 app.post('/api/positions/manager', positionController.createPositionByManager);
@@ -129,7 +137,11 @@ app.put('/api/employee/:employeeId/password', employeeController.updatePassword)
 app.put('/updateEmployee/:employeeId', employeeController.updateEmployeeProfile);
 app.get('/api/employee/position/:positionId', employeeController.getEmployeesByPosition);
 
+<<<<<<< HEAD
 
+=======
+app.post('/api/schedule/generate', scheduleController.generateSchedule);
+>>>>>>> main
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

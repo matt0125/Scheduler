@@ -230,7 +230,6 @@ exports.getEmployeesByManager = async (req, res) => {
   }
 }
 
-
 // Given an employee, get their teammates (other employees) that are managed by the same person
 exports.getManager = async (req, res) => {
   try {
@@ -252,7 +251,6 @@ exports.getManager = async (req, res) => {
     console.error("There was an error:", error);
   }
 }
-
 
 // Given an employee, get their teammates (other employees) that are managed by the same person
 exports.getTeammates = async (req, res) => {
@@ -318,7 +316,6 @@ exports.setAvailability = async (req, res) => {
     console.error("There was an error:", err);
   }
 }
-
 
 exports.addAvailability = async (req, res) => {
   try {
@@ -561,7 +558,6 @@ exports.updateEmployeeProfile = async (req, res) => {
   }
 };
 
-
 exports.updateEmployeeProfile = async (req, res) => {
   try {
     const { employeeId } = req.params;
@@ -599,7 +595,6 @@ exports.updateEmployeeProfile = async (req, res) => {
   }
 };
 
-
 exports.updateEmployeeProfile = async (req, res) => {
   try {
     const { employeeId } = req.params;
@@ -636,7 +631,6 @@ exports.updateEmployeeProfile = async (req, res) => {
     console.error("There was an error:", err);
   }
 };
-
 
 exports.getAllManagers = async (req, res) => {
   try {
@@ -740,6 +734,91 @@ exports.addPositionToEmployee = async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: 'Failed to add position to employee', error });
     console.log('There was an error adding position to employee:', error);
+  }
+};
+
+// given an employee, remove its manager
+exports.removeManagerFromEmployee = async (req, res) => {
+  try {
+    const empId = req.params.empId; // Assuming the employee ID is passed in the request parameters
+
+    const employee = await Employee.findById(empId);
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    if (employee.managedBy === null) {
+      return res.status(400).json({ message: 'Employee does not have a manager' });
+    }
+
+    employee.managedBy = null;
+    
+    await employee.save();
+
+    res.status(200).json({ message: 'Manager removed successfully', employee: employee });
+  } 
+  
+  catch (error) {
+    res.status(500).json({ message: 'An error occurred while removing the manager from the employee', error: error.toString() });
+    console.error('There was an error while trying to remove a manager from an employee', error);
+  }
+};
+
+exports.getManagerByName = async (req, res) => {
+  try {
+    const managerName = req.params.managerName; // Assuming the manager name is provided in the request parameters
+
+    // Find the manager(s) with the specified name
+    const managers = await Employee.find({
+      $and: [
+        { managerIdent: true }, // Assuming managers have managerIdent set to true
+        {
+          $or: [
+            { firstName: new RegExp(managerName, 'i') },
+            { lastName: new RegExp(managerName, 'i') },
+            { username: new RegExp(managerName, 'i') },
+          ],
+        },
+      ],
+    });
+
+    // Check if any managers were found
+    if (managers.length === 0) {
+      return res.status(404).json({ message: 'Manager not found' });
+    }
+
+    res.status(200).json({ managers: managers });
+  } 
+  
+  catch (error) {
+    res.status(500).json({ message: 'An error occurred while fetching manager by name', error: error.toString() });
+    console.error('There was an error while fetching manager by name', error);
+  }
+};
+
+exports.removePositionFromEmployee = async (req, res) => {
+  try {
+    const { empId, positionId } = req.params;
+
+    const employee = await Employee.findById(empId);
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Remove the specified position from the employee's positions array
+    employee.positions.pull(positionId);
+
+    // Save the updated employee
+    const updatedEmployee = await employee.save();
+
+    res.status(200).json(updatedEmployee);
+  }
+
+  catch (error) {
+    res.status(500).json({ message: 'An error occurred while removing a position from an employee', error: error.toString() });
+    console.error('There was an error while removing a position from an employee', error);
   }
 }
 

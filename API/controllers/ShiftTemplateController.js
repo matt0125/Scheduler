@@ -163,7 +163,3 @@ exports.deleteShiftTemplatesByPosition = async (req, res) => {
     console.error('There was an error deleting shift templates by position', error);
   }
 };
-
-
-
-
