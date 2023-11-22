@@ -6,6 +6,35 @@ import '../Models/Position.dart';
 import '../Widgets/popup.dart';
 import '../tabs.dart';
 
+// Add a custom CheckBubble widget
+class CheckBubble extends StatelessWidget {
+  final bool isSelected;
+  final Color bubbleColor;
+
+  const CheckBubble({
+    Key? key,
+    required this.isSelected,
+    this.bubbleColor = Colors.blue,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 20,
+      height: 20,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isSelected ? bubbleColor : Colors.transparent,
+        border: Border.all(
+          color: bubbleColor,
+          width: 2,
+        ),
+      ),
+    );
+  }
+}
+
+
 class WelcomePage extends StatefulWidget {
   @override
   _WelcomePageState createState() => _WelcomePageState();
@@ -255,13 +284,23 @@ class _WelcomePageState extends State<WelcomePage> {
                       });
                     },
                     child: ListTile(
-                      title: Text(
-                        _positions[index].printName,
-                        style: TextStyle(
-                          fontWeight: _selectedPositionIndex.contains(index)
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
+                      title: Row(
+                        children: [
+                          Text(
+                            _positions[index].printName,
+                            style: TextStyle(
+                              fontWeight: _selectedPositionIndex.contains(index)
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                          Spacer(),
+                          CheckBubble(
+                            isSelected: _selectedPositionIndex.contains(index),
+                            bubbleColor: Color(0xFFB1947B),
+
+                          ),
+                        ],
                       ),
                     ),
                   );
