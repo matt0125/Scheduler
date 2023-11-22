@@ -50,14 +50,14 @@ class APIService {
     }
   }
 
-  Future<Map<String, dynamic>> putToEndpoint(Map<String, dynamic> data, String endpoint) async {
+  Future<Map<String, dynamic>> putToEndpoint(Map<String, dynamic>? data, String endpoint) async {
     final response = await http.put(
       Uri.parse('$baseUrl/$endpoint'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${DataService.readJWT()}',
       },
-      body: json.encode(data),
+      body: data != null ? json.encode(data) : null,
     );
     try {
       return json.decode(response.body);
@@ -176,16 +176,21 @@ class APIService {
       print(e);
     }
 
-    for(final item in responseData["shifts"])
-    {
-      shifts.add(FullShift(
+    for (final item in responseData["shifts"]) {
+      try {
+        shifts.add(FullShift(
           startTime: item['templateId']['startTime'],
           endTime: item['templateId']['endTime'],
           positionTitle: item['templateId']['positionId']['name'],
           firstName: item['empId']['firstName'],
           lastName: item['empId']['lastName'],
-      ));
+        ));
+      } catch (e) {
+        // Handle the exception, e.g., print an error message or provide a default value.
+        print('Error processing item: $e');
+      }
     }
+
 
     return shifts;
   }
@@ -279,41 +284,50 @@ class APIService {
     return team;
   }
 
-  Future<List<Employee>> GetAllManagers () async {
-    final responseData = await getToEndpoint(null, 'manager/allmanagers');
+  Future<List<Employee>> GetAllManagers() async {
+    final responseData = await getToEndpoint(null, 'managers');
 
-    try{
-      if(responseData['message'] != null)
-      {
+    if (responseData == null) {
+      // Handle the case where responseData is null, e.g., return an empty list
+      print('Error: Null response data');
+      return [];
+    }
+
+    try {
+      if (responseData['message'] != null) {
         print(responseData['message']);
       }
-    }
-    catch(e)
-    {
-      print(e);
+    } catch (e) {
+      print('Error in message check: $e');
     }
 
     List<Employee> managers = [];
 
-    for(final item in responseData["managers"])
-    {
-      List<String> positions = [];
-      for(final position in item['positions'])
-      {
-        positions.add(position['name']);
+    if (responseData["managers"] != null) {
+      for (final item in responseData["managers"]) {
+        List<String> positions = [];
+        if (item['positions'] != null) {
+          for (final position in item['positions']) {
+            positions.add(position['name']);
+          }
+        }
+
+        managers.add(Employee(
+          employeeId: item['_id'],
+          firstName: item['firstName'],
+          lastName: item['lastName'],
+          email: item['email'],
+          phone: item['phone'],
+          positionTitles: positions,
+        ));
       }
-      managers.add(Employee(
-        employeeId: item['_id'],
-        firstName: item['firstName'],
-        lastName: item['lastName'],
-        email: item['email'],
-        phone: item['phone'],
-        positionTitles: positions,
-      ));
+    } else {
+      print('Error: "managers" key is null or not present in response data');
     }
 
     return managers;
   }
+
 
   Future<Response> AssignManager ( String managerId ) async {
     final data = {
@@ -357,6 +371,35 @@ class APIService {
     return positions;
   }
 
+  Future<List<Position>> GetManagerPositions ( String managerId ) async {
+    final responseData = await getToEndpoint(null, 'positions/${managerId}');
+
+    try{
+      if(responseData['message'] != null)
+      {
+        print(responseData['message']);
+      }
+    }
+    catch(e)
+    {
+      print(e);
+    }
+
+    List<Position> positions = [];
+
+    for(final item in responseData["positions"])
+    {
+      positions.add(
+          Position(
+              id: item['_id'],
+              name: item['name']
+          )
+      );
+    }
+
+    return positions;
+  }
+
   Future<List<List<bool>>> GetAvailabilities() async {
     final responseData = await getToEndpoint(null, 'employee/${DataService.readEmpId()}/availabilities');
 
@@ -376,6 +419,17 @@ class APIService {
     );
   }
 
+  Future<Response> AddPosition(String positionId) async {
+
+    final responseData = await putToEndpoint(null, 'employee/${DataService.readEmpId()}/position/${positionId}');
+
+    if (responseData['message'] != "Position added to employee successfully") {
+      print("${responseData['message']}: ${responseData['error']}");
+    }
+
+    // Check if the response body indicates success
+    return Response(message: responseData['message']);
+  }
 
 }
 

@@ -308,3 +308,14 @@ exports.getShiftByManager = async (req, res) => {
   }
 };
 
+// given a certain employee, delete all of their shifts
+exports.deleteShiftByEmployee = async (req, res) => {
+  try {
+
+  }
+  
+  catch (error) {
+    res.status(500).json({ message: 'Error when deleting all shifts of an employee', error: error.toString() });
+    console.error('There was an error deleting shifts of an employee', error);
+  }
+};
