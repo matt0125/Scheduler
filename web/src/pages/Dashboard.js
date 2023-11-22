@@ -115,16 +115,14 @@ export default class DemoApp extends React.Component {
         }
       });
   
-      const { data } = response;
-      const positionsFromAPI = data.positions || [];
-  
-      const positionsWithIdsAndColors = positionsFromAPI.map((position, index) => ({
+      // Create a new array that includes the position ID and other details
+      const positionsWithIdsAndColors = response.data.map((position, index) => ({
         id: position._id,
         name: position.name,
-        color: colorChoices[index % colorChoices.length],
+        color: colorChoices[index % colorChoices.length], // Cycle through the colors for each position
         checked: false
       }));
-  
+    
       this.setState({ positions: positionsWithIdsAndColors });
     } catch (error) {
       alert('Failed to fetch positions: ' + error.message);
@@ -146,14 +144,14 @@ export default class DemoApp extends React.Component {
       });
   
       // Check if the response is an array
-      if (Array.isArray(response.data.shiftTemplates)) {
+      if (Array.isArray(response.data)) {
         console.log("response data is ", response.data);
-        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data.shiftTemplates);
+        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data);
         console.log("formatted shift template:", formattedShiftTemplates);
         this.setState({ shiftTemplates: formattedShiftTemplates });
       } else {
         // Handle case where response is not an array
-        console.error('Response is not an array', response.data.shiftTemplates);
+        console.error('Response is not an array', response.data);
         console.log()
         this.setState({ shiftTemplates: [] });
         this.setState({ selectMirrorEnabled: false });
@@ -331,7 +329,7 @@ export default class DemoApp extends React.Component {
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
-              right: 'timeGridWeek,timeGridDay'
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
             allDaySlot={false}
             height={520}
@@ -586,21 +584,22 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
 
     // Assign a color to the position if not already assigned
     if (!positionColors[positionId]) {
-      positionColors[positionId] = colorChoices[Object.keys(positionColors).length % colorChoices.length];
+      positionColors[positionId] = getNextColor();
     }
 
     const title = await getPositionTitle(positionId);
 
+    // Loop over the number of weeks
     for (let week = 0; week < numberOfWeeks; week++) {
       const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime, week);
       const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime, week);
 
       formattedTemplates.push({
-        id: `${template._id}-${week}`,
+        id: `${template._id}-${week}`, // Unique ID for each event
         title: title,
         start: startDateTime,
-        end: endDateTime,
-        color: positionColors[positionId], // Use the assigned color for the position
+        end: endDateTime, 
+        color: positionColors[positionId], // Assign the color to the event
         positionId: positionId
       });
     }
@@ -608,7 +607,6 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
 
   return formattedTemplates;
 }
-
 
 function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {
   const currentDate = new Date();
