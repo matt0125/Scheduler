@@ -116,7 +116,7 @@ export default class DemoApp extends React.Component {
       });
   
       // Create a new array that includes the position ID and other details
-      const positionsWithIdsAndColors = response.data.map((position, index) => ({
+      const positionsWithIdsAndColors = response.data.positions.map((position, index) => ({
         id: position._id,
         name: position.name,
         color: colorChoices[index % colorChoices.length], // Cycle through the colors for each position
@@ -144,14 +144,14 @@ export default class DemoApp extends React.Component {
       });
   
       // Check if the response is an array
-      if (Array.isArray(response.data)) {
+      if (Array.isArray(response.data.shiftTemplates)) {
         console.log("response data is ", response.data);
-        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data);
+        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data.shiftTemplates);
         console.log("formatted shift template:", formattedShiftTemplates);
         this.setState({ shiftTemplates: formattedShiftTemplates });
       } else {
         // Handle case where response is not an array
-        console.error('Response is not an array', response.data);
+        console.error('Response is not an array', response.data.shiftTemplates);
         console.log()
         this.setState({ shiftTemplates: [] });
         this.setState({ selectMirrorEnabled: false });
