@@ -18,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 import EditSTModal from '../components/EditSTModal';
 import PositionList from '../components/PositionList';
+import EmployeeList from '../components/EmployeeList'; // Adjust the path as needed
+import { Button } from '@mui/material';
 
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
@@ -42,7 +44,16 @@ export default class DemoApp extends React.Component {
     shiftTemplatePositionId: null, // For storing the position ID of the shift template being edited, NOT created
     selectedShiftTemplate: null,
     showPositionModal: false,
+    showEmployeeList: false,
   }
+
+  // Method to toggle the list view
+  toggleList = () => {
+    this.setState(prevState => ({
+      showEmployeeList: !prevState.showEmployeeList,
+    }));
+  };
+
    // Function to handle opening the modal
    openProfileModal = () => {
     this.setState({ showPorfileModal: true });
@@ -335,6 +346,7 @@ export default class DemoApp extends React.Component {
   
 
   render() {
+    const { showEmployeeList, positions } = this.state;
     // Only render the calendar if colors are loaded
       if (!this.state.colorsLoaded) {
         return <div>Loading...</div>; // Or a spinner, or some other loading indicator
@@ -388,15 +400,31 @@ export default class DemoApp extends React.Component {
             eventRemove={function(){}}
             */
           />
-          <div className='demo-app-sidebar'>
+           <div className='demo-app-sidebar'>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.toggleList}
+            style={{ marginBottom: '10px' }}
+          >
+            {showEmployeeList ? 'Show Positions' : 'Show Employees'}
+          </Button>
+          
+          {showEmployeeList ? (
+            <EmployeeList
+              managerId={localStorage.getItem('id')}
+              onDeleteEmployee={this.deleteEmployee} // Implement this method
+            />
+          ) : (
             <PositionList
-              key={this.state.positions.length}
-              positions={this.state.positions}
+              key={positions.length}
+              positions={positions}
               onToggle={this.togglePosition}
               onAddPosition={this.addPosition}
               onDeletePosition={this.deletePosition}
             />
-          </div>
+          )}
+        </div>
         </div>
       </div>
     )
