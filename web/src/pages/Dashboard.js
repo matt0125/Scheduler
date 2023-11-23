@@ -22,6 +22,11 @@ import PositionList from '../components/PositionList';
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
 
+const getNextAvailableColor = (positionColors) => {
+  const usedColors = new Set(Object.values(positionColors));
+  const availableColors = colorChoices.filter(color => !usedColors.has(color));
+  return availableColors.length > 0 ? availableColors[0] : null; // return null or a default color if all are used
+};
 
 export default class DemoApp extends React.Component {
   state = {
@@ -119,8 +124,7 @@ export default class DemoApp extends React.Component {
   
       const positionsWithIdsAndColors = response.data.positions.map(position => {
         if (!positionColors[position._id]) {
-          positionColors[position._id] = colorChoices[colorIndex % colorChoices.length];
-          colorIndex++;
+          positionColors[position._id] = getNextAvailableColor(positionColors); // Use the utility function
         }
         return {
           id: position._id,
@@ -129,7 +133,7 @@ export default class DemoApp extends React.Component {
           checked: false
         };
       });
-  
+      
       localStorage.setItem('positionColors', JSON.stringify(positionColors));
       this.setState({ 
         positions: positionsWithIdsAndColors,
@@ -249,9 +253,10 @@ export default class DemoApp extends React.Component {
   addPosition = async (positionName) => {
     const jwtToken = localStorage.getItem('token');
     const managerId = localStorage.getItem('id');
+    let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
   
     try {
-      await axios.post(`http://localhost:3000/api/positions/manager`, {
+      const response = await axios.post(`http://localhost:3000/api/positions/manager`, {
         name: positionName,
         managerId: managerId
       }, {
@@ -261,12 +266,24 @@ export default class DemoApp extends React.Component {
         },
       });
   
-      this.fetchPositions(); // Refresh the positions list
+      // Accessing the _id from the newPosition object in the response
+      if (response.data && response.data.newPosition && response.data.newPosition._id) {
+        const newPositionColor = getNextAvailableColor(positionColors);
+        if (newPositionColor) {
+          positionColors[response.data.newPosition._id] = newPositionColor;
+          localStorage.setItem('positionColors', JSON.stringify(positionColors));
+        }
+        this.fetchPositions(); // Refresh the positions list
+      } else {
+        throw new Error('Position data is not in the expected format.');
+      }
     } catch (error) {
       console.error('Failed to add position:', error);
       alert('Failed to add position: ' + error.message);
     }
   };
+  
+  
   
   
   
