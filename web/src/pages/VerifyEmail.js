@@ -19,16 +19,28 @@ const VerifyEmail = () => {
         e.preventDefault();
         try {
             const response = await axios.get(`http://localhost:3000/api/verify-email/${verificationCode}`);
-            // Assuming the response contains user role information
-            const userRole = response.data.userRole; // Adjust based on actual response structure
-            localStorage.setItem('userRole', userRole); // Store the role in local storage
+            // Assuming the response contains user role information and it's stored in local storage
+            const userRole = localStorage.getItem('userRole'); // Retrieve the user role from local storage
+    
             setVerificationStatus('Verification successful. You can now login.');
-            navigate('/role-based-redirect');
+        
+            // Redirect based on the user's role
+            if (userRole === 'Employee') {
+                navigate('/EmployeeRegistration');
+            } else if (userRole === 'Manager') {
+                navigate('/'); // Assuming '/' is the path for the Login page
+            } else {
+                // If the role is neither 'Employee' nor 'Manager', handle accordingly
+                console.error('Unrecognized user role:', userRole);
+                setVerificationStatus('Unrecognized role. Please contact support.');
+            }
         } catch (error) {
             console.error('Error during email verification:', error);
             setVerificationStatus('Verification failed. Please check the code and try again.');
         }
     };
+    
+    
 
     
 

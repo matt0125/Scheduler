@@ -20,7 +20,6 @@ const App = () => {
         <Route path="/change-password/:employeeId" element={<ChangePassword />} />
         <Route path="/update-availability/:employeeId" element={<UpdateAvailability />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/role-based-redirect" element={<RoleBasedRedirect />} />
         <Route path="/EmployeeRegistration" element={<EmployeeRegistration />} /> {/* Added route for EmployeeRegistration */}
       </Routes>
     </Router>
@@ -31,23 +30,5 @@ function DashboardWithNavigate() {
   const navigate = useNavigate();
   return <Dashboard navigate={navigate} />;
 }
-
-// RoleBasedRedirect Component
-function RoleBasedRedirect() {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const userRole = localStorage.getItem('userRole');
-    console.log("UserRole from LocalStorage:", userRole); // Debugging log
-    if (userRole === 'Manager') {
-      navigate('/login'); // Redirect to login if the user is a manager
-    } else {
-      navigate('/EmployeeRegistration'); // Redirect to employee registration if not a manager
-    }
-  }, [navigate]);
-
-  return null; // Render nothing
-}
-
 
 export default App;
