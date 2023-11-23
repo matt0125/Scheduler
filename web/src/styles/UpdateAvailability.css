@@ -1,4 +1,4 @@
-body, html {
+.update-Avail-Page body, html {
     background-color: #EDE7E3;
     font-family: Katibeh;
     display: flex;
@@ -7,12 +7,12 @@ body, html {
     height: 10vh;
 }
 
-.update-title {
+.update-Avail-Page .update-title {
     text-align: center;
     margin-bottom: 10px;
 }
 
-h1 {
+.update-Avail-Page h1 {
     color: #49423E;
     text-align: left;
     font-family: Katibeh;
@@ -23,7 +23,7 @@ h1 {
     margin: 0;
 }
 
-h2 {
+.update-Avail-Page h2 {
     font-size: 50px;
     color: #47413d;
     font-family: Katibeh;
@@ -32,25 +32,26 @@ h2 {
     text-align: center;
 }
 
-h3 {
+.update-Avail-Page h3 {
     display: flex;
+    font-family: Katibeh;
     flex-direction: column;
     align-items: center;
     font-size: 25px;
 }
 
-.logo-container {
+.update-Avail-Page .logo-container {
     margin-left: 10px;
     margin-top: 10px;
 }
 
-.logo {
+.update-Avail-Page .logo {
     width: 50px;
     height: auto;
     margin-left: 10px;
 }
 
-.form-container {
+.update-Avail-Page .form-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -58,28 +59,41 @@ h3 {
     border-radius: 8px;
 }
 
-.dropdown-container {
+.update-Avail-Page .dropdown-container {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     margin-bottom: 20px;
 }
 
 
-form {
+.update-Avail-Page form {
     color: #000000;
 }
 
-.availabilities div {
+.update-Avail-Page .availabilities div {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
 }
 
-.availabilities .start {
+.update-Avail-Page .availabilities .start {
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    color: blue;
+    margin-left: 10px;
 }
 
-label {
+.update-Avail-Page .availabilities .end {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.update-Avail-Page label {
+    font-family: Katibeh;
+    font-size: 18px;
     margin-right: 10px;
     margin-left: 10px;
     padding-right: 10px;
@@ -88,13 +102,13 @@ label {
     height: 30px;
 }
 
-::after {
+.update-Avail-Page::after {
     content: "";
     display: table;
     clear: both;
 }
 
-select {
+.update-Avail-Page select {
     width: 150px;
     margin-bottom: 5px;
     margin-top: 2px;
@@ -108,16 +122,16 @@ select {
     font-size: 15px;
 }
 
-select[name="position"] {
+.update-Avail-Page select[name="position"] {
     margin-left: 10px;
 }
 
-select, input[type="checkbox"] {
+.update-Avail-Page select, input[type="checkbox"] {
     margin-right: 10px;
 }
 
 /* checkbox */
-input[type="checkbox"] {
+.update-Avail-Page input[type="checkbox"] {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -132,7 +146,7 @@ input[type="checkbox"] {
     margin-right: 5px;
 }
 
-input[type="checkbox"]:checked::before {
+.update-Avail-Page input[type="checkbox"]:checked::before {
     content: '\2714';
     font-size: 20px;
     color: #000000;
@@ -142,12 +156,12 @@ input[type="checkbox"]:checked::before {
     transform: translate(-50%, -50%);
 }
 
-.dropdown-container {
+.update-Avail-Page .dropdown-container {
     display: flex;
     justify-content: center;
 }
 
-button {
+.update-Avail-Page button {
     background-color: #B1947B;
     color: #000000;
     font-family: Katibeh;
@@ -162,14 +176,15 @@ button {
     line-height: 35px;
 }
 
-.background-square {
+.update-Avail-Page .background-square {
     background-color: #F8F8F8;
-    padding: 5px;
+    padding: 50px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     margin: auto;
     max-width: 600px;
+    max-height: 100%;
     box-shadow: 5px 0 10px rgba(0, 0, 0, 0.1);
 }
