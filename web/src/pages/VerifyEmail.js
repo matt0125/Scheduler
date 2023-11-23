@@ -18,10 +18,12 @@ const VerifyEmail = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Assuming your backend API endpoint for verifying the code is '/api/verify'
             const response = await axios.get(`http://localhost:3000/api/verify-email/${verificationCode}`);
+            // Assuming the response contains user role information
+            const userRole = response.data.userRole; // Adjust based on actual response structure
+            localStorage.setItem('userRole', userRole); // Store the role in local storage
             setVerificationStatus('Verification successful. You can now login.');
-            navigate('/');
+            navigate('/role-based-redirect');
         } catch (error) {
             console.error('Error during email verification:', error);
             setVerificationStatus('Verification failed. Please check the code and try again.');
