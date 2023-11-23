@@ -75,7 +75,6 @@ export default class DemoApp extends React.Component {
 
   componentDidMount() {
     this.fetchPositions();
-    this.fetchShiftTemplates();
     console.log("Startup: ",this.state.shiftTemplates);
   }
 
@@ -116,13 +115,13 @@ export default class DemoApp extends React.Component {
       });
   
       let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
+      let colorIndex = 0;
   
-      const positionsWithIdsAndColors = response.data.positions.map((position, index) => {
-        // Assign a color only if it's not already stored
+      const positionsWithIdsAndColors = response.data.positions.map(position => {
         if (!positionColors[position._id]) {
-          positionColors[position._id] = colorChoices[index % colorChoices.length];
+          positionColors[position._id] = colorChoices[colorIndex % colorChoices.length];
+          colorIndex++;
         }
-  
         return {
           id: position._id,
           name: position.name,
@@ -131,15 +130,18 @@ export default class DemoApp extends React.Component {
         };
       });
   
-      // Update local storage with new color mapping
       localStorage.setItem('positionColors', JSON.stringify(positionColors));
-  
-      this.setState({ positions: positionsWithIdsAndColors });
+      this.setState({ 
+        positions: positionsWithIdsAndColors,
+        colorsLoaded: true  // New state property to track when colors are loaded
+      }, () => {
+        this.fetchShiftTemplates(); // Fetch templates after positions and colors are set
+      });
     } catch (error) {
-      alert('Failed to fetch positions: ' + error.message);
-      console.log(error);
+      console.error('Failed to fetch positions:', error);
     }
   }
+  
   
   
   
@@ -316,6 +318,10 @@ export default class DemoApp extends React.Component {
   
 
   render() {
+    // Only render the calendar if colors are loaded
+      if (!this.state.colorsLoaded) {
+        return <div>Loading...</div>; // Or a spinner, or some other loading indicator
+      }
     return (
       <div className='demo-app'>
         {this.renderPositionModal()}
@@ -606,7 +612,7 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
         title: title,
         start: startDateTime,
         end: endDateTime,
-        color: positionColors[positionId], // Use the color from local storage
+        color: positionColors[positionId] || '#000000', // Default color if not found
         positionId: positionId
       });
     }
@@ -614,6 +620,7 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
 
   return formattedTemplates;
 }
+
 
 
 function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {

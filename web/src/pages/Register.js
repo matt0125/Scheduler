@@ -45,8 +45,13 @@ const Register = () => {
       const response = await axios.post('http://localhost:3000/api/register', formData);
       console.log('Registration successful:', response.data);
       console.log("Registered successfully.");
+  
+      // Determine the user role based on the managerIdent field
+      const userRole = formData.managerIdent ? 'Manager' : 'Employee';
+      // Store the user role in local storage
+      localStorage.setItem('userRole', userRole);
+  
       setShowEmailVerification(true);
-      // Redirect to a new page or show a modal informing about email verification
       navigate('/verify-email');
     } catch (err) {
       console.log('Error during registration:', err);

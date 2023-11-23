@@ -38,6 +38,7 @@ function RoleBasedRedirect() {
 
   useEffect(() => {
     const userRole = localStorage.getItem('userRole');
+    console.log("UserRole from LocalStorage:", userRole); // Debugging log
     if (userRole === 'Manager') {
       navigate('/login'); // Redirect to login if the user is a manager
     } else {
@@ -47,5 +48,6 @@ function RoleBasedRedirect() {
 
   return null; // Render nothing
 }
+
 
 export default App;
