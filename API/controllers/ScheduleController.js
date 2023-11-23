@@ -50,57 +50,85 @@ exports.generateSchedule = async (req, res) => {
             return res.status(404).json({message: "No shift templates found for that manager"});
 
         let shifts = [];
-            
-        for (let date = new Date(startDate); date <= endDate; date.setDate(date.getDate() + 1)) {
+        const end = new Date(endDate);
+        
+        // For each day
+        for (let date = new Date(startDate); date <= end; date.setDate(date.getDate() + 1)) {
             const dayOfWeek = date.getDay();
         
             const nextDate = new Date(date);
             nextDate.setDate(date.getDate() + 1);
 
+            // Get the shift templates for manager by day
             const templates = await ShiftTemplate.find({
                 managerId: managerId,
                 dayOfWeek: dayOfWeek
             });
-
-            return res.status(200).json({message: `${dayOfWeek} ${managerId}`});
+            
+            // Skip empty days
             if(templates.length === 0) {
                 continue;
             }
 
             let emps = []
 
+            // Loop through templates and find possible employees for each
             for (const template of templates) {
+
+                // Availability indexes
+                const startIdx = parseInt(template.startTime.split(':')[0]);
+                const endIdx = parseInt(template.endTime.split(':')[0]);
+
+                // Find all employees matching manager and position
                 const employees = await Employee.aggregate([
                     {
                         $match: {
-                            positions: template.positionId // Match documents where the position array contains the specified position ID (template.position)
-                        }
-                    },
-                    {
-                        $project: {
-                            sliceOfArray: { $slice: [`$availability.${template.dayOfWeek}`, parseInt(template.startTime.split(':')[0]), parseInt(template.endTime.split(':')[0])] }
-                        }
-                    },
-                    {
-                        $match: {
-                            sliceOfArray: { $all: [true] }
+                            managedBy: new mongoose.Types.ObjectId(managerId),
+                            positions: template.positionId
                         }
                     }
-                  ]);
+                ]);
 
-                if (getEmployeesByPosition.length === 0) {
+                // Filter by matching availability
+                const avail = [];
+
+                for (const emp of employees) {
+                    avail.push(emp);
+                    try{
+                        for (i = startIdx; i < endIdx; i++) {
+                            if (!emp.availability[dayOfWeek][i]) {
+                                avail.splice(-1, 1);
+                                break;
+                            }
+                        }
+                    }
+                    catch (err) {
+                        avail.splice(-1, 1);
+                    }
+                }
+                
+                
+                // If no employees, add "empty employee value" of 0 to match template length
+                if (avail.length === 0) {
                     emps.push(["0"]);
                 }
                 else {
-                    emps.push(employees);
+                    emps.push(avail);
                 }
             }
 
+            if (emps.length != templates.length) {
+                throw new Error("Internal error: emps.length != templates.length");
+            }
+
+
+            // Loop through employees and templates
             while(emps.length != 0) {
                 let shortestArray = emps[0]; // Initialize with the first array
                 let shortestLength = emps[0].length; // Initialize with the length of the first array
                 let index = 0;
 
+                // Find template with least number of employees
                 for (let i = 1; i < emps.length; i++) {
                     if (emps[i].length < shortestLength) {
                         shortestArray = emps[i];
@@ -110,35 +138,35 @@ exports.generateSchedule = async (req, res) => {
                 }
 
                 let template = templates[index];
-                let empId = "0";
 
+                // If there are emps in emps array
                 if(shortestArray[0] != "0") {
-                    for(const emp in shortestArray) {
-                        const shifts = await Shift.find({ 
-                            empId: emp._id,
-                            date: { $gte: date, $lt: nextDate },
+                    // Assign first emp to shift that isnt already scheduled
+                    for(const emp of shortestArray) {
+                        
+                        const empShifts = await Shift.find({ 
+                            empId: { $exists: true, $eq: emp._id },
+                            date: { $exists: true, $gte: date, $lt: nextDate },
                         });
-                        if (shifts.length === 0) {
-                            empId = emp._id;
+                        
+                        if (empShifts.length === 0) {                            
+                            const newShift = new Shift({
+                                _id: new mongoose.Types.ObjectId(),
+                                empId: emp._id,
+                                date: date,
+                                templateId: template._id
+                            });
+                            
+                            
+                            await newShift.save();                            
+                            shifts.push( newShift._id );
+
                             break;
                         }
                     }
-                    
-                    if(empId != "0") {
-                        const newShift = new Shift({
-                            _id: new mongoose.Types.ObjectId(),
-                            date: date,
-                            empId: empId,
-                            templateId: template._id
-                        });
-                        
-                        
-                        await newShift.save();
-                        
-                        shifts.push( newShift._id );
-                    }
                 }
 
+                // Remove employees and template from arrays
                 emps.splice(index, 1);
                 templates.splice(index, 1);
 
@@ -150,7 +178,8 @@ exports.generateSchedule = async (req, res) => {
             _id: new mongoose.Types.ObjectId(),
             startDate: startDate,
             endDate: endDate,
-            managerId: managerId
+            managerId: managerId,
+            shifts: shifts
         });
 
         newSched.save();
