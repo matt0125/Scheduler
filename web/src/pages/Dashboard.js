@@ -75,7 +75,6 @@ export default class DemoApp extends React.Component {
 
   componentDidMount() {
     this.fetchPositions();
-    this.fetchShiftTemplates();
     console.log("Startup: ",this.state.shiftTemplates);
   }
 
@@ -115,22 +114,37 @@ export default class DemoApp extends React.Component {
         }
       });
   
-      const { data } = response;
-      const positionsFromAPI = data.positions || [];
+      let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
+      let colorIndex = 0;
   
-      const positionsWithIdsAndColors = positionsFromAPI.map((position, index) => ({
-        id: position._id,
-        name: position.name,
-        color: colorChoices[index % colorChoices.length],
-        checked: false
-      }));
+      const positionsWithIdsAndColors = response.data.positions.map(position => {
+        if (!positionColors[position._id]) {
+          positionColors[position._id] = colorChoices[colorIndex % colorChoices.length];
+          colorIndex++;
+        }
+        return {
+          id: position._id,
+          name: position.name,
+          color: positionColors[position._id],
+          checked: false
+        };
+      });
   
-      this.setState({ positions: positionsWithIdsAndColors });
+      localStorage.setItem('positionColors', JSON.stringify(positionColors));
+      this.setState({ 
+        positions: positionsWithIdsAndColors,
+        colorsLoaded: true  // New state property to track when colors are loaded
+      }, () => {
+        this.fetchShiftTemplates(); // Fetch templates after positions and colors are set
+      });
     } catch (error) {
-      alert('Failed to fetch positions: ' + error.message);
-      console.log(error);
+      console.error('Failed to fetch positions:', error);
     }
   }
+  
+  
+  
+  
 
   fetchShiftTemplates = async () => {
     const managerId = localStorage.getItem('id');
@@ -146,14 +160,14 @@ export default class DemoApp extends React.Component {
       });
   
       // Check if the response is an array
-      if (Array.isArray(response.data.shiftTemplates)) {
+      if (Array.isArray(response.data)) {
         console.log("response data is ", response.data);
-        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data.shiftTemplates);
+        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data);
         console.log("formatted shift template:", formattedShiftTemplates);
         this.setState({ shiftTemplates: formattedShiftTemplates });
       } else {
         // Handle case where response is not an array
-        console.error('Response is not an array', response.data.shiftTemplates);
+        console.error('Response is not an array', response.data);
         console.log()
         this.setState({ shiftTemplates: [] });
         this.setState({ selectMirrorEnabled: false });
@@ -304,6 +318,10 @@ export default class DemoApp extends React.Component {
   
 
   render() {
+    // Only render the calendar if colors are loaded
+      if (!this.state.colorsLoaded) {
+        return <div>Loading...</div>; // Or a spinner, or some other loading indicator
+      }
     return (
       <div className='demo-app'>
         {this.renderPositionModal()}
@@ -579,16 +597,10 @@ function getNextColor() {
 // Shift templatese now can be shown for 12 week, We can change this number if we want
 async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 12) {
   const formattedTemplates = [];
-  const positionColors = {}; // Object to store colors for positions
+  const positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
 
   for (const template of shiftTemplates) {
-    const positionId = template.positionId;
-
-    // Assign a color to the position if not already assigned
-    if (!positionColors[positionId]) {
-      positionColors[positionId] = colorChoices[Object.keys(positionColors).length % colorChoices.length];
-    }
-
+    const positionId = template.positionId; 
     const title = await getPositionTitle(positionId);
 
     for (let week = 0; week < numberOfWeeks; week++) {
@@ -600,7 +612,7 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
         title: title,
         start: startDateTime,
         end: endDateTime,
-        color: positionColors[positionId], // Use the assigned color for the position
+        color: positionColors[positionId] || '#000000', // Default color if not found
         positionId: positionId
       });
     }
@@ -608,6 +620,7 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
 
   return formattedTemplates;
 }
+
 
 
 function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {

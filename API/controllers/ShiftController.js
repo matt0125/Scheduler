@@ -308,14 +308,22 @@ exports.getShiftByManager = async (req, res) => {
   }
 };
 
-// given a certain employee, delete all of their shifts
-exports.deleteShiftByEmployee = async (req, res) => {
+exports.deleteShiftsByEmployee = async (req, res) => {
   try {
+    const { empId } = req.params;
 
-  }
-  
-  catch (error) {
-    res.status(500).json({ message: 'Error when deleting all shifts of an employee', error: error.toString() });
-    console.error('There was an error deleting shifts of an employee', error);
+    // Optionally, validate if the employee exists
+    const employee = await Employee.findById(empId);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Delete all shifts associated with the employee
+    await Shift.deleteMany({ empId });
+
+    res.status(200).json({ message: `All shifts for employee ${empId} deleted successfully` });
+  } catch (error) {
+    console.error('Error deleting shifts by employee:', error);
+    res.status(500).json({ message: 'Failed to delete shifts by employee', error: error.toString() });
   }
 };

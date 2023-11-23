@@ -65,6 +65,9 @@ app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
 app.put('/api/employee/:employeeId/position/:positionId', employeeController.addPositionToEmployee);
 
+// Email verification
+app.get('/api/verify-email/:token', employeeController.verifyEmail);
+
 // Protected routes below this line
 app.use(authenticateJWT);
 
@@ -101,7 +104,8 @@ app.post('/api/shifts/empbydates', shiftController.getShiftByEmployeeAndDate);
 app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
 app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
-app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftByEmployee);
+
+app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftsByEmployee);
 
 // shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import "../styles/Register.css";
 import { Container, Row, Col } from "react-bootstrap";
@@ -9,8 +10,8 @@ import passIcon from "../images/password.png";
 import phoneIcon from "../images/phone.png";
 
 
-
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -26,6 +27,9 @@ const Register = () => {
     startAvail: 'NULL',
     managerIdent: false
   });
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationStatus, setVerificationStatus] = useState('');
 
   const [formErrors, setFormErrors] = useState({
     username: '',
@@ -94,8 +98,17 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://large.poosd-project.com/api/register', formData);
+      const response = await axios.post('http://localhost:3000/api/register', formData);
       console.log('Registration successful:', response.data);
+      console.log("Registered successfully.");
+  
+      // Determine the user role based on the managerIdent field
+      const userRole = formData.managerIdent ? 'Manager' : 'Employee';
+      // Store the user role in local storage
+      localStorage.setItem('userRole', userRole);
+  
+      setShowEmailVerification(true);
+      navigate('/verify-email');
       setShowPopup(true);
     } catch (err) {
       console.log('Error during registration:', err);
@@ -110,6 +123,23 @@ const Register = () => {
   };
 
  
+  const handleVerificationCodeChange = (e) => {
+    setVerificationCode(e.target.value);
+  };
+
+  const handleEmailVerification = async (e) => {
+    e.preventDefault();
+    try {
+      // Assuming your backend API endpoint for verifying the code is '/api/verify-email'
+      const response = await axios.get(`http://localhost:3000/api/verify-email/${verificationCode}`);
+      setVerificationStatus('Verification successful. You can now login.');
+    } catch (error) {
+      console.error('Error during email verification:', error);
+      setVerificationStatus('Verification failed. Please check the code and try again.');
+    }
+  };
+
+
 
   let url = "/";
   return (
@@ -197,12 +227,31 @@ const Register = () => {
               {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
             </div>
             </div>
-            <button type="submit" className="submit-button">Sign Up</button>
+            <button type="submit" className="submit-button">Verify Email</button>
             <p className="login-register-p">Have an account?  <a href={url} className="login-register-url">log in</a></p>
             </div>
             </form>
           </Col>
         </Row>
+        {showEmailVerification && (
+          <Row>
+            <Col>
+              <div className="email-verification-section">
+                <h2>Verify Your Email</h2>
+                <form onSubmit={handleEmailVerification}>
+                  <input
+                    type="text"
+                    value={verificationCode}
+                    onChange={handleVerificationCodeChange}
+                    placeholder="Enter verification code"
+                  />
+                  <button type="submit">Verify Email</button>
+                </form>
+                {verificationStatus && <p>{verificationStatus}</p>}
+              </div>
+            </Col>
+          </Row>
+        )}
       </Container>
     </div>
   );
