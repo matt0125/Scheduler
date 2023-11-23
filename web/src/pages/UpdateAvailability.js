@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import "../styles/UpdateAvailability.css";
 import logo from "../images/branding-notitle.png";
-import { container, Row, Col } from "react-bootstrap";
+import {Container, Row, Col } from "react-bootstrap";
 
 
 const generateTimeSlots = (interval = 30) => {
@@ -97,81 +97,63 @@ const UpdateAvailability = () => {
   };
 
   return (
-    <container>
-      <Row className="logo-row"></Row>
-      <div className="logo-container">
-        <h1>Sched</h1>
-        <img src={logo} alt="sched logo" className="logo"></img>
-      </div>
-      <div className="background-square">
-        <Col>
-          <h2 className="update-title">Update Availability</h2>
-          <form onSubmit={handleSubmit}>
-              {/* Dropdown for manager name */}
-              <div className="dropdown-container">
-                <select name="managerName" onChange={handleSelectChange}>
-                  <option value="">Select Manager...</option>
-                  {/* Populate with actual manager names */}
-                </select>
-
-                {/* Dropdown for position */}
-                <select name="position" onChange={handleSelectChange}>
-                  <option value="">Select Position...</option>
-                  {/* Populate with actual positions */}
-                </select>
-              </div>
+    <Container className="update-Avail-Page">
+      <Row>
+        <Col xs={12} md={3}>
+          <div className="logo-container">
+            <h1>Sched</h1>
+            <img src={logo} alt="sched logo" className="logo"></img>
+          </div>
+        </Col>
+        <Col xs={12} md={{span: 6, offset: 3}} className="background-square">
+            <h2 className="update-title">Update Availability</h2>
+            <form onSubmit={handleSubmit}>
               <h3>What days are you available?</h3>
-            {/* Availability for each day */}
-            <div className="availabilities">
-            {Object.keys(availability.days).map((day) => (
-              <div key={day}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={availability.days[day].available}
-                    onChange={() => handleCheckboxChange(day)}
-                  />
-                  {day}:
-                </label>
-                <div className="time-selects"> 
-                  <div className="start"> 
-                    <select
-                      value={availability.days[day].startTime}
-                      onChange={(e) => handleTimeChange(day, true, e.target.value)}
-                    >
+              {/* Availability for each day */}
+              <div className="availabilities">
+              {Object.keys(availability.days).map((day) => (
+                <div key={day} className="d-flex align-items-center">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={availability.days[day].available}
+                      onChange={() => handleCheckboxChange(day)}
+                    />
+                    {day}:
+                  </label>
+                  <div className="time-selects"> 
+                    <Col className="start"> 
+                      <select
+                        value={availability.days[day].startTime}
+                        onChange={(e) => handleTimeChange(day, true, e.target.value)}
+                      >
+                        {timeOptions.map(time => (
+                          <option key={`${day}-start-${time}`} value={time}>{time}</option>
+                        ))}
+                      </select>
+                    </Col>
+                    <Col className="end">
+                      <select
+                        value={availability.days[day].endTime}
+                        onChange={(e) => handleTimeChange(day, false, e.target.value)}
+                      >
                       {timeOptions.map(time => (
-                        <option key={`${day}-start-${time}`} value={time}>{time}</option>
+                          <option key={`${day}-end-${time}`} value={time}>{time}</option>
                       ))}
-                    </select>
-                  </div>
-                  <div className="end">
-                    <select
-                      value={availability.days[day].endTime}
-                      onChange={(e) => handleTimeChange(day, false, e.target.value)}
-                    >
-                    {timeOptions.map(time => (
-                        <option key={`${day}-end-${time}`} value={time}>{time}</option>
-                    ))}
-                    </select>
+                      </select>
+                    </Col>
                   </div>
                 </div>
+              ))}
               </div>
-            ))}
-            </div>
-            {/* Dropdown for position */}
-            {/* <select name="position" onChange={handleSelectChange}>
-              <option value="">Select Position...</option>
-              {Populate with actual positions }
-            </select> */}
-            <Row>
-              <button type="button" className="button-container" onClick={() => window.history.back()}>Back</button>
-              <button type="submit" className="button-container">Update Availability</button>
-            </Row>
-            </form>
-        </Col>
-        </div>
-    </container>
-    // </container>
+              <Row>
+                  <button type="button" className="button-container" onClick={() => window.history.back()}>Back</button>
+                  <button type="submit" className="button-container">Update Availability</button>
+              </Row>
+              </form>
+          </Col>
+        </Row>
+    </Container>
   );
 };
 
