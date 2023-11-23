@@ -136,6 +136,11 @@ exports.loginEmployee = async (req, res) => {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
+    // Check if the employee is validated
+    if (!user.isValidated) {
+      return res.status(401).json({ message: 'Employee account is not validated' });
+    }
+
     // Compare provided password with the hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
