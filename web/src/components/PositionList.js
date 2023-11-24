@@ -20,7 +20,6 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
   const handleSavePosition = () => {
     onAddPosition(newPositionName);
     setNewPositionName(''); // Reset the input field
-    setShowInput(false); // Hide the input field again
   };
 
   return (

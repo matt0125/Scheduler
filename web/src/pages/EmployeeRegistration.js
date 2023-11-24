@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Button, Typography, Box, TextField, FormControl } from '@mui/material';
 import Autocomplete from '@mui/lab/Autocomplete';
+import PositionSelector from '../components/PositionSelector';
 
 const EmployeeRegistration = () => {
   const [manager, setManager] = useState('');
   const [managers, setManagers] = useState([]);
+  const [showPositionSelector, setShowPositionSelector] = useState(false); // State to control PositionSelector visibility
   const jwtToken = localStorage.getItem('token'); 
 
   useEffect(() => {
@@ -32,11 +34,29 @@ const EmployeeRegistration = () => {
 
   const handleManagerChange = (event, value) => {
     setManager(value);
+    if (value != null) {
+      localStorage.setItem('selectedManagerId', value._id);
+    } else {
+      localStorage.removeItem('selectedManagerId'); // or set to a default value if required
+    }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(`Selected Manager: ${manager}`);
+    // Debugging: log the manager state before checking
+    console.log("Manager selected:", manager);
+  
+    if (manager) {
+      console.log(`Selected Manager: ${manager.username}`);
+      setShowPositionSelector(true); // Show PositionSelector after submitting manager
+  
+      // Debugging: log the showPositionSelector state after it's set
+      console.log("showPositionSelector set to true");
+    } else {
+      console.log("No manager selected. Please select a manager.");
+      // Debugging: log the showPositionSelector state when no manager is selected
+      console.log("showPositionSelector remains false");
+    }
   };
 
   return (
@@ -53,11 +73,7 @@ const EmployeeRegistration = () => {
               getOptionLabel={(option) => option.username}
               onChange={handleManagerChange}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Who's your manager (by username)?"
-                  variant="outlined"
-                />
+                <TextField {...params} label="Who's your manager (Enter Username)?" variant="outlined" style={{ minWidth: '250px' }} />
               )}
             />
           </FormControl>
@@ -71,6 +87,7 @@ const EmployeeRegistration = () => {
           </Button>
         </Box>
       </Box>
+      {showPositionSelector && <PositionSelector />}
     </Container>
   );
 };
