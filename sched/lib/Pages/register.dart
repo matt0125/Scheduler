@@ -3,9 +3,7 @@ import 'package:sched/Pages/welcome.dart';
 import 'package:sched/Services/APIService.dart';
 import 'package:sched/Services/DataService.dart';
 import 'package:sched/Widgets/popup.dart';
-import 'package:flutter/services.dart'; // Import for TextInputFormatter
-
-
+import 'package:flutter/services.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -23,6 +21,13 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController passwordController = TextEditingController();
 
   bool _obscureText = true;
+  bool isPasswordTyped = false;
+
+  // Password requirements
+  bool isLengthMet = false;
+  bool hasUppercase = false;
+  bool hasNumber = false;
+  bool hasSpecialChar = false;
 
   final apiService = APIService();
 
@@ -82,23 +87,22 @@ class _SignUpPageState extends State<SignUpPage> {
           password,
         );
 
-        if(loginResponse.empId != null) {
+        if (loginResponse.empId != null) {
           await DataService.writeEmpId(loginResponse.empId!);
           await DataService.writeJWT(loginResponse.token!);
 
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(
-                builder: (context) => WelcomePage(),
-              )
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WelcomePage(),
+            ),
           );
-        }
-        else {
+        } else {
           Popup(
             title: 'Error',
             message: loginResponse.message,
           ).show(context);
         }
-
       }
     }
   }
@@ -106,6 +110,16 @@ class _SignUpPageState extends State<SignUpPage> {
   void _togglePasswordVisibility() {
     setState(() {
       _obscureText = !_obscureText;
+    });
+  }
+
+  // Update password requirements based on the current password
+  void _updatePasswordRequirements(String password) {
+    setState(() {
+      isLengthMet = password.length >= 8;
+      hasUppercase = RegExp(r'[A-Z]').hasMatch(password);
+      hasNumber = RegExp(r'\d').hasMatch(password);
+      hasSpecialChar = RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(password);
     });
   }
 
@@ -147,13 +161,12 @@ class _SignUpPageState extends State<SignUpPage> {
                         isError: !fieldValidation['email']!,
                       ),
                       const SizedBox(height: 10.0),
-                      BubbleText2(
+                      BubbleTextPhone(
                         labelText: 'Phone number',
                         controller: phoneNumberController,
                         isError: !fieldValidation['phoneNumber']!,
-                        inputFormatter: [FilteringTextInputFormatter.digitsOnly], // Restrict input to numbers only
+                        inputFormatter: [FilteringTextInputFormatter.digitsOnly],
                       ),
-
                       const SizedBox(height: 10.0),
                       BubbleText(
                         labelText: 'Username',
@@ -161,7 +174,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         isError: !fieldValidation['username']!,
                       ),
                       const SizedBox(height: 10.0),
-                      BubbleText(
+                      BubbleTextPassword(
                         labelText: 'Password',
                         controller: passwordController,
                         obscureText: _obscureText,
@@ -173,8 +186,25 @@ class _SignUpPageState extends State<SignUpPage> {
                           onPressed: _togglePasswordVisibility,
                         ),
                         isError: !fieldValidation['password']!,
+                        inputFormatter: null, // Assuming you don't need any input formatter for the password
+                        onChanged: (value) {
+                          setState(() {
+                            // Set isPasswordTyped to true when the user starts typing in the password field
+                            isPasswordTyped = value.isNotEmpty;
+                            // Update password requirements
+                            _updatePasswordRequirements(value);
+                          });
+                        },
                       ),
-                      const SizedBox(height: 40.0),
+                      const SizedBox(height: 10),
+                      if (isPasswordTyped)
+                        PasswordRequirements(
+                          isLengthMet: isLengthMet,
+                          hasUppercase: hasUppercase,
+                          hasNumber: hasNumber,
+                          hasSpecialChar: hasSpecialChar,
+                        ),
+                      const SizedBox(height: 10.0),
                       ElevatedButton(
                         onPressed: _signUp,
                         style: ButtonStyle(
@@ -250,7 +280,6 @@ class SignUpText extends StatelessWidget {
   }
 }
 
-
 class BubbleText extends StatelessWidget {
   final String labelText;
   final TextEditingController controller;
@@ -296,7 +325,6 @@ class BubbleText extends StatelessWidget {
     );
   }
 }
-
 
 class BubbleContainer extends StatelessWidget {
   final TextEditingController controller;
@@ -355,14 +383,14 @@ class BubbleContainer extends StatelessWidget {
   }
 }
 
-class BubbleContainer2 extends StatelessWidget {
+class BubbleContainerPhone extends StatelessWidget {
   final TextEditingController controller;
   final bool obscureText;
   final Widget? suffixIcon;
   final bool isError;
   final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
 
-  const BubbleContainer2({
+  const BubbleContainerPhone({
     required this.controller,
     required this.obscureText,
     this.suffixIcon,
@@ -413,7 +441,7 @@ class BubbleContainer2 extends StatelessWidget {
   }
 }
 
-class BubbleText2 extends StatelessWidget {
+class BubbleTextPhone extends StatelessWidget {
   final String labelText;
   final TextEditingController controller;
   final bool obscureText;
@@ -421,7 +449,7 @@ class BubbleText2 extends StatelessWidget {
   final bool isError;
   final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
 
-  const BubbleText2({
+  const BubbleTextPhone({
     required this.labelText,
     required this.controller,
     this.obscureText = false,
@@ -447,7 +475,7 @@ class BubbleText2 extends StatelessWidget {
             ),
           ],
         ),
-        BubbleContainer2(
+        BubbleContainerPhone(
           controller: controller,
           obscureText: obscureText,
           suffixIcon: suffixIcon,
@@ -458,6 +486,117 @@ class BubbleText2 extends StatelessWidget {
     );
   }
 }
+
+class BubbleTextPassword extends StatelessWidget {
+  final String labelText;
+  final TextEditingController controller;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final bool isError;
+  final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
+  final void Function(String) onChanged; // Add onChanged property
+
+  const BubbleTextPassword({
+    required this.labelText,
+    required this.controller,
+    this.obscureText = false,
+    this.suffixIcon,
+    this.isError = false,
+    this.inputFormatter,
+    required this.onChanged, // Initialize the onChanged property
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              labelText,
+              style: const TextStyle(
+                fontFamily: 'Katibeh',
+                fontSize: 25,
+                color: Color(0xFF49423E),
+              ),
+            ),
+          ],
+        ),
+        BubbleContainerPassword(
+          controller: controller,
+          obscureText: obscureText,
+          suffixIcon: suffixIcon,
+          isError: isError,
+          inputFormatter: inputFormatter,
+          onChanged: onChanged, // Pass the onChanged property to BubbleContainer
+        ),
+      ],
+    );
+  }
+}
+
+class BubbleContainerPassword extends StatelessWidget {
+  final TextEditingController controller;
+  final bool obscureText;
+  final Widget? suffixIcon;
+  final bool isError;
+  final List<TextInputFormatter>? inputFormatter; // Add inputFormatter property
+  final void Function(String) onChanged; // Add onChanged property
+
+  const BubbleContainerPassword({
+    required this.controller,
+    required this.obscureText,
+    this.suffixIcon,
+    this.isError = false,
+    this.inputFormatter,
+    required this.onChanged, // Initialize the onChanged property
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 275,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(60),
+        color: const Color(0xFFCDBFB6),
+        border: Border.all(
+          color: isError ? Colors.red : Colors.black,
+          width: 2.0,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black,
+            offset: Offset(0.0, 1.0),
+            blurRadius: 5.0,
+            spreadRadius: 1.0,
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        inputFormatters: inputFormatter,
+        onChanged: onChanged, // Call onChanged when the text changes
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          contentPadding:
+          const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+          hintStyle: const TextStyle(
+            fontFamily: 'Katibeh',
+            color: Color(0xFF49423E),
+          ),
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          suffixIcon: suffixIcon,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
+
 
 class AccountText extends StatelessWidget {
   const AccountText({Key? key});
@@ -542,6 +681,70 @@ class PhoneNumberTextInputFormatter extends TextInputFormatter {
     }
 
     return newValue;
+  }
+}
+
+class PasswordRequirements extends StatelessWidget {
+  final bool isLengthMet;
+  final bool hasUppercase;
+  final bool hasNumber;
+  final bool hasSpecialChar;
+
+  PasswordRequirements({
+    required this.isLengthMet,
+    required this.hasUppercase,
+    required this.hasNumber,
+    required this.hasSpecialChar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Password Requirements:',
+          style: TextStyle(
+            fontFamily: 'Katibeh',
+            fontSize: 18,
+            color: Color(0xFF49423E),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          '- At least 8 characters',
+          style: TextStyle(
+            fontFamily: 'Katibeh',
+            fontSize: 16,
+            color: isLengthMet ? Colors.green : Colors.red,
+          ),
+        ),
+        Text(
+          '- Include at least one uppercase letter',
+          style: TextStyle(
+            fontFamily: 'Katibeh',
+            fontSize: 16,
+            color: hasUppercase ? Colors.green : Colors.red,
+          ),
+        ),
+        Text(
+          '- Include at least one number',
+          style: TextStyle(
+            fontFamily: 'Katibeh',
+            fontSize: 16,
+            color: hasNumber ? Colors.green : Colors.red,
+          ),
+        ),
+        Text(
+          '- Include at least one special character',
+          style: TextStyle(
+            fontFamily: 'Katibeh',
+            fontSize: 16,
+            color: hasSpecialChar ? Colors.green : Colors.red,
+          ),
+        ),
+      ],
+    );
   }
 }
 
