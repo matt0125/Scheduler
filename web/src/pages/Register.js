@@ -159,7 +159,7 @@ const Register = () => {
 
   let url = "/";
   return (
-    <div id="register-body">
+    <div id="register-body" onClick={handleClosePopup}>
     <Container>
         <Row>
           <Col>
@@ -174,15 +174,15 @@ const Register = () => {
             <img src={vector} className="business-photo" alt="business vector"/>
           </Col>
           <Col className="main-column">            
-            {showPopup && (<div id="good-top-popup" onClick={handleClosePopup}>
+            {showPopup && (<div id="good-top-popup">
                 <p>Registered Successfully!</p>
               </div>
             )}
-            {showFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
+            {showFailPopup && (<div className="bad-top-popup">
                 <p>Register was unsuccessful.</p>
               </div>
             )}
-            {showUserFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
+            {showUserFailPopup && (<div className="bad-top-popup">
                 <p>Username already exists.</p>
               </div>
             )}
