@@ -105,6 +105,11 @@ const Register = () => {
       const response = await axios.post('http://localhost:3000/api/register', formData);
       console.log('Registration successful:', response.data);
       console.log("Registered successfully.");
+
+
+      // Login successful
+      const token = data.token;
+      localStorage.setItem('token', token);
   
       // Determine the user role based on the managerIdent field
       const userRole = formData.managerIdent ? 'Manager' : 'Employee';
