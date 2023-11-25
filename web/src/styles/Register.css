@@ -146,10 +146,15 @@
   z-index: 1;
 }
 
-#bad-top-popup{
+.bad-top-popup{
   position: absolute;
-  top: -10%;
-  left: 37.5%;
+  top: -13%;
+  width: 22%;
+  left:0;
+  right:0;
+  text-align: center;
+  margin-left:auto;
+  margin-right:auto;  
   background-color: #ff9999;
   color: #333;
   padding: 8px;

@@ -166,7 +166,7 @@ const Register = () => {
                 <p>Registered Successfully!</p>
               </div>
             )}
-            {showFailPopup && (<div id="bad-top-popup" onClick={handleClosePopup}>
+            {showFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
                 <p>Register was unsuccessful.</p>
               </div>
             )}
