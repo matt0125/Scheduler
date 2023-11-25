@@ -367,7 +367,7 @@ exports.addAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability added successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
     res.status(500).json({ message: 'Error creating availability', error: err.toString()});
