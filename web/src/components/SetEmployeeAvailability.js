@@ -1,41 +1,16 @@
 import React, { useState } from 'react';
-import { Container, Paper, Checkbox, FormControlLabel, TextField, Button, Grid, Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-    padding: theme.spacing(3),
-  },
-  paper: {
-    padding: theme.spacing(2),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
-  selectEmpty: {
-    marginTop: theme.spacing(2),
-  },
-  button: {
-    marginTop: theme.spacing(2),
-  },
-}));
+import { Container, Paper, Checkbox, FormControlLabel, TextField, Button, Grid, Typography } from '@mui/material';
 
 const SetEmployeeAvailability = () => {
-    const classes = useStyles();
-    const [availability, setAvailability] = useState({
-      Mon: { available: false, startTime: '8:00 AM', endTime: '9:00 PM' },
-      Tue: { available: false, startTime: '8:00 AM', endTime: '9:00 PM' },
-      Wed: { available: false, startTime: '8:00 AM', endTime: '9:00 PM' },
-      Thu: { available: false, startTime: '8:00 AM', endTime: '9:00 PM' },
-      Fri: { available: false, startTime: '8:00 AM', endTime: '9:00 PM' },
-      Sat: { available: false, startTime: '8:00 AM', endTime: '9:00 PM' },
-      Sun: { available: false, startTime: '8:00 AM', endTime: '9:00 PM' },
-    });
-  
+  const [availability, setAvailability] = useState({
+    Mon: { available: false, startTime: '08:00', endTime: '21:00' },
+    Tue: { available: false, startTime: '08:00', endTime: '21:00' },
+    Wed: { available: false, startTime: '08:00', endTime: '21:00' },
+    Thu: { available: false, startTime: '08:00', endTime: '21:00' },
+    Fri: { available: false, startTime: '08:00', endTime: '21:00' },
+    Sat: { available: false, startTime: '08:00', endTime: '21:00' },
+    Sun: { available: false, startTime: '08:00', endTime: '21:00' },
+  });
 
   const handleCheckboxChange = (day) => (event) => {
     setAvailability({ ...availability, [day]: { ...availability[day], available: event.target.checked } });
@@ -57,11 +32,11 @@ const SetEmployeeAvailability = () => {
   };
 
   return (
-    <Container maxWidth="sm" className={classes.root}>
+    <Container maxWidth="sm" sx={{ flexGrow: 1, padding: 3 }}>
       <Typography variant="h4" gutterBottom>Set Employee Availability</Typography>
       <form onSubmit={handleSubmit}>
         {Object.entries(availability).map(([day, { available, startTime, endTime }]) => (
-          <Paper key={day} className={classes.paper}>
+          <Paper key={day} sx={{ padding: 2, textAlign: 'center', color: 'text.secondary', marginBottom: 2 }}>
             <Grid container alignItems="center" spacing={2}>
               <Grid item xs={2}>
                 <FormControlLabel
@@ -88,6 +63,7 @@ const SetEmployeeAvailability = () => {
                   inputProps={{
                     step: 300, // 5 min
                   }}
+                  sx={{ width: '100%' }}
                 />
               </Grid>
               <Grid item xs={5}>
@@ -102,17 +78,18 @@ const SetEmployeeAvailability = () => {
                   inputProps={{
                     step: 300, // 5 min
                   }}
+                  sx={{ width: '100%' }}
                 />
               </Grid>
             </Grid>
           </Paper>
         ))}
-        <Grid container spacing={2} justify="space-between">
+        <Grid container spacing={2} justifyContent="space-between">
           <Grid item>
-            <Button variant="contained" onClick={() => { /* back logic here */ }}>Back</Button>
+            <Button variant="outlined" onClick={() => { /* back logic here */ }}>Back</Button>
           </Grid>
           <Grid item>
-            <Button type="submit" variant="contained" color="primary" className={classes.button}>Submit</Button>
+            <Button type="submit" variant="contained" color="primary" sx={{ marginTop: 2 }}>Submit</Button>
           </Grid>
         </Grid>
       </form>

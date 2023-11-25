@@ -3,7 +3,7 @@ import axios from 'axios';
 import Autocomplete from '@mui/lab/Autocomplete';
 import { Container, Button, Typography, Box, TextField, FormControl, Snackbar } from '@mui/material';
 
-const PositionSelector = ({ managerId, setSuccess }) => {
+const PositionSelector = ({ managerId, onPositionSelection }) => {
   const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [error, setError] = useState(false);
@@ -29,23 +29,23 @@ const PositionSelector = ({ managerId, setSuccess }) => {
           console.error('Error fetching positions:', error);
         });
     }
-    // Check if there is a selected position in local storage when component mounts
+  }, [managerId]);
+
+  useEffect(() => {
+    // After positions are set, check for the selected position in local storage
     const storedPositionId = localStorage.getItem('selectedPositionId');
     if (storedPositionId) {
-      // Find the stored position in the positions array and set it as selected
       const storedPosition = positions.find(position => position._id === storedPositionId);
       setSelectedPosition(storedPosition);
     }
-  }, [managerId, positions]);
+  }, [positions]); // This effect should run whenever positions change
 
   const handlePositionChange = (event, value) => {
     setSelectedPosition(value);
     if (value) {
       localStorage.setItem('selectedPositionId', value._id);
-      setSuccess(true);
     } else {
       localStorage.removeItem('selectedPositionId');
-      setSuccess(false);
     }
   };
 
@@ -53,8 +53,11 @@ const PositionSelector = ({ managerId, setSuccess }) => {
     event.preventDefault();
     if (selectedPosition) {
       setError(false);
+      // Call onPositionSelection only here, on successful submit
+      onPositionSelection(true);
     } else {
       setError(true);
+      onPositionSelection(false); // Optionally inform the parent component of the error state
     }
   };
 
@@ -77,8 +80,7 @@ const PositionSelector = ({ managerId, setSuccess }) => {
                   {...params}
                   label="What is your position?"
                   variant="outlined"
-                  // Apply the green border if there is a selected position ID in local storage
-                  sx={localStorage.getItem('selectedPositionId') ? {
+                  sx={selectedPosition ? {
                     '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
                       borderColor: 'green',
                       borderWidth: '2px',

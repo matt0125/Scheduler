@@ -3,11 +3,13 @@ import axios from 'axios';
 import { Container, Button, Typography, Box, FormControl, Snackbar, TextField } from '@mui/material';
 import Autocomplete from '@mui/lab/Autocomplete';
 import PositionSelector from '../components/PositionSelector';
+import SetEmployeeAvailability from '../components/SetEmployeeAvailability'; // Import the SetEmployeeAvailability component
 
 const EmployeeRegistration = () => {
   const [manager, setManager] = useState(null);
   const [managers, setManagers] = useState([]);
   const [showPositionSelector, setShowPositionSelector] = useState(false);
+  const [showEmployeeAvailability, setShowEmployeeAvailability] = useState(false); // New state for controlling visibility of SetEmployeeAvailability
   const jwtToken = localStorage.getItem('token');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
@@ -33,21 +35,29 @@ const EmployeeRegistration = () => {
 
   const handleManagerChange = (event, value) => {
     setManager(value);
-    localStorage.setItem('selectedManagerId', value ? value._id : '');
-    setSuccess(false); // Reset success state on manager change
+    if (value) {
+      localStorage.setItem('selectedManagerId', value._id);
+      setSuccess(false);
+    } else {
+      // Clear both selectedManagerId and selectedPositionId from local storage
+      localStorage.removeItem('selectedManagerId');
+      localStorage.removeItem('selectedPositionId');
+      setSuccess(false);
+      setShowPositionSelector(false);
+      setShowEmployeeAvailability(false); // Hide the availability settings as well
+    }
+  };
+
+  // This function is passed to PositionSelector and is called on submit
+  const handlePositionSelection = (isPositionSelected) => {
+    setShowEmployeeAvailability(isPositionSelected);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (manager) {
-      setShowPositionSelector(true);
-      setSuccess(true);
-      setError(false);
-    } else {
-      setShowPositionSelector(false);
-      setSuccess(false);
-      setError(true);
-    }
+    setShowPositionSelector(!!manager);
+    setSuccess(!!manager);
+    setError(!manager);
   };
 
   return (
@@ -102,9 +112,10 @@ const EmployeeRegistration = () => {
       {showPositionSelector && (
         <PositionSelector 
           managerId={localStorage.getItem('selectedManagerId')} 
-          setSuccess={setSuccess} 
+          onPositionSelection={handlePositionSelection}
         />
       )}
+      {showEmployeeAvailability && <SetEmployeeAvailability />}
       <Snackbar
         open={error}
         autoHideDuration={6000}
