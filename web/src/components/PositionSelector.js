@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autocomplete from '@mui/lab/Autocomplete';
 import { Container, Button, Typography, Box, TextField, FormControl, Snackbar } from '@mui/material';
-const PositionSelector = ({ managerId, setSuccess }) => { // Accepting managerId as a prop here
+
+const PositionSelector = ({ managerId, setSuccess }) => {
   const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
-  const [error, setError] = useState(false); // State to manage the error message
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (managerId) {
@@ -18,7 +19,6 @@ const PositionSelector = ({ managerId, setSuccess }) => { // Accepting managerId
           },
         })
         .then((response) => {
-          console.log('Positions:', response.data.positions);
           if (Array.isArray(response.data.positions)) {
             setPositions(response.data.positions);
           } else {
@@ -29,27 +29,32 @@ const PositionSelector = ({ managerId, setSuccess }) => { // Accepting managerId
           console.error('Error fetching positions:', error);
         });
     }
-  }, [managerId]); // Dependency array includes managerId
-
-  // Custom filter function
-  const customFilterOptions = (options, { inputValue }) =>
-    options.filter((option) =>
-      option.name.toLowerCase().includes(inputValue.toLowerCase())
-    );
+    // Check if there is a selected position in local storage when component mounts
+    const storedPositionId = localStorage.getItem('selectedPositionId');
+    if (storedPositionId) {
+      // Find the stored position in the positions array and set it as selected
+      const storedPosition = positions.find(position => position._id === storedPositionId);
+      setSelectedPosition(storedPosition);
+    }
+  }, [managerId, positions]);
 
   const handlePositionChange = (event, value) => {
-    setSelectedPosition(value); // Store the entire position object or just an identifier as needed
+    setSelectedPosition(value);
+    if (value) {
+      localStorage.setItem('selectedPositionId', value._id);
+      setSuccess(true);
+    } else {
+      localStorage.removeItem('selectedPositionId');
+      setSuccess(false);
+    }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (selectedPosition) {
-      localStorage.setItem('selectedPosition', JSON.stringify(selectedPosition));
-      setSuccess(true);
       setError(false);
     } else {
-      setError(true); // Set error to true if no position is selected
-      setSuccess(false);
+      setError(true);
     }
   };
 
@@ -67,9 +72,19 @@ const PositionSelector = ({ managerId, setSuccess }) => { // Accepting managerId
               getOptionLabel={(option) => option.name}
               value={selectedPosition}
               onChange={handlePositionChange}
-              filterOptions={customFilterOptions} // Use the custom filter function here
               renderInput={(params) => (
-                <TextField {...params} label="What is your position?" variant="outlined" style={{ minWidth: '250px' }} />
+                <TextField
+                  {...params}
+                  label="What is your position?"
+                  variant="outlined"
+                  // Apply the green border if there is a selected position ID in local storage
+                  sx={localStorage.getItem('selectedPositionId') ? {
+                    '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'green',
+                      borderWidth: '2px',
+                    },
+                  } : {}}
+                />
               )}
             />
           </FormControl>
