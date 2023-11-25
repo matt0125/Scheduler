@@ -323,7 +323,7 @@ exports.setAvailability = async (req, res) => {
       availability: updatedEmployee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error creating availability', error: err.toString() });
     console.error("There was an error:", err);
   }
 }
@@ -370,7 +370,7 @@ exports.addAvailability = async (req, res) => {
       availability: updatedEmployee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error creating availability', error: err.toString()});
     console.error("There was an error:", err);
   }
 };
@@ -425,7 +425,7 @@ exports.updateAvailability = async (req, res) => {
       availability: updatedEmployee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error creating availability', error: err.toString() });
     console.error("There was an error:", err);
   }
 };
