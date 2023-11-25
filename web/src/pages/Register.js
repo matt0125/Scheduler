@@ -11,6 +11,7 @@ import phoneIcon from "../images/phone.png";
 
 
 
+
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -32,7 +33,6 @@ const Register = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationStatus, setVerificationStatus] = useState('');
 
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const [formErrors, setFormErrors] = useState({
@@ -46,6 +46,7 @@ const Register = () => {
 
   const [showPopup, setShowPopup] = useState(false);
   const [showFailPopup, setFailPopup] = useState(false);
+  const [showUserFailPopup, setUserFailPopup] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -124,6 +125,9 @@ const Register = () => {
     } catch (err) {
       console.log('Error during registration:', err);
       setFailPopup(true);
+      if (err.code === 11000) {
+        setUserFailPopup(true);
+      }
     }
   };
 
@@ -131,6 +135,7 @@ const Register = () => {
     // Close the popup
     setShowPopup(false);
     setFailPopup(false);
+    setUserFailPopup(false);
   };
 
  
@@ -149,8 +154,6 @@ const Register = () => {
       setVerificationStatus('Verification failed. Please check the code and try again.');
     }
   };
-
-
 
   let url = "/";
   return (
@@ -173,8 +176,12 @@ const Register = () => {
                 <p>Registered Successfully!</p>
               </div>
             )}
-            {showFailPopup && (<div id="bad-top-popup" onClick={handleClosePopup}>
+            {showFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
                 <p>Register was unsuccessful.</p>
+              </div>
+            )}
+            {showUserFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
+                <p>Username already taken.</p>
               </div>
             )}
             <form id ="myForm" onSubmit={handleSubmit}>
@@ -197,10 +204,14 @@ const Register = () => {
               <div class="pass-input-group"> 
               <h2 class="input-font">Password</h2>
               <img src={passIcon} alt="pass icon" /> 
-                <input type = {showPassword ? "text" : "password"} name="password" placeholder="" required onChange={handleChange} />
+                <input type = {showPassword ? "text" : "password"} name="password" placeholder="" required onChange={handleChange}>
+                </input>
                 {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
-              <input id = "reg-eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
-              </input>
+              <div class="checkbox_wrapper">
+                <input id="reg-eyeball" className = "eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
+                </input>
+                <label for="reg-eyeball"></label>
+              </div>
               </div>
               <div class="email-input-group">
               <h2 class="input-font">Email</h2>
