@@ -117,7 +117,10 @@ exports.registerEmployee = async (req, res) => {
     // const foundEmployee = await Employee.findById(savedEmployee._id);
     // console.log('Directly queried employee:', foundEmployee);
 
-    res.status(201).json({ message: 'Employee registered successfully', employeeId: savedEmployee._id });
+    const token = jwt.sign({ id: savedEmployee._id }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
+
+
+    res.status(201).json({ message: 'Employee registered successfully', employeeId: savedEmployee._id, token: token });
   } catch (err) {
     if (err.code === 11000) {
       return res.status(400).json({ message: 'Username already exists' });
@@ -355,8 +358,8 @@ exports.addAvailability = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const startIndex = startTime.split(":")[0];
-    const endIndex = endTime.split(":")[0];
+    const startIndex = parseInt(startTime.split(":")[0]);
+    const endIndex = parseInt(endTime.split(":")[0]);
 
     for (let i = startIndex; i <= endIndex; i++) {
       employee.availability[dayOfWeek][i] = true;
@@ -410,8 +413,8 @@ exports.updateAvailability = async (req, res) => {
       employee.availability[dayOfWeek][i] = false;
     }
 
-    startIndex = newStartTime.split(":")[0];
-    endIndex = newEndTime.split(":")[0];
+    startIndex = parseInt(newStartTime.split(":")[0]);
+    endIndex = parseInt(newEndTime.split(":")[0]);
 
     for (let i = startIndex; i <= endIndex; i++) {
       employee.availability[dayOfWeek][i] = true;
@@ -434,7 +437,7 @@ exports.updateAvailability = async (req, res) => {
 exports.deleteAvailability = async (req, res) => {
   try {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
-    const { dayOfWeek, startTime, endTime } = req.body; // Get the availability details from the request body
+    const { dayOfWeek, startTime, endTime } = req.query; // Get the availability details from the request body
 
     // Check for required availability details
     if (dayOfWeek === undefined || startTime === undefined || endTime === undefined) {
@@ -458,8 +461,8 @@ exports.deleteAvailability = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const startIndex = startTime.split(":")[0];
-    const endIndex = endTime.split(":")[0];
+    const startIndex = parseInt(startTime.split(":")[0]);
+    const endIndex = parseInt(endTime.split(":")[0]);
 
     for (let i = startIndex; i <= endIndex; i++) {
       employee.availability[dayOfWeek][i] = false;
@@ -470,10 +473,10 @@ exports.deleteAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability removed successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error deleting availability', error: err.toString() });
     console.error("There was an error:", err);
   }
 };
