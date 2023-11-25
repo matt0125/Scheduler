@@ -117,7 +117,10 @@ exports.registerEmployee = async (req, res) => {
     // const foundEmployee = await Employee.findById(savedEmployee._id);
     // console.log('Directly queried employee:', foundEmployee);
 
-    res.status(201).json({ message: 'Employee registered successfully', employeeId: savedEmployee._id });
+    const token = jwt.sign({ id: savedEmployee._id }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
+
+
+    res.status(201).json({ message: 'Employee registered successfully', employeeId: savedEmployee._id, token: token });
   } catch (err) {
     if (err.code === 11000) {
       return res.status(400).json({ message: 'Username already exists' });
@@ -367,7 +370,7 @@ exports.addAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability added successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
     res.status(500).json({ message: 'Error creating availability', error: err.toString()});
@@ -422,7 +425,7 @@ exports.updateAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability updated successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
     res.status(500).json({ message: 'Error creating availability', error: err.toString() });
