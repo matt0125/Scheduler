@@ -100,6 +100,7 @@ app.put('/api/shifts/:id', shiftController.editShift);
 app.delete('/api/shifts/:id', shiftController.deleteShift);
 
 app.post('/api/shifts/empbydates', shiftController.getShiftByEmployeeAndDate);
+app.post('/api/shifts/managerbydates', shiftController.getShiftByManagerAndDate);
 
 app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
 app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);

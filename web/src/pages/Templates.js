@@ -150,7 +150,7 @@ export default class DemoApp extends React.Component {
         positions: positionsWithIdsAndColors,
         colorsLoaded: true  // New state property to track when colors are loaded
       }, () => {
-        this.fetchShifts(); // Fetch templates after positions and colors are set
+        this.fetchShiftTemplates(); // Fetch templates after positions and colors are set
       });
     } catch (error) {
       console.error('Failed to fetch positions:', error);
@@ -161,7 +161,7 @@ export default class DemoApp extends React.Component {
   
   
 
-  fetchShifts = async () => {
+  fetchShiftTemplates = async () => {
     const managerId = localStorage.getItem('id');
     const jwtToken = localStorage.getItem('token');
   
@@ -324,7 +324,7 @@ export default class DemoApp extends React.Component {
         positions: prevState.positions.filter(position => position.id !== positionId),
       }), () => {
         // Callback to ensure the state is updated before fetching templates
-        this.fetchShifts();
+        this.fetchShiftTemplates();
       });
   
     } catch (error) {
@@ -381,7 +381,7 @@ export default class DemoApp extends React.Component {
               right: 'timeGridWeek,timeGridDay'
             }}
             allDaySlot={false}
-            height={700}
+            height={520}
             scrollTime={"09:00:00"}
             initialView='timeGridWeek'
             editable={true}
@@ -486,7 +486,7 @@ export default class DemoApp extends React.Component {
         };
 
         // calendarApi.addEvent(event);
-        this.fetchShifts();
+        this.fetchShiftTemplates();
       } catch (error) {
         alert(error);
       }
@@ -507,11 +507,64 @@ export default class DemoApp extends React.Component {
     })
   }
 
+  // Make this be able to add employees to shift temmplates 
+  handleEventDelete = (clickInfo) => {
+    if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
+      console.log(clickInfo.id);
+      const eventId = clickInfo.id.split('-')[0]; // Extract original template ID
+      const url = `http://localhost:3000/api/shift-templates/${eventId}`;
+
+      // Retrieve the JWT from local storage
+      const jwtToken = localStorage.getItem("token");
+
+      axios.delete(url, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            contentType: 'application/json'
+        }
+      })
+      .then(response => {
+        // Filter out deleted events
+        const updatedShiftTemplates = this.state.shiftTemplates.filter(event => !event.id.startsWith(`${eventId}-`));
+        this.setState({ shiftTemplates: updatedShiftTemplates });
+    
+        alert("Event deleted successfully.");
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert("Failed to delete the event: " + error);
+      });
+    }
+  };
+  
+  handleEventEdit = (clickInfo) => {
+    console.log("The clikc info is: ", clickInfo);
+    this.setState({ selectedShiftTemplateId: clickInfo.id.substring(0,24) });
+    this.setState({ selectedShiftTemplate: clickInfo});
+    this.openEditSTModal(clickInfo._def.extendedProps.positionId.substring(0, 24));
+  };
+
   renderEventContent = (eventInfo) => {
     return (
       <div>
         <b style={{ color: '#47413d' }}>{eventInfo.timeText}</b>
         <i style={{ color: '#47413d' }}>{eventInfo.event.title}</i>
+        <button
+          className="event-edit-button"
+          onClick={() => this.handleEventEdit(eventInfo.event)}
+          aria-label="Edit event"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer', marginRight: '5px' }}
+        >
+          ✏️
+        </button>
+        <button
+          className="event-delete-button"
+          onClick={() => this.handleEventDelete(eventInfo.event)}
+          aria-label="Delete event"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+        >
+          🗑️
+        </button>
       </div>
     )
   }
