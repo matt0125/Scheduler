@@ -117,9 +117,11 @@ const Register = () => {
       setShowPopup(true);
     } catch (err) {
       console.log('Error during registration:', err);
-      setFailPopup(true);
-      if (err.code === 11000) {
+      if (err.response.data.message === "Username already exists") {
         setUserFailPopup(true);
+      }
+      else{
+        setFailPopup(true);
       }
     }
   };
@@ -174,7 +176,7 @@ const Register = () => {
               </div>
             )}
             {showUserFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
-                <p>Username already taken.</p>
+                <p>Username already exists.</p>
               </div>
             )}
             <form id ="myForm" onSubmit={handleSubmit}>
