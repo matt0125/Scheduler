@@ -80,7 +80,7 @@
 .update-Avail-Page .availabilities .start {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: left;
     margin-left: 10px;
 }
 
