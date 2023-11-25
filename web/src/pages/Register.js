@@ -108,8 +108,7 @@ const Register = () => {
 
 
       // Login successful
-      const data = await response.json();
-      const token = data.token;
+      const token = response.token;
       localStorage.setItem('token', token);
   
       // Determine the user role based on the managerIdent field
