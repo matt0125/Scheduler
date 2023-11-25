@@ -131,8 +131,11 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <input id = "log-eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
+                <div id="log-checkbox_wrapper">
+                  <input id="log-eyeball" className = "eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
                   </input>
+                  <label for="log-eyeball"></label>
+                </div>
                 </div>
                 <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
                 <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>
