@@ -1,10 +1,14 @@
 const Employee = require('../models/Employee');
+const Position = require('../models/Position');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const saltRounds = 10; // for bcrypt password hashing
 const jwt = require('jsonwebtoken');
 const e = require('express');
 const secretKey = process.env.JWT_SECRET_KEY;
+const emailPassword = process.env.EMAIL_PASSWORD;
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 // Was used for unique index testing
 
@@ -51,6 +55,27 @@ exports.registerEmployee = async (req, res) => {
       return res.status(400).json({ message: 'Username must be between 2 to 20 characters' });
     }
 
+    // Password complexity validations
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      return res.status(400).json({ message: 'Password must contain at least one uppercase letter' });
+    }
+
+    if (!/[a-z]/.test(password)) {
+      return res.status(400).json({ message: 'Password must contain at least one lowercase letter' });
+    }
+
+    if (!/[0-9]/.test(password)) {
+      return res.status(400).json({ message: 'Password must contain at least one number' });
+    }
+
+    if (!/[^A-Za-z0-9]/.test(password)) {
+      return res.status(400).json({ message: 'Password must contain at least one special character' });
+    }
+
     // Hash password before storing it
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -71,6 +96,13 @@ exports.registerEmployee = async (req, res) => {
       preference, // as above, validate structure before saving
       __v: 0 // typically this is handled by Mongoose and does not need to be set manually
     });
+
+    // Generate verification token
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+    newEmployee.verificationToken = verificationToken;
+
+    // Send verification email (pseudo-code, replace with your email service)
+    sendVerificationEmail(email, verificationToken);
 
     const savedEmployee = await newEmployee.save();
     console.log('Saved employee with ID:', savedEmployee._id);
@@ -104,6 +136,11 @@ exports.loginEmployee = async (req, res) => {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
+    // Check if the employee is validated
+    if (!user.isValidated) {
+      return res.status(401).json({ message: 'Employee account is not validated' });
+    }
+
     // Compare provided password with the hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
@@ -111,7 +148,7 @@ exports.loginEmployee = async (req, res) => {
     }
 
     // If the password matches, create a JWT token
-    const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: '2h' }); // Expires in 2 hours
+    const token = jwt.sign({ id: user._id }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
 
     // If the password matches, proceed to login
     return res.json({ message: 'Login successful', id: user._id, token: token });
@@ -198,7 +235,6 @@ exports.getEmployeesByManager = async (req, res) => {
   }
 }
 
-
 // Given an employee, get their teammates (other employees) that are managed by the same person
 exports.getManager = async (req, res) => {
   try {
@@ -220,7 +256,6 @@ exports.getManager = async (req, res) => {
     console.error("There was an error:", error);
   }
 }
-
 
 // Given an employee, get their teammates (other employees) that are managed by the same person
 exports.getTeammates = async (req, res) => {
@@ -286,7 +321,6 @@ exports.setAvailability = async (req, res) => {
     console.error("There was an error:", err);
   }
 }
-
 
 exports.addAvailability = async (req, res) => {
   try {
@@ -529,7 +563,6 @@ exports.updateEmployeeProfile = async (req, res) => {
   }
 };
 
-
 exports.updateEmployeeProfile = async (req, res) => {
   try {
     const { employeeId } = req.params;
@@ -567,7 +600,6 @@ exports.updateEmployeeProfile = async (req, res) => {
   }
 };
 
-
 exports.updateEmployeeProfile = async (req, res) => {
   try {
     const { employeeId } = req.params;
@@ -604,7 +636,6 @@ exports.updateEmployeeProfile = async (req, res) => {
     console.error("There was an error:", err);
   }
 };
-
 
 exports.getAllManagers = async (req, res) => {
   try {
@@ -678,3 +709,183 @@ exports.getEmployeesByPosition = async (req, res) => {
     console.error('There was an error fetching employees by position:', error);
   }
 };
+
+exports.addPositionToEmployee = async (req, res) => {
+  try {
+    const { employeeId, positionId } = req.params; // or from req.body
+
+    // Find the employee
+    const employee = await Employee.findById(employeeId);
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Check if the position already exists in the employee's positions
+    if (employee.positions.includes(positionId)) {
+      return res.status(400).json({ message: 'Position already assigned to this employee' });
+    }
+
+    // Find the position
+    const position = await Position.findById(positionId);
+    if (!position) {
+      return res.status(404).json({ message: 'Position not found' });
+    }
+
+    // Add position to the employee's positions array
+    employee.positions.push(positionId);
+    await employee.save();
+
+    res.status(200).json({ message: 'Position added to employee successfully', employee });
+  } catch (error) {
+    res.status(400).json({ message: 'Failed to add position to employee', error: error.toString() });
+    console.log('There was an error adding position to employee:', error);
+  }
+};
+
+// given an employee, remove its manager
+exports.removeManagerFromEmployee = async (req, res) => {
+  try {
+    const empId = req.params.empId; // Assuming the employee ID is passed in the request parameters
+
+    const employee = await Employee.findById(empId);
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    if (employee.managedBy === null) {
+      return res.status(400).json({ message: 'Employee does not have a manager' });
+    }
+
+    employee.managedBy = null;
+    
+    await employee.save();
+
+    res.status(200).json({ message: 'Manager removed successfully', employee: employee });
+  } 
+  
+  catch (error) {
+    res.status(500).json({ message: 'An error occurred while removing the manager from the employee', error: error.toString() });
+    console.error('There was an error while trying to remove a manager from an employee', error);
+  }
+};
+
+exports.getManagerByName = async (req, res) => {
+  try {
+    const managerName = req.params.managerName; // Assuming the manager name is provided in the request parameters
+
+    // Find the manager(s) with the specified name
+    const managers = await Employee.find({
+      $and: [
+        { managerIdent: true }, // Assuming managers have managerIdent set to true
+        {
+          $or: [
+            { firstName: new RegExp(managerName, 'i') },
+            { lastName: new RegExp(managerName, 'i') },
+            { username: new RegExp(managerName, 'i') },
+          ],
+        },
+      ],
+    });
+
+    // Check if any managers were found
+    if (managers.length === 0) {
+      return res.status(404).json({ message: 'Manager not found' });
+    }
+
+    res.status(200).json({ managers: managers });
+  } 
+  
+  catch (error) {
+    res.status(500).json({ message: 'An error occurred while fetching manager by name', error: error.toString() });
+    console.error('There was an error while fetching manager by name', error);
+  }
+};
+
+exports.removePositionFromEmployee = async (req, res) => {
+  try {
+    const { empId, positionId } = req.params;
+
+    const employee = await Employee.findById(empId);
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    // Remove the specified position from the employee's positions array
+    employee.positions.pull(positionId);
+
+    // Save the updated employee
+    const updatedEmployee = await employee.save();
+
+    res.status(200).json(updatedEmployee);
+  }
+
+  catch (error) {
+    res.status(500).json({ message: 'An error occurred while removing a position from an employee', error: error.toString() });
+    console.error('There was an error while removing a position from an employee', error);
+  }
+}
+
+exports.verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    // Find employee with the token
+    const employee = await Employee.findOne({ verificationToken: token });
+    console.log(employee);
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Invalid or expired verification token' });
+    }
+
+    // Update employee as verified
+    employee.isValidated = true;
+    employee.verificationToken = ''; // Clear the token
+    await employee.save();
+
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.log('Error verifying email:', error);
+    res.status(500).json({ message: 'Error verifying email', error });
+  }
+};
+
+async function sendVerificationEmail(email, token) {
+  // Use your email service to send an email
+  // The email should contain a link to your frontend which calls the verifyEmail endpoint
+  // Example link: https://yourfrontend.com/verify-email?token=xxx
+  // Create reusable transporter object using SMTP transport
+  console.log("password is", emailPassword);
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // Replace with your email provider
+    auth: {
+      user: 'poosdproject@gmail.com', // Replace with your email
+      pass: emailPassword // Replace with your email password
+    }
+  });
+
+  // Email content
+  const mailOptions = {
+    from: '"Sched" <poosdproject@gmail.com>', // sender address
+    to: email, // list of receivers
+    subject: `${token} is your Sched activation code`, // Subject line
+    html: `
+              <p>Hello,</p>
+              <p>Your Sched activation code is: <strong>${token}</strong></p>
+              <p>You can also activate your account by clicking on the link below:</p>
+              <a href="https://large.poosd-project.com/verify-email/${token}">Verify Email</a>
+              <p>If you did not request this, please ignore this email.</p>
+              <p>Best regards,</p>
+              <p>The Sched Team</p>
+          ` // HTML body
+  };
+
+  // Send email
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: %s', info.messageId);
+  } catch (error) {
+    console.error('Error sending email: ', error);
+  }
+}

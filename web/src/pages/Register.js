@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import "../styles/Register.css";
 import { Container, Row, Col } from "react-bootstrap";
@@ -9,8 +10,8 @@ import passIcon from "../images/password.png";
 import phoneIcon from "../images/phone.png";
 
 
-
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -26,6 +27,21 @@ const Register = () => {
     startAvail: 'NULL',
     managerIdent: false
   });
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationStatus, setVerificationStatus] = useState('');
+
+  const [formErrors, setFormErrors] = useState({
+    username: '',
+    password: '',
+    email: '',
+    firstName: '',
+    lastName: '',
+    phone: '',
+  });
+
+  const [showPopup, setShowPopup] = useState(false);
+  const [showFailPopup, setFailPopup] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,18 +49,96 @@ const Register = () => {
       ...formData,
       [name]: value
     });
+
+    validateField(name, value);
   };
+
+  const validateField = (name, value) => {
+    let error = '';
+
+    if (name === 'username') {
+      if (value.length < 2 || value.length > 20) {
+        error = 'Username must be between 2 to 20 characters';
+      }
+    } 
+    if (name === 'email') {
+      // Example: Check if the email is a valid email address
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        error = 'Enter a valid email address.';
+      }
+    }
+    if (name === 'password') {
+      if (value.length < 8) {
+        error = 'Password must be at least 8 characters long.';
+      }
+      if (!/[A-Z]/.test(value)) {
+        error = 'Password must contain at least one uppercase letter';
+      }
+      if (!/[a-z]/.test(value)) {
+        error = 'Password must contain at least one lowercase letter';
+      }
+      if (!/[0-9]/.test(value)) {
+        error = 'Password must contain at least one number';
+      }
+      if (!/[^A-Za-z0-9]/.test(value)) {
+        error = 'Password must contain at least one special character';
+      }
+    } 
+    
+
+    // Update the form errors
+    setFormErrors({
+      ...formErrors,
+      [name]: error,
+    });
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://large.poosd-project.com/api/register', formData);
+      const response = await axios.post('http://localhost:3000/api/register', formData);
       console.log('Registration successful:', response.data);
-      alert("Registered successfully.")
+      console.log("Registered successfully.");
+  
+      // Determine the user role based on the managerIdent field
+      const userRole = formData.managerIdent ? 'Manager' : 'Employee';
+      // Store the user role in local storage
+      localStorage.setItem('userRole', userRole);
+  
+      setShowEmailVerification(true);
+      navigate('/verify-email');
+      setShowPopup(true);
     } catch (err) {
       console.log('Error during registration:', err);
+      setFailPopup(true);
     }
   };
+
+  const handleClosePopup = () => {
+    // Close the popup
+    setShowPopup(false);
+    setFailPopup(false);
+  };
+
+ 
+  const handleVerificationCodeChange = (e) => {
+    setVerificationCode(e.target.value);
+  };
+
+  const handleEmailVerification = async (e) => {
+    e.preventDefault();
+    try {
+      // Assuming your backend API endpoint for verifying the code is '/api/verify-email'
+      const response = await axios.get(`http://localhost:3000/api/verify-email/${verificationCode}`);
+      setVerificationStatus('Verification successful. You can now login.');
+    } catch (error) {
+      console.error('Error during email verification:', error);
+      setVerificationStatus('Verification failed. Please check the code and try again.');
+    }
+  };
+
 
 
   let url = "/";
@@ -64,60 +158,100 @@ const Register = () => {
             <img src={vector} className="business-photo" alt="business vector"/>
           </Col>
           <Col className="main-column">            
-            <form onSubmit={handleSubmit}>
+            {showPopup && (<div id="good-top-popup" onClick={handleClosePopup}>
+                <p>Registered Successfully!</p>
+              </div>
+            )}
+            {showFailPopup && (<div id="bad-top-popup" onClick={handleClosePopup}>
+                <p>Register was unsuccessful.</p>
+              </div>
+            )}
+            <form id ="myForm" onSubmit={handleSubmit}>
             <div className='register-form'>
             <h1 class="font-family-katibeh">Register</h1>
             <div className='register-box'>
               <div class="firstName-input-group">  
               <h2 class="input-font">First Name</h2>
-                <input type="text" name="firstName" placeholder="" onChange={handleChange} />
+                <input type="text" name="firstName" placeholder="" required onChange={handleChange} />
               </div>
               <div class="lastName-input-group"> 
               <h2 class="input-font">Last Name</h2>
-                <input type="text" name="lastName" placeholder="" onChange={handleChange} />
+                <input type="text" name="lastName" placeholder="" required onChange={handleChange} />
               </div>
               <div class="user-input-group"> 
               <h2 class="input-font">Username</h2>
-                <input type="text" name="username" placeholder="" onChange={handleChange} />
+                <input type="text" name="username" placeholder="" required onChange={handleChange} />
+                {formErrors.username && <div className="user-popup">{formErrors.username}</div>}
               </div>
               <div class="pass-input-group"> 
               <h2 class="input-font">Password</h2>
               <img src={passIcon} alt="pass icon" /> 
-                <input type="password" name="password" placeholder="" onChange={handleChange} />
+                <input type="password" name="password" placeholder="" required onChange={handleChange} />
+                {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
               </div>
               <div class="email-input-group">
               <h2 class="input-font">Email</h2>
               <img src={emailIcon} alt="email icon" /> 
-                <input type="email" name="email" placeholder="" onChange={handleChange} />
+                <input type="email" name="email" placeholder="" required onChange={handleChange} />
+                {formErrors.email && <div className="popup">{formErrors.email}</div>}
               </div>
               <div class="phone-input-group">
               <h2 class="input-font">Phone Number</h2>
               <img src={phoneIcon} alt="email icon" /> 
-                <input type="text" name="phone" placeholder="" onChange={handleChange} />
+                <input type="text" name="phone" placeholder="" required onChange={handleChange} />
               </div>
             </div>
             <div class="managerID-input-group">
             <h2 class="input-font">Are you a manager or an employee?</h2>
-            <div id="radio-buttons">
-            <input 
+            <div className="radio-toolbar">
+              <input 
+                type="radio" 
+                value="Manager" 
+                id="manager"
+                name="title"
+                required
+                />
+                <label for="manager" onClick={(e) => handleChange({ target: { name: 'managerIdent', value: true } })}>
+                  Manager
+                </label>
+              <input 
               type="radio" 
-              value="Manager" 
-              name="title" 
-              onChange={(e) => handleChange({ target: { name: 'managerIdent', value: e.target.checked } })}
-              /> Manager
-            <input 
-            type="radio" 
-            value="Employee" 
-            name="title" 
-            onChange={(e) => handleChange({ target: { name: 'managerIdent', value: false} })}/> Employee
+              value="Employee" 
+              id="employee"
+              name="title"
+              required
+              />
+              <label for="employee" onClick={(e) => handleChange({ target: { name: 'managerIdent', value: false } })}>
+                Employee
+              </label>
+              {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
             </div>
             </div>
-            <button type="submit" className="submit-button">Sign Up</button>
+            <button type="submit" className="submit-button">Verify Email</button>
             <p className="login-register-p">Have an account?  <a href={url} className="login-register-url">log in</a></p>
             </div>
             </form>
           </Col>
         </Row>
+        {showEmailVerification && (
+          <Row>
+            <Col>
+              <div className="email-verification-section">
+                <h2>Verify Your Email</h2>
+                <form onSubmit={handleEmailVerification}>
+                  <input
+                    type="text"
+                    value={verificationCode}
+                    onChange={handleVerificationCodeChange}
+                    placeholder="Enter verification code"
+                  />
+                  <button type="submit">Verify Email</button>
+                </form>
+                {verificationStatus && <p>{verificationStatus}</p>}
+              </div>
+            </Col>
+          </Row>
+        )}
       </Container>
     </div>
   );

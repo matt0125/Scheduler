@@ -42,6 +42,7 @@ const EmployeeSchema = new Schema({
   email: { type: String, default: '' },
   phone: { type: String, default: '' },
   managerIdent: { type: Boolean, default: false },
+  verificationToken: { type: String, default: '' },
   managedBy: {
     type: Schema.Types.ObjectId,
     ref: 'Employee'

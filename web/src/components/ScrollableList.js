@@ -5,8 +5,12 @@ const ScrollableList = ({ items, selectedItemIds, setSelectedItemIds }) => {
     const handleItemClick = (itemId) => {
         if (selectedItemIds.includes(itemId)) {
           setSelectedItemIds(selectedItemIds.filter(id => id !== itemId));
+          
         } else {
           setSelectedItemIds([...selectedItemIds, itemId]);
+          console.log("New selected item ids: " + selectedItemIds);
+          console.log("Item id was: " + itemId);
+          console.log(items);
         }
     };
 
@@ -16,11 +20,11 @@ const ScrollableList = ({ items, selectedItemIds, setSelectedItemIds }) => {
             {items.map((item) => (
                 <ListItem 
                     button 
-                    key={item.id} 
-                    selected={selectedItemIds.includes(item.id)} 
-                    onClick={() => handleItemClick(item.id)}
+                    key={item._id} 
+                    selected={selectedItemIds.includes(item._id)} 
+                    onClick={() => handleItemClick(item._id)}
                 >
-                <ListItemText primary={item.name} />
+                <ListItemText primary={`${item.firstName} ${item.lastName}`} />
             </ListItem>
             ))}
             </List>

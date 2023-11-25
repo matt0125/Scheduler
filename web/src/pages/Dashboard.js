@@ -17,10 +17,18 @@ import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from "react-router-dom";
 import { withRouter } from 'react-router-dom';
 import EditSTModal from '../components/EditSTModal';
+import PositionList from '../components/PositionList';
+import EmployeeList from '../components/EmployeeList'; // Adjust the path as needed
+import { Button } from '@mui/material';
 
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
 
+const getNextAvailableColor = (positionColors) => {
+  const usedColors = new Set(Object.values(positionColors));
+  const availableColors = colorChoices.filter(color => !usedColors.has(color));
+  return availableColors.length > 0 ? availableColors[0] : null; // return null or a default color if all are used
+};
 
 export default class DemoApp extends React.Component {
   state = {
@@ -32,8 +40,20 @@ export default class DemoApp extends React.Component {
     showEditSTModal: false,
     shiftTemplates: [],
     selectMirrorEnabled: true,
+    selectedShiftTemplateId: null,
+    shiftTemplatePositionId: null, // For storing the position ID of the shift template being edited, NOT created
+    selectedShiftTemplate: null,
     showPositionModal: false,
+    showEmployeeList: false,
   }
+
+  // Method to toggle the list view
+  toggleList = () => {
+    this.setState(prevState => ({
+      showEmployeeList: !prevState.showEmployeeList,
+    }));
+  };
+
    // Function to handle opening the modal
    openProfileModal = () => {
     this.setState({ showPorfileModal: true });
@@ -59,8 +79,9 @@ export default class DemoApp extends React.Component {
     this.props.navigate(`/edit-profile/${employeeId}`);
   };
   
-  openEditSTModal = () => {
+  openEditSTModal = (id) => {
     this.setState({ showEditSTModal: true });
+    this.setState({ shiftTemplatePositionId: id });
   }
 
   closeEditSTModal = () => {
@@ -70,7 +91,6 @@ export default class DemoApp extends React.Component {
 
   componentDidMount() {
     this.fetchPositions();
-    this.fetchShiftTemplates();
     console.log("Startup: ",this.state.shiftTemplates);
   }
 
@@ -81,14 +101,12 @@ export default class DemoApp extends React.Component {
         <Select
           labelId="position-select-label"
           value={this.state.selectedPositionId || ''}
-          onChange={this.handlePositionSelect}
+          onChange={(event) => this.handlePositionSelect(event)} // Update this line
           label="Position"
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          {this.state.positions.map(position => (
-            <MenuItem key={position._id} value={position._id}>
+          <MenuItem value=""><em>None</em></MenuItem>
+          {this.state.positions.map((position) => (
+            <MenuItem key={position.id} value={position.id}>
               {position.name}
             </MenuItem>
           ))}
@@ -96,27 +114,52 @@ export default class DemoApp extends React.Component {
       </FormControl>
     );
   }
+  
+  
+  
 
   fetchPositions = async () => {
-    // Fetch the positions based on the manager ID
-    // The manager ID should ideally come from a logged-in manager's data
     const managerId = localStorage.getItem('id');
     const jwtToken = localStorage.getItem('token');
     
     try {
-      const response = await axios.get(`http://large.poosd-project.com/api/positions/${managerId}`, {
+      const response = await axios.get(`http://localhost:3000/api/positions/${managerId}`, {
         headers: {
           contentType: 'application/json',
           Authorization: `Bearer ${jwtToken}`
         }
       });
-
-      this.setState({ positions: response.data });
+  
+      let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
+      let colorIndex = 0;
+  
+      const positionsWithIdsAndColors = response.data.positions.map(position => {
+        if (!positionColors[position._id]) {
+          positionColors[position._id] = getNextAvailableColor(positionColors); // Use the utility function
+        }
+        return {
+          id: position._id,
+          name: position.name,
+          color: positionColors[position._id],
+          checked: false
+        };
+      });
+      
+      localStorage.setItem('positionColors', JSON.stringify(positionColors));
+      this.setState({ 
+        positions: positionsWithIdsAndColors,
+        colorsLoaded: true  // New state property to track when colors are loaded
+      }, () => {
+        this.fetchShiftTemplates(); // Fetch templates after positions and colors are set
+      });
     } catch (error) {
-      alert('Failed to fetch positions: ' + error.message);
-      console.log(error);
+      console.error('Failed to fetch positions:', error);
     }
   }
+  
+  
+  
+  
 
   fetchShiftTemplates = async () => {
     const managerId = localStorage.getItem('id');
@@ -157,8 +200,16 @@ export default class DemoApp extends React.Component {
   
 
   handlePositionSelect = (event) => {
-    this.setState({ selectedPositionId: event.target.value });
-  }
+    const selectedId = event.target.value;
+    console.log('Selected position ID:', selectedId); // Should log the selected position's ID
+  
+    if (selectedId) {
+      this.setState({ selectedPositionId: selectedId });
+    } else {
+      console.log('No position ID found');
+    }
+  };
+  
 
   handleDateClick = () => {
     // Enable selectMirror when starting selection
@@ -173,7 +224,7 @@ export default class DemoApp extends React.Component {
   
     try {
       let jwtToken = localStorage.getItem('token');
-      const response = await axios.get('http://large.poosd-project.com/api/employee/', {
+      const response = await axios.get('http://localhost:3000/api/employee/', {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -208,9 +259,98 @@ export default class DemoApp extends React.Component {
     this.handleDateSelect(this.state.selectInfo);
     this.setState({ showPositionModal: false });
   }
+
+  // Adds position to manager
+  addPosition = async (positionName) => {
+    const jwtToken = localStorage.getItem('token');
+    const managerId = localStorage.getItem('id');
+    let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
+  
+    try {
+      const response = await axios.post(`http://localhost:3000/api/positions/manager`, {
+        name: positionName,
+        managerId: managerId
+      }, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        },
+      });
+  
+      // Accessing the _id from the newPosition object in the response
+      if (response.data && response.data.newPosition && response.data.newPosition._id) {
+        const newPositionColor = getNextAvailableColor(positionColors);
+        if (newPositionColor) {
+          positionColors[response.data.newPosition._id] = newPositionColor;
+          localStorage.setItem('positionColors', JSON.stringify(positionColors));
+        }
+        this.fetchPositions(); // Refresh the positions list
+      } else {
+        throw new Error('Position data is not in the expected format.');
+      }
+    } catch (error) {
+      console.error('Failed to add position:', error);
+      alert('Failed to add position: ' + error.message);
+    }
+  };
+  
+  
+  
+  
+  
+  
+  
+  // Deletes position connected to manager
+  deletePosition = async (positionId) => {
+    const jwtToken = localStorage.getItem('token');
+  
+    try {
+        // Then, delete all shift templates associated with this position
+      await axios.delete(`http://localhost:3000/api/shift-templates/position/${positionId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        },
+      });
+      await axios.delete(`http://localhost:3000/api/position/${positionId}`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+          'Content-Type': 'application/json'
+        },
+      });
+  
+      // Use the callback form of setState to ensure the state updates correctly
+      this.setState(prevState => ({
+        positions: prevState.positions.filter(position => position.id !== positionId),
+      }), () => {
+        // Callback to ensure the state is updated before fetching templates
+        this.fetchShiftTemplates();
+      });
+  
+    } catch (error) {
+      alert('Failed to delete position: ' + error.message);
+      console.error(error);
+    }
+  };
+
+  togglePosition = (positionId) => {
+    this.setState(prevState => ({
+      positions: prevState.positions.map(position => {
+        if (position.id === positionId) {
+          return { ...position, checked: !position.checked };
+        }
+        return position;
+      }),
+    }));
+  };
   
 
   render() {
+    const { showEmployeeList, positions } = this.state;
+    // Only render the calendar if colors are loaded
+      if (!this.state.colorsLoaded) {
+        return <div>Loading...</div>; // Or a spinner, or some other loading indicator
+      }
     return (
       <div className='demo-app'>
         {this.renderPositionModal()}
@@ -225,14 +365,20 @@ export default class DemoApp extends React.Component {
           isOpen={this.state.showEditSTModal} 
           onRequestClose={this.closeEditSTModal}
         > 
-            <EditSTModal isOpen={this.state.showEditSTModal} />
+            <EditSTModal 
+              isOpen={this.state.showEditSTModal} 
+              positionId={this.state.shiftTemplatePositionId}
+              templateId={this.state.selectedShiftTemplateId}
+              empId={localStorage.getItem('id')}
+              template={this.state.selectedShiftTemplate}
+            />
         </Modal>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+              right: 'timeGridWeek,timeGridDay'
             }}
             allDaySlot={false}
             height={520}
@@ -254,6 +400,31 @@ export default class DemoApp extends React.Component {
             eventRemove={function(){}}
             */
           />
+           <div className='demo-app-sidebar'>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.toggleList}
+            style={{ marginBottom: '10px' }}
+          >
+            {showEmployeeList ? 'Show Positions' : 'Show Employees'}
+          </Button>
+          
+          {showEmployeeList ? (
+            <EmployeeList
+              managerId={localStorage.getItem('id')}
+              onDeleteEmployee={this.deleteEmployee} // Implement this method
+            />
+          ) : (
+            <PositionList
+              key={positions.length}
+              positions={positions}
+              onToggle={this.togglePosition}
+              onAddPosition={this.addPosition}
+              onDeletePosition={this.deletePosition}
+            />
+          )}
+        </div>
         </div>
       </div>
     )
@@ -315,8 +486,6 @@ export default class DemoApp extends React.Component {
         };
 
         // calendarApi.addEvent(event);
-        alert('New shift template created!');
-        alert('Fetching events!');
         this.fetchShiftTemplates();
       } catch (error) {
         alert(error);
@@ -340,11 +509,10 @@ export default class DemoApp extends React.Component {
 
   // Make this be able to add employees to shift temmplates 
   handleEventDelete = (clickInfo) => {
-    alert(typeof clickInfo);
     if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
-      alert(clickInfo.id);
+      console.log(clickInfo.id);
       const eventId = clickInfo.id.split('-')[0]; // Extract original template ID
-      const url = `http://large.poosd-project.com/api/shift-templates/${eventId}`;
+      const url = `http://localhost:3000/api/shift-templates/${eventId}`;
 
       // Retrieve the JWT from local storage
       const jwtToken = localStorage.getItem("token");
@@ -370,7 +538,10 @@ export default class DemoApp extends React.Component {
   };
   
   handleEventEdit = (clickInfo) => {
-    this.openEditSTModal();
+    console.log("The clikc info is: ", clickInfo);
+    this.setState({ selectedShiftTemplateId: clickInfo.id.substring(0,24) });
+    this.setState({ selectedShiftTemplate: clickInfo});
+    this.openEditSTModal(clickInfo._def.extendedProps.positionId.substring(0, 24));
   };
 
   renderEventContent = (eventInfo) => {
@@ -471,35 +642,31 @@ function getNextColor() {
 // Shift templatese now can be shown for 12 week, We can change this number if we want
 async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 12) {
   const formattedTemplates = [];
-  const positionColors = {}; // Object to store colors for positions
+  const positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
 
   for (const template of shiftTemplates) {
-    const positionId = template.positionId;
-
-    // Assign a color to the position if not already assigned
-    if (!positionColors[positionId]) {
-      positionColors[positionId] = getNextColor();
-    }
-
+    const positionId = template.positionId; 
     const title = await getPositionTitle(positionId);
 
-    // Loop over the number of weeks
     for (let week = 0; week < numberOfWeeks; week++) {
       const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime, week);
       const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime, week);
 
       formattedTemplates.push({
-        id: `${template._id}-${week}`, // Unique ID for each event
+        id: `${template._id}-${week}`,
         title: title,
         start: startDateTime,
         end: endDateTime,
-        color: positionColors[positionId] // Assign the color to the event
+        color: positionColors[positionId] || '#000000', // Default color if not found
+        positionId: positionId
       });
     }
   }
 
   return formattedTemplates;
 }
+
+
 
 function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {
   const currentDate = new Date();

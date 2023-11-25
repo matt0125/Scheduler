@@ -20,9 +20,11 @@ const Login = () => {
     let errors = {};
     if (!username) {
       setUsernameError("Username is required");
+      
     }
     if (!password) {
       setPasswordError("Password is required");
+      
     }
     return errors;
   };
@@ -66,6 +68,9 @@ const Login = () => {
     } else {
       // Login failed
       alert("Invalid username or password");
+      document.getElementById("user-input").focus();
+      document.getElementById("pass-input").focus();
+
     }
   };
   
@@ -97,6 +102,7 @@ const Login = () => {
                     type="text"
                     name="username"
                     placeholder=""
+                    id="user-input"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                   />
@@ -108,6 +114,7 @@ const Login = () => {
                     type="password"
                     name="password"
                     placeholder=""
+                    id="pass-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
