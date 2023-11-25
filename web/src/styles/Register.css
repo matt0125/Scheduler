@@ -199,6 +199,16 @@
   z-index: 1;
 }
 
+#reg-eyeball{
+  position: absolute;
+  right: 10px;
+  top: 75%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+
 
 
 @media (max-width: 650px) {

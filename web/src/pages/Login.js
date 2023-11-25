@@ -15,6 +15,10 @@ const Login = () => {
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
+
+  const [showPassword, setShowPassword] = useState(false);
+
+
   // Validate the username and password
   const validateForm = () => {
     let errors = {};
@@ -111,13 +115,15 @@ const Login = () => {
                 <div class="password-input-group">
                   <img src={passIcon} alt="password icon"></img>
                   <input
-                    type="password"
+                    type= {showPassword ? "text" : "password"}
                     name="password"
                     placeholder=""
                     id="pass-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  <input id = "log-eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
+                  </input>
                 </div>
                 <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
                 <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>

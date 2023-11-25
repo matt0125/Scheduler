@@ -129,6 +129,16 @@ h1 {
   height: 20px;
 }
 
+#log-eyeball{
+  position: absolute;
+  right: 10px;
+  top: 52%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  z-index: 1;
+}
+
 .password-input-group input {
   padding-left: 40px;
 }

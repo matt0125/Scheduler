@@ -10,6 +10,7 @@ import passIcon from "../images/password.png";
 import phoneIcon from "../images/phone.png";
 
 
+
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -30,6 +31,9 @@ const Register = () => {
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [verificationStatus, setVerificationStatus] = useState('');
+
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formErrors, setFormErrors] = useState({
     username: '',
@@ -186,8 +190,10 @@ const Register = () => {
               <div class="pass-input-group"> 
               <h2 class="input-font">Password</h2>
               <img src={passIcon} alt="pass icon" /> 
-                <input type="password" name="password" placeholder="" required onChange={handleChange} />
+                <input type = {showPassword ? "text" : "password"} name="password" placeholder="" required onChange={handleChange} />
                 {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
+              <input id = "reg-eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
+              </input>
               </div>
               <div class="email-input-group">
               <h2 class="input-font">Email</h2>
@@ -224,7 +230,6 @@ const Register = () => {
               <label for="employee" onClick={(e) => handleChange({ target: { name: 'managerIdent', value: false } })}>
                 Employee
               </label>
-              {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
             </div>
             </div>
             <button type="submit" className="submit-button">Verify Email</button>
