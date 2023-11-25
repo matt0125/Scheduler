@@ -358,8 +358,8 @@ exports.addAvailability = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const startIndex = startTime.split(":")[0];
-    const endIndex = endTime.split(":")[0];
+    const startIndex = parseInt(startTime.split(":")[0]);
+    const endIndex = parseInt(endTime.split(":")[0]);
 
     for (let i = startIndex; i <= endIndex; i++) {
       employee.availability[dayOfWeek][i] = true;
@@ -413,8 +413,8 @@ exports.updateAvailability = async (req, res) => {
       employee.availability[dayOfWeek][i] = false;
     }
 
-    startIndex = newStartTime.split(":")[0];
-    endIndex = newEndTime.split(":")[0];
+    startIndex = parseInt(newStartTime.split(":")[0]);
+    endIndex = parseInt(newEndTime.split(":")[0]);
 
     for (let i = startIndex; i <= endIndex; i++) {
       employee.availability[dayOfWeek][i] = true;
@@ -461,8 +461,8 @@ exports.deleteAvailability = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const startIndex = startTime.split(":")[0];
-    const endIndex = endTime.split(":")[0];
+    const startIndex = parseInt(startTime.split(":")[0]);
+    const endIndex = parseInt(endTime.split(":")[0]);
 
     for (let i = startIndex; i <= endIndex; i++) {
       employee.availability[dayOfWeek][i] = false;
@@ -473,10 +473,10 @@ exports.deleteAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability removed successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error deleting availability', error: err.toString() });
     console.error("There was an error:", err);
   }
 };
