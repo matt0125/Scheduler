@@ -361,10 +361,19 @@ exports.getShiftByManagerAndDate = async (req, res) => {
           $lte: endDate,
         },
       }).populate({
+        path: 'empId',
+        model: Employee,
+        select: 'firstName lastName',
+      }).populate({
+        path: 'templateId',
+        model: ShiftTemplate,
+        select: 'startTime endTime positionId',
+      }).populate({
         path: 'templateId',
         populate: {
           path: 'positionId',
           model: Position,
+          select: 'name'
         },
       });
 

@@ -164,25 +164,35 @@ export default class DemoApp extends React.Component {
   fetchShifts = async () => {
     const managerId = localStorage.getItem('id');
     const jwtToken = localStorage.getItem('token');
-  
+// Have to get starting and ending dates some how
     try {
       console.log(managerId);
-      const response = await axios.get(`http://localhost:3000/api/shift-templates/manager/${managerId}`, {
+
+      const data = {
+        empId: managerId,
+        startDate: "11-19-2023",
+        endDate: "11-25-2023"
+      };
+
+      const response = await axios.post(`http://localhost:3000/api/shifts/managerbydates`, data, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
           contentType: 'application/json'
         }
       });
   
+      if(response.data != null) {
+
+      }
       // Check if the response is an array
-      if (Array.isArray(response.data)) {
+      if (Array.isArray(response.data.shifts)) {
         console.log("response data is ", response.data);
-        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data);
+        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data.shifts);
         console.log("formatted shift template:", formattedShiftTemplates);
         this.setState({ shiftTemplates: formattedShiftTemplates });
       } else {
         // Handle case where response is not an array
-        console.error('Response is not an array', response.data);
+        console.error('Response.data.shifts is not an array', response.data.shifts);
         console.log()
         this.setState({ shiftTemplates: [] });
         this.setState({ selectMirrorEnabled: false });
@@ -587,21 +597,22 @@ function getNextColor() {
 }
 
 // Shift templatese now can be shown for 12 week, We can change this number if we want
-async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 12) {
-  const formattedTemplates = [];
+async function formatShiftTemplatesForCalendar(shifts, numberOfWeeks = 12) {
+  const formattedShifts = [];
   const positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
 
-  for (const template of shiftTemplates) {
-    const positionId = template.positionId; 
-    const title = await getPositionTitle(positionId);
+  for (const shift of shifts) {
+    const positionId = shift.templateId.positionId?._id; 
+    const title = shift.templateId.positionId?.name;
 
     for (let week = 0; week < numberOfWeeks; week++) {
-      const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime, week);
-      const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime, week);
+      const startDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.startTime, week);
+      const endDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.endTime, week);
 
-      formattedTemplates.push({
-        id: `${template._id}-${week}`,
+      formattedShifts.push({
+        id: `${shift.templateId._id}-${week}`,
         title: title,
+        name: `${shift.empId.firstName} ${shift.empId.lastName}`,
         start: startDateTime,
         end: endDateTime,
         color: positionColors[positionId] || '#000000', // Default color if not found
@@ -610,7 +621,7 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 1
     }
   }
 
-  return formattedTemplates;
+  return formattedShifts;
 }
 
 

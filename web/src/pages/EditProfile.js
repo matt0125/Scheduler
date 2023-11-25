@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { TextField, Button, Container, Box, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, InputAdornment, IconButton } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Container, Box, Typography } from '@mui/material';
 
 const EditProfile = () => {
   const navigate = useNavigate();
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
-    phone: '' // Make sure this key matches the one from your API response.
+    phone: ''
   });
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -90,11 +102,38 @@ const EditProfile = () => {
     }));
   };
 
-  // Since employeeId is no longer needed for navigation, these handlers have been updated
-  const navigateToChangeManager = () => navigate('/change-manager');
-  const navigateToChangePosition = () => navigate('/change-position');
-  const navigateToChangePassword = () => navigate('/change-password');
-  const navigateToUpdateAvailability = () => navigate('/update-availability');
+  const handlePasswordChange = async () => {
+    if (newPassword !== confirmNewPassword) {
+      alert("Passwords don't match.");
+      return;
+    }
+
+    let jwtToken = localStorage.getItem('token');
+    let employeeId = localStorage.getItem('id');
+    // Replace the URL with your actual endpoint to update the password
+    const url = `http://localhost:3000/api/employee/${employeeId}/changePassword`;
+    
+    try {
+      const response = await axios.put(url, { newPassword }, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
+      alert('Password updated successfully!');
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error updating password', error);
+      alert('Error updating password');
+    }
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <Container maxWidth="sm">
@@ -102,38 +141,38 @@ const EditProfile = () => {
         Edit Profile
       </Typography>
       <Box component="form" noValidate autoComplete="off">
-      <TextField
-        fullWidth
-        label="First Name"
-        name="firstName"
-        value={formData.firstName}
-        onChange={handleChange}
-        margin="normal"
-        variant="outlined"
-      />
-      <TextField
-        fullWidth
-        label="Last Name"
-        name="lastName"
-        value={formData.lastName}
-        onChange={handleChange}
-        margin="normal"
-        variant="outlined"
-      />
-      <TextField
-        fullWidth
-        label="Email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        margin="normal"
-        variant="outlined"
-      />
-      <TextField
+        <TextField
+          fullWidth
+          label="First Name"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleChange}
+          margin="normal"
+          variant="outlined"
+        />
+        <TextField
+          fullWidth
+          label="Last Name"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleChange}
+          margin="normal"
+          variant="outlined"
+        />
+        <TextField
+          fullWidth
+          label="Email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          margin="normal"
+          variant="outlined"
+        />
+        <TextField
           fullWidth
           label="Phone Number"
-          name="phone" // This should match the key used in setFormData
-          value={formData.phone || ''} // Make sure you handle the controlled component correctly
+          name="phone"
+          value={formData.phone || ''}
           onChange={handleChange}
           margin="normal"
           variant="outlined"
@@ -142,27 +181,54 @@ const EditProfile = () => {
           fullWidth
           variant="contained"
           onClick={handleSave}
-          sx={{ mt: 3, mb: 2, backgroundColor: '#1976d2' }} // Use MUI blue instead of default purple
+          sx={{ mt: 3, mb: 2, backgroundColor: '#1976d2' }}
         >
           Save
         </Button>
         <Button
           fullWidth
           variant="outlined"
-          onClick={navigateToChangePassword}
+          onClick={handleOpenModal}
           sx={{ mb: 2 }}
         >
           Change Password
         </Button>
-        <Button
-          fullWidth
-          variant="outlined"
-          onClick={navigateToUpdateAvailability}
-          sx={{ mb: 2 }}
-        >
-          Change Availability
-        </Button>
+        {/* Assuming navigateToUpdateAvailability is defined elsewhere */}
       </Box>
+
+      <Dialog open={isModalOpen} onClose={handleCloseModal}>
+        <DialogTitle>Change Password</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            To update your password, please enter your new password here.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="new-password"
+            label="New Password"
+            type="password"
+            fullWidth
+            variant="standard"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            id="confirm-new-password"
+            label="Retype New Password"
+            type="password"
+            fullWidth
+            variant="standard"
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal}>Cancel</Button>
+          <Button onClick={handlePasswordChange}>Confirm</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
