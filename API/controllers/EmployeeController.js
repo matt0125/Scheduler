@@ -76,6 +76,12 @@ exports.registerEmployee = async (req, res) => {
       return res.status(400).json({ message: 'Password must contain at least one special character' });
     }
 
+    // Check if username is unique
+    const existingUser = await Employee.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
     // Hash password before storing it
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -317,7 +323,7 @@ exports.setAvailability = async (req, res) => {
       availability: updatedEmployee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error creating availability', error: err.toString() });
     console.error("There was an error:", err);
   }
 }
@@ -361,10 +367,10 @@ exports.addAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability added successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error creating availability', error: err.toString()});
     console.error("There was an error:", err);
   }
 };
@@ -416,10 +422,10 @@ exports.updateAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability updated successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error creating availability', error: err.toString() });
     console.error("There was an error:", err);
   }
 };
