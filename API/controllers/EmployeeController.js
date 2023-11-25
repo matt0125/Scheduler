@@ -437,7 +437,7 @@ exports.updateAvailability = async (req, res) => {
 exports.deleteAvailability = async (req, res) => {
   try {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
-    const { dayOfWeek, startTime, endTime } = req.body; // Get the availability details from the request body
+    const { dayOfWeek, startTime, endTime } = req.query; // Get the availability details from the request body
 
     // Check for required availability details
     if (dayOfWeek === undefined || startTime === undefined || endTime === undefined) {

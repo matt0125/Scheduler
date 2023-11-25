@@ -43,21 +43,85 @@ const SetEmployeeAvailability = () => {
     event.preventDefault();
   
     const jwtToken = localStorage.getItem('token');
-    const employeeId = localStorage.getItem('id'); // Assuming the employee's ID is stored with the key 'id'
+    const employeeId = localStorage.getItem('id');
   
     // Prepare the data for each day
     const dataToSend = Object.entries(availability).flatMap(([day, slots]) =>
       slots.filter(slot => slot.available).map(slot => ({
-        // Convert day string to day number, ensure to map it correctly
         dayOfWeek: convertDayToNumber(day),
         startTime: slot.startTime,
-        endTime: slot.endTime,
-        isValidated: true // Set as per your requirement
+        endTime: slot.endTime
       }))
     );
+
+
+    // Assign manager
+    try {
+      const managerId = localStorage.getItem('selectedManagerId');
+      if (managerId == null) {
+        throw new Error("mangerId null");
+      }
+      const data = {
+        managerId: managerId
+      }
+
+      const response = await axios.post(`http://localhost:3000/api/employee/${employeeId}/assign/manager`, data, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+      console.log(`post assign manager:`, response);
+    }
+    catch (e) {
+      console.error("Error assigning manager [components/SetEmployeeAvailability.js]", e);
+    }
+
+    // Assign position
+    try {
+      const positionId = localStorage.getItem('selectedPositionId');
+      if (positionId == null) {
+        throw new Error("positionId null");
+      }
+
+      const response = await axios.put(`http://localhost:3000/api/employee/${employeeId}/position/${positionId}`, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+      console.log(`put add position: ${response}`);
+    }
+    catch (error) {
+      if (!(error.response && error.response.status === 400 && error.response.data.message === "Position already assigned to this employee")) {
+        console.error("Error adding position [components/SetEmployeeAvailability.js]", error);
+      }
+    }
+
+    // Remove all old availability
+    try {
+      for (var i = 0; i < 7; i++) {
+        const data = {
+          dayOfWeek: `${i}`,
+          startTime: '00:00',
+          endTime: '23:00'
+        };
+        await axios.delete(`http://localhost:3000/api/employee/${employeeId}/availabilityByString`, {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            'Content-Type': 'application/json'
+          },
+          params: data
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting all availability:', error);
+    }
   
     try {
-      // Make the API call for each time slot
+      // Add availability for each time selected
       for (const slotData of dataToSend) {
         await axios.post(`http://localhost:3000/api/employee/${employeeId}/availability`, slotData, {
           headers: {
@@ -66,11 +130,9 @@ const SetEmployeeAvailability = () => {
           }
         });
       }
-  
-      // Handle success here
+
     } catch (error) {
       console.error('Error updating availability:', error);
-      // Handle error here
     }
   };
   
