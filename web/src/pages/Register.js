@@ -252,7 +252,7 @@ const Register = () => {
               </label>
             </div>
             </div>
-            <button type="submit" className="submit-button">Verify Email</button>
+            <button type="submit" className="submit-button">Submit</button>
             <p className="login-register-p">Have an account?  <a href={url} className="login-register-url">log in</a></p>
             </div>
             </form>
