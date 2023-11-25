@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autocomplete from '@mui/lab/Autocomplete';
-import { Container, Button, Typography, Box, TextField, FormControl } from '@mui/material';
-
-const PositionSelector = () => {
+import { Container, Button, Typography, Box, TextField, FormControl, Snackbar } from '@mui/material';
+const PositionSelector = ({ managerId, setSuccess }) => { // Accepting managerId as a prop here
   const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
+  const [error, setError] = useState(false); // State to manage the error message
 
   useEffect(() => {
-    const managerId = localStorage.getItem('selectedManagerId');
     if (managerId) {
       const jwtToken = localStorage.getItem('token');
       axios
@@ -20,8 +19,8 @@ const PositionSelector = () => {
         })
         .then((response) => {
           console.log('Positions:', response.data.positions);
-          if (Array.isArray(response.data.positions)) { // Check if response data is an array
-            setPositions(response.data.positions); // Adjust this based on your API response structure
+          if (Array.isArray(response.data.positions)) {
+            setPositions(response.data.positions);
           } else {
             console.error('Error: API response data is not an array');
           }
@@ -30,7 +29,7 @@ const PositionSelector = () => {
           console.error('Error fetching positions:', error);
         });
     }
-  }, []);
+  }, [managerId]); // Dependency array includes managerId
 
   // Custom filter function
   const customFilterOptions = (options, { inputValue }) =>
@@ -42,12 +41,15 @@ const PositionSelector = () => {
     setSelectedPosition(value); // Store the entire position object or just an identifier as needed
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
     if (selectedPosition) {
-      localStorage.setItem('selectedPosition', JSON.stringify(selectedPosition)); // Store the position object as a string
-      alert(`Position ${selectedPosition.name} saved!`); // Feedback for the user
+      localStorage.setItem('selectedPosition', JSON.stringify(selectedPosition));
+      setSuccess(true);
+      setError(false);
     } else {
-      alert('Please select a position.');
+      setError(true); // Set error to true if no position is selected
+      setSuccess(false);
     }
   };
 
@@ -80,6 +82,12 @@ const PositionSelector = () => {
             Submit
           </Button>
         </Box>
+        <Snackbar
+          open={error}
+          autoHideDuration={6000}
+          onClose={() => setError(false)}
+          message="Please select a position"
+        />
       </Box>
     </Container>
   );

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Button, Typography, Box, TextField, FormControl } from '@mui/material';
+import { Container, Button, Typography, Box, FormControl, Snackbar, TextField } from '@mui/material';
 import Autocomplete from '@mui/lab/Autocomplete';
 import PositionSelector from '../components/PositionSelector';
 
 const EmployeeRegistration = () => {
-  const [manager, setManager] = useState('');
+  const [manager, setManager] = useState(null);
   const [managers, setManagers] = useState([]);
-  const [showPositionSelector, setShowPositionSelector] = useState(false); // State to control PositionSelector visibility
-  const jwtToken = localStorage.getItem('token'); 
+  const [showPositionSelector, setShowPositionSelector] = useState(false);
+  const jwtToken = localStorage.getItem('token');
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchManagers = async () => {
@@ -19,10 +21,7 @@ const EmployeeRegistration = () => {
             'Content-Type': 'application/json'
           }
         });
-
-        // Assuming the response data is in the format { managers: [...] }
         const managerList = response.data.managers.filter(user => user.managerIdent);
-
         setManagers(managerList);
       } catch (error) {
         console.error('Error fetching managers:', error);
@@ -34,28 +33,20 @@ const EmployeeRegistration = () => {
 
   const handleManagerChange = (event, value) => {
     setManager(value);
-    if (value != null) {
-      localStorage.setItem('selectedManagerId', value._id);
-    } else {
-      localStorage.removeItem('selectedManagerId'); // or set to a default value if required
-    }
+    localStorage.setItem('selectedManagerId', value ? value._id : '');
+    setSuccess(false); // Reset success state on manager change
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Debugging: log the manager state before checking
-    console.log("Manager selected:", manager);
-  
     if (manager) {
-      console.log(`Selected Manager: ${manager.username}`);
-      setShowPositionSelector(true); // Show PositionSelector after submitting manager
-  
-      // Debugging: log the showPositionSelector state after it's set
-      console.log("showPositionSelector set to true");
+      setShowPositionSelector(true);
+      setSuccess(true);
+      setError(false);
     } else {
-      console.log("No manager selected. Please select a manager.");
-      // Debugging: log the showPositionSelector state when no manager is selected
-      console.log("showPositionSelector remains false");
+      setShowPositionSelector(false);
+      setSuccess(false);
+      setError(true);
     }
   };
 
@@ -72,8 +63,29 @@ const EmployeeRegistration = () => {
               options={managers}
               getOptionLabel={(option) => option.username}
               onChange={handleManagerChange}
+              value={manager}
               renderInput={(params) => (
-                <TextField {...params} label="Who's your manager (Enter Username)?" variant="outlined" style={{ minWidth: '250px' }} />
+                <TextField
+                  {...params}
+                  label="Who's your manager (Enter Username)?"
+                  variant="outlined"
+                  style={{ minWidth: '250px' }}
+                  InputProps={{
+                    ...params.InputProps,
+                    style: {
+                      paddingRight: '0',
+                    },
+                  }}
+                  // Apply the green border only after the form is submitted and success is true
+                  sx={success ? {
+                    '& .MuiOutlinedInput-root': {
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'green',
+                        borderWidth: '2px',
+                      },
+                    },
+                  } : {}}
+                />
               )}
             />
           </FormControl>
@@ -87,7 +99,18 @@ const EmployeeRegistration = () => {
           </Button>
         </Box>
       </Box>
-      {showPositionSelector && <PositionSelector />}
+      {showPositionSelector && (
+        <PositionSelector 
+          managerId={localStorage.getItem('selectedManagerId')} 
+          setSuccess={setSuccess} 
+        />
+      )}
+      <Snackbar
+        open={error}
+        autoHideDuration={6000}
+        onClose={() => setError(false)}
+        message="Please select a manager"
+      />
     </Container>
   );
 };
