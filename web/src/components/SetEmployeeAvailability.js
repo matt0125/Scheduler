@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Container, Paper, Checkbox, FormControlLabel, TextField, Button, Grid, Typography, IconButton } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 
 const SetEmployeeAvailability = () => {
+  const navigate = useNavigate();
     const [availability, setAvailability] = useState({
         Mon: [{ available: false, startTime: '08:00', endTime: '17:00' }],
         Tue: [{ available: false, startTime: '08:00', endTime: '17:00' }],
@@ -134,6 +136,9 @@ const SetEmployeeAvailability = () => {
     } catch (error) {
       console.error('Error updating availability:', error);
     }
+
+    navigate('/');
+
   };
   
   // Helper function to convert day string to day number
