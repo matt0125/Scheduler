@@ -124,9 +124,11 @@ const Register = () => {
       setShowPopup(true);
     } catch (err) {
       console.log('Error during registration:', err);
-      setFailPopup(true);
-      if (err.code === 11000) {
+      if (err.response.data.message === "Username already exists") {
         setUserFailPopup(true);
+      }
+      else{
+        setFailPopup(true);
       }
     }
   };
@@ -157,7 +159,7 @@ const Register = () => {
 
   let url = "/";
   return (
-    <div id="register-body">
+    <div id="register-body" onClick={handleClosePopup}>
     <Container>
         <Row>
           <Col>
@@ -172,16 +174,16 @@ const Register = () => {
             <img src={vector} className="business-photo" alt="business vector"/>
           </Col>
           <Col className="main-column">            
-            {showPopup && (<div id="good-top-popup" onClick={handleClosePopup}>
+            {showPopup && (<div id="good-top-popup">
                 <p>Registered Successfully!</p>
               </div>
             )}
-            {showFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
+            {showFailPopup && (<div className="bad-top-popup">
                 <p>Register was unsuccessful.</p>
               </div>
             )}
-            {showUserFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
-                <p>Username already taken.</p>
+            {showUserFailPopup && (<div className="bad-top-popup">
+                <p>Username already exists.</p>
               </div>
             )}
             <form id ="myForm" onSubmit={handleSubmit}>
@@ -250,7 +252,7 @@ const Register = () => {
               </label>
             </div>
             </div>
-            <button type="submit" className="submit-button">Verify Email</button>
+            <button type="submit" className="submit-button">Submit</button>
             <p className="login-register-p">Have an account?  <a href={url} className="login-register-url">log in</a></p>
             </div>
             </form>
