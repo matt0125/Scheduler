@@ -9,6 +9,7 @@ const EditProfile = () => {
   const navigate = useNavigate();
 
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState(''); // Add a state for the current password
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -103,29 +104,35 @@ const EditProfile = () => {
   };
 
   const handlePasswordChange = async () => {
-    if (newPassword !== confirmNewPassword) {
-      alert("Passwords don't match.");
+    // Log passwords for debugging purposes
+    console.log(`Current Password: ${currentPassword}, New Password: ${newPassword}, Confirm New Password: ${confirmNewPassword}`);
+  
+    // Check if the new passwords match
+    if (newPassword.trim() !== confirmNewPassword.trim()) {
+      alert("New passwords don't match.");
       return;
     }
-
+  
+    // Perform the password update call
     let jwtToken = localStorage.getItem('token');
     let employeeId = localStorage.getItem('id');
-    // Replace the URL with your actual endpoint to update the password
-    const url = `http://localhost:3000/api/employee/${employeeId}/changePassword`;
-    
+    const url = `http://localhost:3000/api/employee/${employeeId}/password`;
+    console.log("Sending request with", { currentPassword, newPassword });
     try {
-      const response = await axios.put(url, { newPassword }, {
+      const response = await axios.put(url, JSON.stringify({ currentPassword, newPassword }), {
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${jwtToken}`,
         },
       });
       alert('Password updated successfully!');
       handleCloseModal();
     } catch (error) {
-      console.error('Error updating password', error);
-      alert('Error updating password');
+      console.error('Error updating password:', error);
+      alert(`Error updating password: ${error.response?.data?.message || error.message}`);
     }
   };
+  
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -200,19 +207,31 @@ const EditProfile = () => {
         <DialogTitle>Change Password</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To update your password, please enter your new password here.
+            To update your password, please enter your current and new password here.
           </DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
-            id="new-password"
-            label="New Password"
-            type="password"
+            id="current-password"
+            label="Current Password"
+            type={passwordVisible ? 'text' : 'password'}
             fullWidth
             variant="standard"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {passwordVisible ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
+
           <TextField
             margin="dense"
             id="confirm-new-password"
