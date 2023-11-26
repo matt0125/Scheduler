@@ -67,7 +67,7 @@ const SetEmployeeAvailability = () => {
         managerId: managerId
       }
 
-      const response = await axios.post(`http://localhost:3000/api/employee/${employeeId}/assign/manager`, data, {
+      const response = await axios.post(`http://large.poosd-project.com/api/employee/${employeeId}/assign/manager`, data, {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
             'Content-Type': 'application/json'
@@ -87,7 +87,7 @@ const SetEmployeeAvailability = () => {
         throw new Error("positionId null");
       }
 
-      const response = await axios.put(`http://localhost:3000/api/employee/${employeeId}/position/${positionId}`, {
+      const response = await axios.put(`http://large.poosd-project.com/api/employee/${employeeId}/position/${positionId}`, {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
             'Content-Type': 'application/json'
@@ -110,7 +110,7 @@ const SetEmployeeAvailability = () => {
           startTime: '00:00',
           endTime: '23:00'
         };
-        await axios.delete(`http://localhost:3000/api/employee/${employeeId}/availabilityByString`, {
+        await axios.delete(`http://large.poosd-project.com/api/employee/${employeeId}/availabilityByString`, {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
             'Content-Type': 'application/json'
@@ -125,7 +125,7 @@ const SetEmployeeAvailability = () => {
     try {
       // Add availability for each time selected
       for (const slotData of dataToSend) {
-        await axios.post(`http://localhost:3000/api/employee/${employeeId}/availability`, slotData, {
+        await axios.post(`http://large.poosd-project.com/api/employee/${employeeId}/availability`, slotData, {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
             'Content-Type': 'application/json'

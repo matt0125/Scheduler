@@ -27,7 +27,7 @@ const VerifyEmail = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.get(`http://localhost:3000/api/verify-email/${verificationCode}`);
+            const response = await axios.get(`http://large.poosd-project.com/api/verify-email/${verificationCode}`);
             // Assuming the response contains user role information and it's stored in local storage
             const userRole = localStorage.getItem('userRole'); // Retrieve the user role from local storage
     
