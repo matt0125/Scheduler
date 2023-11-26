@@ -241,7 +241,7 @@ export default class DemoApp extends React.Component {
     // Handle event click action
     console.log('Event clicked:', clickInfo.event);
     // Set the clicked event details in the state and open the modal
-    this.setState({ selectedEvent: clickInfo.event, showPorfileModal: true });
+    this.setState({ selectedEvent: clickInfo.event, showEventModal: true });
   };
 
   handleDateClick = () => {
@@ -380,7 +380,7 @@ export default class DemoApp extends React.Component {
 
   render() {
     const { showEmployeeList, positions } = this.state;
-    const { showPorfileModal, selectedEvent } = this.state;
+    const { showEventModal, selectedEvent } = this.state;
 
     // Only render the calendar if colors are loaded
       if (!this.state.colorsLoaded) {
@@ -414,7 +414,7 @@ export default class DemoApp extends React.Component {
               />
           </Modal>
           <Modal
-            isOpen={showPorfileModal}
+            isOpen={showEventModal}
             onRequestClose={this.closeProfileModal}
             contentLabel="Event Modal"
             // Additional modal settings
