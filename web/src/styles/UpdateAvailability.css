@@ -180,9 +180,9 @@
 }
 
 /* hard coding because I couldn't get the selects
-    to move */
+    /* to move */
 /* .update-Avail-Page .time-selects {
     display: flex;
-    /*flex-direction: column; 
+    flex-direction: column; 
     align-items: flex-start;
-} */
+}  */
