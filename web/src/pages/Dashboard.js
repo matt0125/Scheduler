@@ -20,6 +20,9 @@ import EditSTModal from '../components/EditSTModal';
 import PositionList from '../components/PositionList';
 import EmployeeList from '../components/EmployeeList'; // Adjust the path as needed
 import { Button } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+
 
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
@@ -36,7 +39,7 @@ export default class DemoApp extends React.Component {
     currentEvents: [],
     positions: [], // To store the list of positions
     selectedPositionId: null, // To store the selected position ID
-    showPorfileModal: false,  // Add this line
+    showProfileModal: false,  // Add this line
     showEditSTModal: false,
     shifts: [],
     selectMirrorEnabled: true,
@@ -57,12 +60,12 @@ export default class DemoApp extends React.Component {
 
    // Function to handle opening the modal
    openProfileModal = () => {
-    this.setState({ showPorfileModal: true });
+    this.setState({ showProfileModal: true });
   }
 
   // Function to handle closing the modal
   closeProfileModal = () => {
-    this.setState({ showPorfileModal: false });
+    this.setState({ showProfileModal: false });
   }
 
   // Function to handle sign out
@@ -402,9 +405,17 @@ export default class DemoApp extends React.Component {
         <div className='demo-app-main'>
           <img src={logo} alt="sched logo" className="logo"></img>
           <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
-          <Modal isOpen={this.state.showPorfileModal} onRequestClose={this.closeProfileModal}>
-              <button onClick={this.handleSignOut}>Sign Out</button>
-              <button onClick={this.handleEditProfile}>Edit Profile</button>
+          <Modal isOpen={this.state.showProfileModal} onRequestClose={this.closeProfileModal}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+              <Stack spacing={2} direction="row" justifyContent="center" alignItems="center" sx={{ p: 2 }}>
+                <Button variant="contained" color="primary" onClick={this.handleSignOut}>
+                  Sign Out
+                </Button>
+                <Button variant="outlined" color="primary" onClick={this.handleEditProfile}>
+                  Edit Profile
+                </Button>
+              </Stack>
+            </Box>
           </Modal>
           <Modal 
             isOpen={this.state.showEditSTModal} 

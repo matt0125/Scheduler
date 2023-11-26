@@ -36,7 +36,7 @@ export default class DemoApp extends React.Component {
     currentEvents: [],
     positions: [], // To store the list of positions
     selectedPositionId: null, // To store the selected position ID
-    showPorfileModal: false,  // Add this line
+    showProfileModal: false,  // Add this line
     showEditSTModal: false,
     shiftTemplates: [],
     selectMirrorEnabled: true,
@@ -56,12 +56,12 @@ export default class DemoApp extends React.Component {
 
    // Function to handle opening the modal
    openProfileModal = () => {
-    this.setState({ showPorfileModal: true });
+    this.setState({ showProfileModal: true });
   }
 
   // Function to handle closing the modal
   closeProfileModal = () => {
-    this.setState({ showPorfileModal: false });
+    this.setState({ showProfileModal: false });
   }
 
   // Function to handle sign out
@@ -357,7 +357,7 @@ export default class DemoApp extends React.Component {
         <div className='demo-app-main'>
         <img src={logo} alt="sched logo" className="logo"></img>
         <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
-        <Modal isOpen={this.state.showPorfileModal} onRequestClose={this.closeProfileModal}>
+        <Modal isOpen={this.state.showProfileModal} onRequestClose={this.closeProfileModal}>
             <button onClick={this.handleSignOut}>Sign Out</button>
             <button onClick={this.handleEditProfile}>Edit Profile</button>
         </Modal>
