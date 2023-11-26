@@ -11,14 +11,14 @@ const EmployeeList = ({ managerId, onDeleteEmployee }) => {
       const jwtToken = localStorage.getItem('token'); 
 
       try {
-        const response = await axios.get(`http://localhost:3000/api/employee/${managerId}`, {
+        const response = await axios.get(`http://large.poosd-project.com/api/manager/${managerId}/employees`, {
           headers: {
             'Authorization': `Bearer ${jwtToken}`,
             'Content-Type': 'application/json'
           }
         });
-        console.log("Employee data:", response.data);
-        setEmployeeData(response.data);
+        // console.log("Employee data:", response.data.employees);
+        setEmployeeData(response.data.employees);
       } catch (error) {
         console.error('Error fetching employee data:', error);
       }

@@ -35,7 +35,7 @@ const EditProfile = () => {
           throw new Error('No employee ID found in local storage.');
         }
 
-        const url = `http://localhost:3000/api/employee/${employeeId}`;
+        const url = `http://large.poosd-project.com/api/employee/${employeeId}`;
         const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -69,7 +69,7 @@ const EditProfile = () => {
       return; // Exit the function if no employee ID is found
     }
   
-    const url = `http://localhost:3000/updateEmployee/${employeeId}`;
+    const url = `http://large.poosd-project.com/updateEmployee/${employeeId}`;
     
     try {
       // The formData sent to the server must match the server's expected format
@@ -116,7 +116,7 @@ const EditProfile = () => {
     // Perform the password update call
     let jwtToken = localStorage.getItem('token');
     let employeeId = localStorage.getItem('id');
-    const url = `http://localhost:3000/api/employee/${employeeId}/password`;
+    const url = `http://large.poosd-project.com/api/employee/${employeeId}/password`;
     console.log("Sending request with", { currentPassword, newPassword });
     try {
       const response = await axios.put(url, JSON.stringify({ currentPassword, newPassword }), {

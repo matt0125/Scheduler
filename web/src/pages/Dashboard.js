@@ -123,7 +123,7 @@ export default class DemoApp extends React.Component {
     const jwtToken = localStorage.getItem('token');
     
     try {
-      const response = await axios.get(`http://localhost:3000/api/positions/${managerId}`, {
+      const response = await axios.get(`http://large.poosd-project.com/api/positions/${managerId}`, {
         headers: {
           contentType: 'application/json',
           Authorization: `Bearer ${jwtToken}`
@@ -192,7 +192,7 @@ export default class DemoApp extends React.Component {
         endDate: formattedEndDate
       };
 
-      const response = await axios.post(`http://localhost:3000/api/shifts/managerbydates`, data, {
+      const response = await axios.post(`http://large.poosd-project.com/api/shifts/managerbydates`, data, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
           contentType: 'application/json'
@@ -257,7 +257,7 @@ export default class DemoApp extends React.Component {
   
     try {
       let jwtToken = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:3000/api/employee/', {
+      const response = await axios.get('http://large.poosd-project.com/api/employee/', {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
         },
@@ -300,7 +300,7 @@ export default class DemoApp extends React.Component {
     let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
   
     try {
-      const response = await axios.post(`http://localhost:3000/api/positions/manager`, {
+      const response = await axios.post(`http://large.poosd-project.com/api/positions/manager`, {
         name: positionName,
         managerId: managerId
       }, {
@@ -339,13 +339,13 @@ export default class DemoApp extends React.Component {
   
     try {
         // Then, delete all shift templates associated with this position
-      await axios.delete(`http://localhost:3000/api/shift-templates/position/${positionId}`, {
+      await axios.delete(`http://large.poosd-project.com/api/shift-templates/position/${positionId}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
           'Content-Type': 'application/json'
         },
       });
-      await axios.delete(`http://localhost:3000/api/position/${positionId}`, {
+      await axios.delete(`http://large.poosd-project.com/api/position/${positionId}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
           'Content-Type': 'application/json'
@@ -503,7 +503,7 @@ export default class DemoApp extends React.Component {
         console.log(convertToStandardTime(selectInfo.startStr));
         console.log(convertToStandardTime(selectInfo.endStr));
         console.log(getDayOfWeek(selectInfo.startStr));
-        const response = await axios.post('http://localhost:3000/api/shift-templates', {
+        const response = await axios.post('http://large.poosd-project.com/api/shift-templates', {
           dayOfWeek: getDayOfWeek(selectInfo.startStr), // convert startStr to day of week
           startTime: convertToStandardTime(selectInfo.startStr),
           endTime: convertToStandardTime(selectInfo.endStr),
@@ -638,7 +638,7 @@ function formatDateTimeForCalendar(dateTime) {
 
 async function getPositionTitle(positionId) {
   // Define the base URL
-  const baseUrl = 'http://localhost:3000/api/position/';
+  const baseUrl = 'http://large.poosd-project.com/api/position/';
 
   // Append the positionId to the URL
   const url = `${baseUrl}${positionId}`;
