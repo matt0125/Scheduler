@@ -14,6 +14,10 @@ const Login = () => {
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showFailPopup, setFailPopup] = useState(false);
+
+
 
   // Validate the username and password
   const validateForm = () => {
@@ -43,7 +47,7 @@ const Login = () => {
 
     // Call the backend API to authenticate the user
     // TODO: Replace this with a real API call
-    const response = await fetch("http://localhost:3000/api/login", {
+    const response = await fetch("http://large.poosd-project.com/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -67,11 +71,16 @@ const Login = () => {
       navigate('/dashboard');
     } else {
       // Login failed
-      alert("Invalid username or password");
+      setFailPopup(true);
       document.getElementById("user-input").focus();
       document.getElementById("pass-input").focus();
 
     }
+  };
+
+  const handleClosePopup = () => {
+    // Close the popup
+    setFailPopup(false);
   };
   
   let url = "/register";
@@ -92,6 +101,10 @@ const Login = () => {
             <img src={vector} className="business-photo" alt="business vector"/>
           </Col>
           <Col className="main-column">
+          {showFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
+            <p>Invalid username or password</p>
+            </div>
+            )}
             <form onSubmit={handleSubmit}>
               <div className="login-box">
                 <h1 class="font-family-katibeh">Login</h1>
@@ -111,13 +124,18 @@ const Login = () => {
                 <div class="password-input-group">
                   <img src={passIcon} alt="password icon"></img>
                   <input
-                    type="password"
+                    type= {showPassword ? "text" : "password"}
                     name="password"
                     placeholder=""
                     id="pass-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                <div id="log-checkbox_wrapper">
+                  <input id="log-eyeball" className = "eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
+                  </input>
+                  <label for="log-eyeball"></label>
+                </div>
                 </div>
                 <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
                 <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>

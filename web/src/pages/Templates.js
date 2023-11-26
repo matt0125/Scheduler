@@ -38,7 +38,7 @@ export default class DemoApp extends React.Component {
     selectedPositionId: null, // To store the selected position ID
     showPorfileModal: false,  // Add this line
     showEditSTModal: false,
-    shifts: [],
+    shiftTemplates: [],
     selectMirrorEnabled: true,
     selectedShiftTemplateId: null,
     shiftTemplatePositionId: null, // For storing the position ID of the shift template being edited, NOT created
@@ -91,7 +91,7 @@ export default class DemoApp extends React.Component {
 
   componentDidMount() {
     this.fetchPositions();
-    console.log("Startup: ",this.state.shifts);
+    console.log("Startup: ",this.state.shiftTemplates);
   }
 
   renderPositionSelect() {
@@ -150,79 +150,52 @@ export default class DemoApp extends React.Component {
         positions: positionsWithIdsAndColors,
         colorsLoaded: true  // New state property to track when colors are loaded
       }, () => {
-        // this.fetchShifts(); // Fetch templates after positions and colors are set
+        this.fetchShiftTemplates(); // Fetch templates after positions and colors are set
       });
     } catch (error) {
       console.error('Failed to fetch positions:', error);
     }
   }
   
+  
+  
+  
 
-  fetchShifts = async (startDate = null, endDate = null) => {
+  fetchShiftTemplates = async () => {
     const managerId = localStorage.getItem('id');
     const jwtToken = localStorage.getItem('token');
   
     try {
-      let formattedStartDate = startDate;
-      let formattedEndDate = endDate;
-  
-      if (!startDate || !endDate) {
-        // If startDate or endDate is null, get shifts for this week (from this Sunday to this Saturday)
-        const today = new Date();
-        const sunday = new Date(today);
-        sunday.setDate(today.getDate() - today.getDay());
-        
-        const saturday = new Date(today);
-        saturday.setDate(today.getDate() + (6 - today.getDay()));
-  
-        const format = (date) => {
-          const month = date.getMonth() + 1;
-          const day = date.getDate();
-          const year = date.getFullYear();
-          return `${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}-${year}`;
-        };
-  
-        formattedStartDate = format(sunday);
-        formattedEndDate = format(saturday);
-      }
-  
-      const data = {
-        empId: managerId,
-        startDate: formattedStartDate,
-        endDate: formattedEndDate
-      };
-
-      const response = await axios.post(`http://large.poosd-project.com/api/shifts/managerbydates`, data, {
+      console.log(managerId);
+      const response = await axios.get(`http://large.poosd-project.com/api/shift-templates/manager/${managerId}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
           contentType: 'application/json'
-        },
-        validateStatus: function (status) {
-          return status === 404 || (status >= 200 && status < 300); // Resolve only for 404 or successful statuses
         }
       });
-
-      if(response.status !== 404) {
-        if (Array.isArray(response.data.shifts)) {
-          const formattedShifts = await formatShiftsForCalendar(response.data.shifts);
-          console.log("formatted shifts:", formattedShifts);
-          this.setState({ shifts: formattedShifts });
-        } else {
-          // Handle case where response is not an array
-          console.error('Response.data.shifts is not an array', response.data.shifts);
-          this.setState({ shifts: [] });
-          this.setState({ selectMirrorEnabled: false });
-        }
+  
+      // Check if the response is an array
+      if (Array.isArray(response.data)) {
+        console.log("response data is ", response.data);
+        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data);
+        console.log("formatted shift template:", formattedShiftTemplates);
+        this.setState({ shiftTemplates: formattedShiftTemplates });
+      } else {
+        // Handle case where response is not an array
+        console.error('Response is not an array', response.data);
+        console.log()
+        this.setState({ shiftTemplates: [] });
+        this.setState({ selectMirrorEnabled: false });
       }
-      else {
-        console.log({status: 404, message: response.data.message});
-      }
-      
+      // calendarApi = selectInfo.view.calendar;
+      // console.log("this is being added: ", shiftTemplates[0]);
+      // calendarApi.addEvent(shiftTemplates[0])
     } catch (error) {
-      alert('Failed to fetch shifts: ' + error.message);
+      alert('Failed to fetch shift templates: ' + error.message);
       console.log(error);
-      this.setState({ shifts: [] }); // Reset to empty array on error
+      this.setState({ shiftTemplates: [] }); // Reset to empty array on error
     }
+    console.log("After startup: ", this.state.shiftTemplates);
   }
   
 
@@ -237,12 +210,6 @@ export default class DemoApp extends React.Component {
     }
   };
   
-  handleEventClick = (clickInfo) => {
-    // Handle event click action
-    console.log('Event clicked:', clickInfo.event);
-    // Set the clicked event details in the state and open the modal
-    this.setState({ selectedEvent: clickInfo.event, showPorfileModal: true });
-  };
 
   handleDateClick = () => {
     // Enable selectMirror when starting selection
@@ -357,7 +324,7 @@ export default class DemoApp extends React.Component {
         positions: prevState.positions.filter(position => position.id !== positionId),
       }), () => {
         // Callback to ensure the state is updated before fetching templates
-        this.fetchShifts();
+        this.fetchShiftTemplates();
       });
   
     } catch (error) {
@@ -380,61 +347,32 @@ export default class DemoApp extends React.Component {
 
   render() {
     const { showEmployeeList, positions } = this.state;
-    const { showPorfileModal, selectedEvent } = this.state;
-
     // Only render the calendar if colors are loaded
       if (!this.state.colorsLoaded) {
         return <div>Loading...</div>; // Or a spinner, or some other loading indicator
       }
-
-      // used in selectable to create "on the fly" shifts
-      const isManager = localStorage.getItem('userRole') === 'Manager';
-
-
     return (
       <div className='demo-app'>
         {this.renderPositionModal()}
         <div className='demo-app-main'>
-          <img src={logo} alt="sched logo" className="logo"></img>
-          <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
-          <Modal isOpen={this.state.showPorfileModal} onRequestClose={this.closeProfileModal}>
-              <button onClick={this.handleSignOut}>Sign Out</button>
-              <button onClick={this.handleEditProfile}>Edit Profile</button>
-          </Modal>
-          <Modal 
-            isOpen={this.state.showEditSTModal} 
-            onRequestClose={this.closeEditSTModal}
-          > 
-              <EditSTModal 
-                isOpen={this.state.showEditSTModal} 
-                positionId={this.state.shiftTemplatePositionId}
-                templateId={this.state.selectedShiftTemplateId}
-                empId={localStorage.getItem('id')}
-                template={this.state.selectedShiftTemplate}
-              />
-          </Modal>
-          <Modal
-            isOpen={showPorfileModal}
-            onRequestClose={this.closeProfileModal}
-            contentLabel="Event Modal"
-            // Additional modal settings
-          >
-            {selectedEvent && (
-              <div>
-                <h2>
-                  {selectedEvent.title !== 'undefined' && selectedEvent.title !== null
-                    ? selectedEvent.title.replace(/\b\w/g, (char) => char.toUpperCase())
-                    : 'No Position'}
-                </h2>
-                <p>Date: {new Date(selectedEvent.start).toLocaleDateString()}</p>
-                <p>
-                  Time: {new Date(selectedEvent.start).toLocaleTimeString([], { timeStyle: 'short' })} -{' '}
-                  {new Date(selectedEvent.end).toLocaleTimeString([], { timeStyle: 'short' })}
-                </p>
-                <button onClick={this.closeProfileModal}>Close</button>
-              </div>
-            )}
-          </Modal>
+        <img src={logo} alt="sched logo" className="logo"></img>
+        <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
+        <Modal isOpen={this.state.showPorfileModal} onRequestClose={this.closeProfileModal}>
+            <button onClick={this.handleSignOut}>Sign Out</button>
+            <button onClick={this.handleEditProfile}>Edit Profile</button>
+        </Modal>
+        <Modal 
+          isOpen={this.state.showEditSTModal} 
+          onRequestClose={this.closeEditSTModal}
+        > 
+            <EditSTModal 
+              isOpen={this.state.showEditSTModal} 
+              positionId={this.state.shiftTemplatePositionId}
+              templateId={this.state.selectedShiftTemplateId}
+              empId={localStorage.getItem('id')}
+              template={this.state.selectedShiftTemplate}
+            />
+        </Modal>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{
@@ -443,28 +381,50 @@ export default class DemoApp extends React.Component {
               right: 'timeGridWeek,timeGridDay'
             }}
             allDaySlot={false}
-            height={'80vh'}
+            height={520}
             scrollTime={"09:00:00"}
             initialView='timeGridWeek'
-            editable={false} // Just handles drag and drop that we dont support
-            selectable={isManager}
+            editable={true}
+            selectable={true}
             selectMirror={true}
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
-            events={this.state.shifts} // alternatively, use the `events` setting to fetch from a feed
+            events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
             select={this.triggerHandleDateSelect}
             eventContent={this.renderEventContent} // custom render function
             eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
             dateClick={this.handleDateClick}
-            eventClick={this.handleEventClick}
-
-            datesSet={this.handleDatesSet}
             /* you can update a remote database when these fire:
             eventAdd={function(){}}
             eventChange={function(){}}
             eventRemove={function(){}}
             */
           />
+           <div className='demo-app-sidebar'>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.toggleList}
+            style={{ marginBottom: '10px' }}
+          >
+            {showEmployeeList ? 'Show Positions' : 'Show Employees'}
+          </Button>
+          
+          {showEmployeeList ? (
+            <EmployeeList
+              managerId={localStorage.getItem('id')}
+              onDeleteEmployee={this.deleteEmployee} // Implement this method
+            />
+          ) : (
+            <PositionList
+              key={positions.length}
+              positions={positions}
+              onToggle={this.togglePosition}
+              onAddPosition={this.addPosition}
+              onDeletePosition={this.deletePosition}
+            />
+          )}
+        </div>
         </div>
       </div>
     )
@@ -526,11 +486,16 @@ export default class DemoApp extends React.Component {
         };
 
         // calendarApi.addEvent(event);
-        this.fetchShifts();
+        this.fetchShiftTemplates();
       } catch (error) {
         alert(error);
       }
+      
+      
 
+      // const empId = localStorage.getItem('id');
+      // const templateId = 'TEMPLATE_ID';
+      // const date = formatDate(event.start, { year: 'numeric', month: '2-digit', day: '2-digit' });
     } else {
       alert('You must select a position first.');
     }
@@ -542,66 +507,67 @@ export default class DemoApp extends React.Component {
     })
   }
 
-  renderEventContent = (eventInfo) => {
-    const shouldDisplayTitle = eventInfo.event.title && eventInfo.event.title.trim() !== 'undefined';
-    const shouldDisplayName = eventInfo.event.extendedProps.name && eventInfo.event.extendedProps.name.trim() !== 'undefined';
+  // Make this be able to add employees to shift temmplates 
+  handleEventDelete = (clickInfo) => {
+    if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
+      console.log(clickInfo.id);
+      const eventId = clickInfo.id.split('-')[0]; // Extract original template ID
+      const url = `http://large.poosd-project.com/api/shift-templates/${eventId}`;
+
+      // Retrieve the JWT from local storage
+      const jwtToken = localStorage.getItem("token");
+
+      axios.delete(url, {
+        headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            contentType: 'application/json'
+        }
+      })
+      .then(response => {
+        // Filter out deleted events
+        const updatedShiftTemplates = this.state.shiftTemplates.filter(event => !event.id.startsWith(`${eventId}-`));
+        this.setState({ shiftTemplates: updatedShiftTemplates });
     
-    const eventStyle = {
-      textAlign: 'center',
-      color: '#47413d',
-    };
-  
-    const titleStyle = {
-      fontStyle: 'italic',
-    };
-  
-    return (
-      <div style={eventStyle}>
-        <div>
-          <b>{eventInfo.timeText}</b>
-        </div>
-        {shouldDisplayTitle && (
-          <div style={titleStyle}>
-            {eventInfo.event.title}
-          </div>
-        )}
-        {shouldDisplayName && (
-          <div style={titleStyle}>
-            {eventInfo.event.extendedProps.name}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  handleDatesSet = async (dateInfo) => {
-    try {
-      const formatToMMDDYYYY = (date) => {
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        const year = date.getFullYear();
-        return `${month}-${day}-${year}`;
-      };
-  
-      const startDate = dateInfo.start ? formatToMMDDYYYY(dateInfo.start) : null;
-      var endDate = dateInfo.end ? formatToMMDDYYYY(dateInfo.end) : null;
-  
-      // Subtract one day from endDate
-      if (endDate) {
-        const endDateTimeStamp = Date.parse(endDate);
-        const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
-        const newEndDate = new Date(endDateTimeStamp - oneDay);
-        endDate = formatToMMDDYYYY(newEndDate);
-      }
-
-      await this.fetchShifts(startDate, endDate);
-  
-      // Other operations based on visible dates
-      // ...
-    } catch (error) {
-      console.error('Error handling visible dates:', error);
+        alert("Event deleted successfully.");
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert("Failed to delete the event: " + error);
+      });
     }
   };
+  
+  handleEventEdit = (clickInfo) => {
+    console.log("The clikc info is: ", clickInfo);
+    this.setState({ selectedShiftTemplateId: clickInfo.id.substring(0,24) });
+    this.setState({ selectedShiftTemplate: clickInfo});
+    this.openEditSTModal(clickInfo._def.extendedProps.positionId.substring(0, 24));
+  };
+
+  renderEventContent = (eventInfo) => {
+    return (
+      <div>
+        <b style={{ color: '#47413d' }}>{eventInfo.timeText}</b>
+        <i style={{ color: '#47413d' }}>{eventInfo.event.title}</i>
+        <button
+          className="event-edit-button"
+          onClick={() => this.handleEventEdit(eventInfo.event)}
+          aria-label="Edit event"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer', marginRight: '5px' }}
+        >
+          ✏️
+        </button>
+        <button
+          className="event-delete-button"
+          onClick={() => this.handleEventDelete(eventInfo.event)}
+          aria-label="Delete event"
+          style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
+        >
+          🗑️
+        </button>
+      </div>
+    )
+  }
   
 
 
@@ -673,29 +639,31 @@ function getNextColor() {
   return color;
 }
 
-async function formatShiftsForCalendar(shifts) {
-  const formattedShifts = [];
+// Shift templatese now can be shown for 12 week, We can change this number if we want
+async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 12) {
+  const formattedTemplates = [];
   const positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
 
-  for (const shift of shifts) {
-    const positionId = shift.templateId.positionId?._id; 
-    const title = shift.templateId.positionId?.name;
+  for (const template of shiftTemplates) {
+    const positionId = template.positionId; 
+    const title = await getPositionTitle(positionId);
 
-      const startDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.startTime);
-      const endDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.endTime);
+    for (let week = 0; week < numberOfWeeks; week++) {
+      const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime, week);
+      const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime, week);
 
-      formattedShifts.push({
-        id: `${shift.templateId._id}`,
+      formattedTemplates.push({
+        id: `${template._id}-${week}`,
         title: title,
-        name: `${shift.empId.firstName} ${shift.empId.lastName}`,
         start: startDateTime,
         end: endDateTime,
-        color: positionColors[positionId] || '#999999', // Default color if not found
+        color: positionColors[positionId] || '#000000', // Default color if not found
         positionId: positionId
       });
+    }
   }
 
-  return formattedShifts;
+  return formattedTemplates;
 }
 
 
@@ -727,3 +695,8 @@ function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {
 
   return formattedDate;
 }
+
+
+// Example usage
+console.log(getNextFormattedDateForDayOfWeek(2, '15:30'));
+

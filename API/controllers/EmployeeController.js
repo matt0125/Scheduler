@@ -76,6 +76,12 @@ exports.registerEmployee = async (req, res) => {
       return res.status(400).json({ message: 'Password must contain at least one special character' });
     }
 
+    // Check if username is unique
+    const existingUser = await Employee.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
     // Hash password before storing it
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -111,7 +117,10 @@ exports.registerEmployee = async (req, res) => {
     // const foundEmployee = await Employee.findById(savedEmployee._id);
     // console.log('Directly queried employee:', foundEmployee);
 
-    res.status(201).json({ message: 'Employee registered successfully', employeeId: savedEmployee._id });
+    const token = jwt.sign({ id: savedEmployee._id }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
+
+
+    res.status(201).json({ message: 'Employee registered successfully', employeeId: savedEmployee._id, token: token });
   } catch (err) {
     if (err.code === 11000) {
       return res.status(400).json({ message: 'Username already exists' });
@@ -223,7 +232,7 @@ exports.getEmployeesByManager = async (req, res) => {
       return res.status(404).json({ message: 'Manager not found' });
     }
 
-    const employees = await Employee.find({managedBy: manager.managedBy, _id: { $ne: managerId}}).select('-_id firstName lastName email phone positions').populate('positions');
+    const employees = await Employee.find({managedBy: { $exists: true, $ne: null, $eq: managerId}, _id: { $ne: managerId}}).select('firstName lastName email phone positions').populate('positions');
 
     res.status(200).json({manager: manager, employees: employees});
   }
@@ -317,7 +326,7 @@ exports.setAvailability = async (req, res) => {
       availability: updatedEmployee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error creating availability', error: err.toString() });
     console.error("There was an error:", err);
   }
 }
@@ -349,8 +358,8 @@ exports.addAvailability = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const startIndex = startTime.split(":")[0];
-    const endIndex = endTime.split(":")[0];
+    const startIndex = parseInt(startTime.split(":")[0]);
+    const endIndex = parseInt(endTime.split(":")[0]);
 
     for (let i = startIndex; i <= endIndex; i++) {
       employee.availability[dayOfWeek][i] = true;
@@ -361,10 +370,10 @@ exports.addAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability added successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error creating availability', error: err.toString()});
     console.error("There was an error:", err);
   }
 };
@@ -404,8 +413,8 @@ exports.updateAvailability = async (req, res) => {
       employee.availability[dayOfWeek][i] = false;
     }
 
-    startIndex = newStartTime.split(":")[0];
-    endIndex = newEndTime.split(":")[0];
+    startIndex = parseInt(newStartTime.split(":")[0]);
+    endIndex = parseInt(newEndTime.split(":")[0]);
 
     for (let i = startIndex; i <= endIndex; i++) {
       employee.availability[dayOfWeek][i] = true;
@@ -416,10 +425,10 @@ exports.updateAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability updated successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error creating availability', error: err.toString() });
     console.error("There was an error:", err);
   }
 };
@@ -428,7 +437,7 @@ exports.updateAvailability = async (req, res) => {
 exports.deleteAvailability = async (req, res) => {
   try {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
-    const { dayOfWeek, startTime, endTime } = req.body; // Get the availability details from the request body
+    const { dayOfWeek, startTime, endTime } = req.query; // Get the availability details from the request body
 
     // Check for required availability details
     if (dayOfWeek === undefined || startTime === undefined || endTime === undefined) {
@@ -452,8 +461,8 @@ exports.deleteAvailability = async (req, res) => {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const startIndex = startTime.split(":")[0];
-    const endIndex = endTime.split(":")[0];
+    const startIndex = parseInt(startTime.split(":")[0]);
+    const endIndex = parseInt(endTime.split(":")[0]);
 
     for (let i = startIndex; i <= endIndex; i++) {
       employee.availability[dayOfWeek][i] = false;
@@ -464,10 +473,10 @@ exports.deleteAvailability = async (req, res) => {
     // Send the updated availability array back to the client
     res.status(200).json({
       message: 'Availability removed successfully',
-      availability: updatedEmployee.availability
+      availability: employee.availability
     });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating availability', err });
+    res.status(500).json({ message: 'Error deleting availability', error: err.toString() });
     console.error("There was an error:", err);
   }
 };
@@ -522,80 +531,6 @@ exports.updatePassword = async (req, res) => {
     res.status(200).json({ message: 'Password updated successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error updating password', err });
-    console.error("There was an error:", err);
-  }
-};
-
-exports.updateEmployeeProfile = async (req, res) => {
-  try {
-    const { employeeId } = req.params;
-    const { firstName, lastName, email, phone } = req.body;
-
-    let updateFields = {};
-    if (firstName) updateFields.firstName = firstName;
-    if (lastName) updateFields.lastName = lastName;
-    if (email) updateFields.email = email;
-    if (phone) updateFields.phone = phone;
-
-    // Check if at least one field is provided for update
-    if (Object.keys(updateFields).length === 0) {
-      return res.status(400).json({ message: 'At least one field is required to update' });
-    }
-
-    // Find the employee by ID and update the provided fields
-    const updatedEmployee = await Employee.findByIdAndUpdate(
-      employeeId,
-      { $set: updateFields },
-      { new: true, runValidators: true } // Return the updated document and run schema validators
-    );
-
-    if (!updatedEmployee) {
-      return res.status(404).json({ message: 'Employee not found' });
-    }
-
-    res.status(200).json({
-      message: 'Employee updated successfully',
-      employee: updatedEmployee
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Error updating employee', err });
-    console.error("There was an error:", err);
-  }
-};
-
-exports.updateEmployeeProfile = async (req, res) => {
-  try {
-    const { employeeId } = req.params;
-    const { firstName, lastName, email, phone } = req.body;
-
-    let updateFields = {};
-    if (firstName) updateFields.firstName = firstName;
-    if (lastName) updateFields.lastName = lastName;
-    if (email) updateFields.email = email;
-    if (phone) updateFields.phone = phone;
-
-    // Check if at least one field is provided for update
-    if (Object.keys(updateFields).length === 0) {
-      return res.status(400).json({ message: 'At least one field is required to update' });
-    }
-
-    // Find the employee by ID and update the provided fields
-    const updatedEmployee = await Employee.findByIdAndUpdate(
-      employeeId,
-      { $set: updateFields },
-      { new: true, runValidators: true } // Return the updated document and run schema validators
-    );
-
-    if (!updatedEmployee) {
-      return res.status(404).json({ message: 'Employee not found' });
-    }
-
-    res.status(200).json({
-      message: 'Employee updated successfully',
-      employee: updatedEmployee
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Error updating employee', err });
     console.error("There was an error:", err);
   }
 };
