@@ -66,7 +66,8 @@ const UpdateAvailability = () => {
   // Function to submit the form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    const jwtToken = localStorage.getItem('token');
+
     const payload = {
       availability: [],
     }
@@ -81,7 +82,13 @@ const UpdateAvailability = () => {
 
     try {
       // Replace 'YOUR_API_ENDPOINT' with the actual endpoint of your backend
-      const response = await axios.put('http://large.poosd-project.com/api/employee/654c4136aa30871b5bd30826/availability/654c7e645ef9e3156f0fd1cd', payload);
+      const response = await axios.put('http://large.poosd-project.com/api/employee/654c4136aa30871b5bd30826/availability/654c7e645ef9e3156f0fd1cd', payload,
+      {
+        headers: {
+          contentType: 'application/json',
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      });
 
       // Handle the response as needed
       console.log(response.data);
