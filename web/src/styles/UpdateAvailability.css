@@ -77,17 +77,10 @@
     margin-bottom: 10px;
 }
 
-.update-Avail-Page .availabilities .start {
-    display: flex;
-    flex-direction: column;
-    align-items: left;
-    margin-left: 10px;
-}
-
+.update-Avail-Page .availabilities .start, 
 .update-Avail-Page .availabilities .end {
     display: flex;
     flex-direction: column;
-    align-items: center;
     margin-left: 10px;
 }
 
@@ -95,8 +88,6 @@
     font-family: Katibeh;
     font-size: 18px;
     margin-right: 10px;
-    margin-left: 10px;
-    padding-right: 10px;
     display: flex;
     align-items: center;
     height: 30px;
@@ -112,7 +103,6 @@
     width: 150px;
     margin-bottom: 5px;
     margin-top: 2px;
-    /* margin-right: 5px; */
     background-color: #CDBFB6;
     color: #49423E;
     border: 2px solid #000000;
@@ -188,3 +178,11 @@
     max-height: 100%;
     box-shadow: 5px 0 10px rgba(0, 0, 0, 0.1);
 }
+
+/* hard coding because I couldn't get the selects
+    to move */
+/* .update-Avail-Page .time-selects {
+    display: flex;
+    /*flex-direction: column; 
+    align-items: flex-start;
+} */

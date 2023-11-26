@@ -123,8 +123,8 @@ const UpdateAvailability = () => {
                       {day}:
                     </label>
                   </Col>
-                  <Col className="time-selects d-flex align-items-start"> 
-                      <select className="start mr-2"
+                  <Col className="time-selects d-flex flex-column align-items-start"> 
+                      <select className="start mb-2"
                         value={availability.days[day].startTime}
                         onChange={(e) => handleTimeChange(day, true, e.target.value)}
                       >
@@ -132,7 +132,7 @@ const UpdateAvailability = () => {
                           <option key={`${day}-start-${time}`} value={time}>{time}</option>
                         ))}
                       </select>
-                      <select className="end mr-2"
+                      <select className="end mb-2"
                         value={availability.days[day].endTime}
                         onChange={(e) => handleTimeChange(day, false, e.target.value)}
                       >
