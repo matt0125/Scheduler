@@ -45,6 +45,7 @@ export default class DemoApp extends React.Component {
     selectedShiftTemplate: null,
     showPositionModal: false,
     showEmployeeList: false,
+    showEventModal: false,
   }
 
   // Method to toggle the list view
@@ -86,6 +87,10 @@ export default class DemoApp extends React.Component {
 
   closeEditSTModal = () => {
     this.setState({ showEditSTModal: false });
+  }
+
+  closeEventModal = () => {
+    this.setState({ showEventModal: false });
   }
 
 
@@ -431,7 +436,7 @@ export default class DemoApp extends React.Component {
                   Time: {new Date(selectedEvent.start).toLocaleTimeString([], { timeStyle: 'short' })} -{' '}
                   {new Date(selectedEvent.end).toLocaleTimeString([], { timeStyle: 'short' })}
                 </p>
-                <button onClick={this.closeProfileModal}>Close</button>
+                <button onClick={this.closeEventModal}>Close</button>
               </div>
             )}
           </Modal>
