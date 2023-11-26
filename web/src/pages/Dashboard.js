@@ -238,7 +238,10 @@ export default class DemoApp extends React.Component {
   };
   
   handleEventClick = (clickInfo) => {
+    // Handle event click action
     console.log('Event clicked:', clickInfo.event);
+    // Set the clicked event details in the state and open the modal
+    this.setState({ selectedEvent: clickInfo.event, showPorfileModal: true });
   };
 
   handleDateClick = () => {
@@ -377,6 +380,8 @@ export default class DemoApp extends React.Component {
 
   render() {
     const { showEmployeeList, positions } = this.state;
+    const { showPorfileModal, selectedEvent } = this.state;
+
     // Only render the calendar if colors are loaded
       if (!this.state.colorsLoaded) {
         return <div>Loading...</div>; // Or a spinner, or some other loading indicator
@@ -407,6 +412,28 @@ export default class DemoApp extends React.Component {
                 empId={localStorage.getItem('id')}
                 template={this.state.selectedShiftTemplate}
               />
+          </Modal>
+          <Modal
+            isOpen={showPorfileModal}
+            onRequestClose={this.closeProfileModal}
+            contentLabel="Event Modal"
+            // Additional modal settings
+          >
+            {selectedEvent && (
+              <div>
+                <h2>
+                  {selectedEvent.title !== 'undefined' && selectedEvent.title !== null
+                    ? selectedEvent.title.replace(/\b\w/g, (char) => char.toUpperCase())
+                    : 'No Position'}
+                </h2>
+                <p>Date: {new Date(selectedEvent.start).toLocaleDateString()}</p>
+                <p>
+                  Time: {new Date(selectedEvent.start).toLocaleTimeString([], { timeStyle: 'short' })} -{' '}
+                  {new Date(selectedEvent.end).toLocaleTimeString([], { timeStyle: 'short' })}
+                </p>
+                <button onClick={this.closeProfileModal}>Close</button>
+              </div>
+            )}
           </Modal>
           <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
