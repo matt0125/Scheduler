@@ -232,7 +232,7 @@ exports.getEmployeesByManager = async (req, res) => {
       return res.status(404).json({ message: 'Manager not found' });
     }
 
-    const employees = await Employee.find({managedBy: manager.managedBy, _id: { $ne: managerId}}).select('-_id firstName lastName email phone positions').populate('positions');
+    const employees = await Employee.find({managedBy: { $exists: true, $ne: null, $eq: manager.managedBy}, _id: { $ne: managerId}}).select('firstName lastName email phone positions').populate('positions');
 
     res.status(200).json({manager: manager, employees: employees});
   }
