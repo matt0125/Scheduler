@@ -187,9 +187,9 @@ export default class DemoApp extends React.Component {
       // Check if the response is an array
       if (Array.isArray(response.data.shifts)) {
         console.log("response data is ", response.data);
-        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data.shifts);
-        console.log("formatted shift template:", formattedShiftTemplates);
-        this.setState({ shiftTemplates: formattedShiftTemplates });
+        const formattedShifts = await formatShiftTemplatesForCalendar(response.data.shifts);
+        console.log("formatted shift template:", formattedShifts);
+        this.setState({ shiftTemplates: formattedShifts });
       } else {
         // Handle case where response is not an array
         console.error('Response.data.shifts is not an array', response.data.shifts);
@@ -220,6 +220,9 @@ export default class DemoApp extends React.Component {
     }
   };
   
+  handleEventClick = (clickInfo) => {
+    console.log('Event clicked:', clickInfo.event);
+  };
 
   handleDateClick = () => {
     // Enable selectMirror when starting selection
@@ -361,6 +364,11 @@ export default class DemoApp extends React.Component {
       if (!this.state.colorsLoaded) {
         return <div>Loading...</div>; // Or a spinner, or some other loading indicator
       }
+
+      // used in selectable to create "on the fly" shifts
+      const isManager = localStorage.getItem('userRole') === 'Manager';
+
+
     return (
       <div className='demo-app'>
         {this.renderPositionModal()}
@@ -391,11 +399,11 @@ export default class DemoApp extends React.Component {
               right: 'timeGridWeek,timeGridDay'
             }}
             allDaySlot={false}
-            height={700}
+            height={'80vh'}
             scrollTime={"09:00:00"}
             initialView='timeGridWeek'
-            editable={true}
-            selectable={true}
+            editable={false} // Just handles drag and drop that we dont support
+            selectable={isManager}
             selectMirror={true}
             dayMaxEvents={true}
             weekends={this.state.weekendsVisible}
@@ -404,37 +412,15 @@ export default class DemoApp extends React.Component {
             eventContent={this.renderEventContent} // custom render function
             eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
             dateClick={this.handleDateClick}
+            eventClick={this.handleEventClick}
+
+            datesSet={this.handleDatesSet}
             /* you can update a remote database when these fire:
             eventAdd={function(){}}
             eventChange={function(){}}
             eventRemove={function(){}}
             */
           />
-           <div className='demo-app-sidebar'>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.toggleList}
-            style={{ marginBottom: '10px' }}
-          >
-            {showEmployeeList ? 'Show Positions' : 'Show Employees'}
-          </Button>
-          
-          {showEmployeeList ? (
-            <EmployeeList
-              managerId={localStorage.getItem('id')}
-              onDeleteEmployee={this.deleteEmployee} // Implement this method
-            />
-          ) : (
-            <PositionList
-              key={positions.length}
-              positions={positions}
-              onToggle={this.togglePosition}
-              onAddPosition={this.addPosition}
-              onDeletePosition={this.deletePosition}
-            />
-          )}
-        </div>
         </div>
       </div>
     )
@@ -518,13 +504,45 @@ export default class DemoApp extends React.Component {
   }
 
   renderEventContent = (eventInfo) => {
+    const shouldDisplayTitle = eventInfo.event.title && eventInfo.event.title.trim() !== 'undefined';
+    const shouldDisplayName = eventInfo.event.extendedProps.name && eventInfo.event.extendedProps.name.trim() !== 'undefined';
+    
+    const eventStyle = {
+      textAlign: 'center',
+      color: '#47413d',
+    };
+  
+    const titleStyle = {
+      fontStyle: 'italic',
+    };
+  
     return (
-      <div>
-        <b style={{ color: '#47413d' }}>{eventInfo.timeText}</b>
-        <i style={{ color: '#47413d' }}>{eventInfo.event.title}</i>
+      <div style={eventStyle}>
+        <div>
+          <b>{eventInfo.timeText}</b>
+        </div>
+        {shouldDisplayTitle && (
+          <div style={titleStyle}>
+            {eventInfo.event.title}
+          </div>
+        )}
+        {shouldDisplayName && (
+          <div style={titleStyle}>
+            {eventInfo.event.extendedProps.name}
+          </div>
+        )}
       </div>
-    )
+    );
   }
+
+  handleDatesSet = (dateInfo) => {
+    // dateInfo.start and dateInfo.end represent the start and end dates of the currently visible range
+    console.log('Start date:', dateInfo.start);
+    console.log('End date:', dateInfo.end);
+  
+    // Access the currently visible dates and handle accordingly
+    // You can perform operations or fetch data based on these visible dates
+  };
   
 
 
@@ -597,7 +615,7 @@ function getNextColor() {
 }
 
 // Shift templatese now can be shown for 12 week, We can change this number if we want
-async function formatShiftTemplatesForCalendar(shifts, numberOfWeeks = 12) {
+async function formatShiftTemplatesForCalendar(shifts) {
   const formattedShifts = [];
   const positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
 
@@ -605,20 +623,18 @@ async function formatShiftTemplatesForCalendar(shifts, numberOfWeeks = 12) {
     const positionId = shift.templateId.positionId?._id; 
     const title = shift.templateId.positionId?.name;
 
-    for (let week = 0; week < numberOfWeeks; week++) {
-      const startDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.startTime, week);
-      const endDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.endTime, week);
+      const startDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.startTime);
+      const endDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.endTime);
 
       formattedShifts.push({
-        id: `${shift.templateId._id}-${week}`,
+        id: `${shift.templateId._id}`,
         title: title,
         name: `${shift.empId.firstName} ${shift.empId.lastName}`,
         start: startDateTime,
         end: endDateTime,
-        color: positionColors[positionId] || '#000000', // Default color if not found
+        color: positionColors[positionId] || '#999999', // Default color if not found
         positionId: positionId
       });
-    }
   }
 
   return formattedShifts;
