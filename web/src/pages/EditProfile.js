@@ -4,6 +4,7 @@ import { TextField, Button, Container, Box, Typography, Dialog, DialogActions, D
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
+import EmployeeRegistration from './EmployeeRegistration';
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const EditProfile = () => {
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false)
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
@@ -104,27 +106,33 @@ const EditProfile = () => {
   };
 
   const handlePasswordChange = async () => {
-    // Log passwords for debugging purposes
     console.log(`Current Password: ${currentPassword}, New Password: ${newPassword}, Confirm New Password: ${confirmNewPassword}`);
   
-    // Check if the new passwords match
     if (newPassword.trim() !== confirmNewPassword.trim()) {
       alert("New passwords don't match.");
       return;
     }
   
-    // Perform the password update call
     let jwtToken = localStorage.getItem('token');
     let employeeId = localStorage.getItem('id');
+    if (!employeeId) {
+      alert('No employee ID found in local storage.');
+      return;
+    }
+  
     const url = `http://large.poosd-project.com/api/employee/${employeeId}/password`;
-    console.log("Sending request with", { currentPassword, newPassword });
+  
     try {
-      const response = await axios.put(url, JSON.stringify({ currentPassword, newPassword }), {
+      const response = await axios.put(url, {
+        currentPassword,
+        newPassword
+      }, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${jwtToken}`,
         },
       });
+  
       alert('Password updated successfully!');
       handleCloseModal();
     } catch (error) {
@@ -144,6 +152,14 @@ const EditProfile = () => {
   
   const goBack = () => {
     navigate(-1); // Navigates back to the previous page
+  };
+
+  const handleOpenRegistrationModal = () => {
+    setIsRegistrationModalOpen(true);
+  };
+
+  const handleCloseRegistrationModal = () => {
+    setIsRegistrationModalOpen(false);
   };
 
   return (
@@ -212,6 +228,14 @@ const EditProfile = () => {
         >
           Change Password
         </Button>
+        <Button
+        fullWidth
+        variant="contained"
+        onClick={handleOpenRegistrationModal}
+        sx={{ mt: 2, mb: 2 }}
+        >
+          Change Everything
+        </Button>
         {/* Assuming navigateToUpdateAvailability is defined elsewhere */}
       </Box>
 
@@ -258,6 +282,20 @@ const EditProfile = () => {
         <DialogActions>
           <Button onClick={handleCloseModal}>Cancel</Button>
           <Button onClick={handlePasswordChange}>Confirm</Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={isRegistrationModalOpen}
+        onClose={handleCloseRegistrationModal}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Employee Registration</DialogTitle>
+        <DialogContent>
+          <EmployeeRegistration />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseRegistrationModal}>Close</Button>
         </DialogActions>
       </Dialog>
     </Container>
