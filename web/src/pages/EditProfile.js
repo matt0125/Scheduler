@@ -234,7 +234,7 @@ const EditProfile = () => {
         onClick={handleOpenRegistrationModal}
         sx={{ mt: 2, mb: 2 }}
         >
-          Change Everything
+          Change Manager
         </Button>
         {/* Assuming navigateToUpdateAvailability is defined elsewhere */}
       </Box>
