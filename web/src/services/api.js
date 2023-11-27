@@ -12,6 +12,22 @@ const apiService = axios.create({
   }
 });
 
+export const register = async (data) => {
+  try {
+    delete apiService.defaults.headers.common['Authorization'];
+
+    const response = await apiService.post(`/register`, data);
+    const token = response.data.token;
+
+    // Set Authorization header with the obtained token
+    apiService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data || error.message);
+  }
+};
+
 export const login = async (username, password) => {
   const data = {
     username,
