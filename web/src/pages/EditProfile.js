@@ -141,6 +141,10 @@ const EditProfile = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+  
+  const goBack = () => {
+    navigate(-1); // Navigates back to the previous page
+  };
 
   return (
     <Container maxWidth="sm">
@@ -184,11 +188,19 @@ const EditProfile = () => {
           margin="normal"
           variant="outlined"
         />
+        <Button 
+          fullWidth
+          variant="contained"
+          onClick={goBack}
+          sx={{ mt: 3, mb: 0, backgroundColor: '#1976d2' }}
+        >
+          Back
+        </Button>
         <Button
           fullWidth
           variant="contained"
           onClick={handleSave}
-          sx={{ mt: 3, mb: 2, backgroundColor: '#1976d2' }}
+          sx={{ mt: 3, mb: 3, backgroundColor: '#1976d2' }}
         >
           Save
         </Button>
