@@ -69,7 +69,7 @@ const EditProfile = () => {
       return; // Exit the function if no employee ID is found
     }
   
-    const url = `http://large.poosd-project.com/updateEmployee/${employeeId}`;
+    const url = `http://large.poosd-project.com/api/update/employee/${employeeId}`;
     
     try {
       // The formData sent to the server must match the server's expected format
