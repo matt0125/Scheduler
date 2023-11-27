@@ -406,14 +406,14 @@ export default class DemoApp extends React.Component {
           <img src={logo} alt="sched logo" className="logo"></img>
           <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
           <Modal isOpen={this.state.showProfileModal} onRequestClose={this.closeProfileModal}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
               <Stack spacing={2} direction="row" justifyContent="center" alignItems="center" sx={{ p: 2 }}>
-                <Button variant="contained" color="primary" onClick={this.handleSignOut}>
-                  Sign Out
-                </Button>
-                <Button variant="outlined" color="primary" onClick={this.handleEditProfile}>
+              <Button id='edit-button' variant="contained" color="primary" onClick={this.handleEditProfile}>
                   Edit Profile
                 </Button>
+                <Button variant="contained" color="primary" onClick={this.handleSignOut}>
+                  Sign Out
+              </Button>
               </Stack>
             </Box>
           </Modal>
