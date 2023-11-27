@@ -134,7 +134,7 @@ app.post('/api/positions/manager', positionController.createPositionByManager);
 
 // Update employee
 app.put('/api/employee/:employeeId/password', employeeController.updatePassword);
-app.put('/updateEmployee/:employeeId', employeeController.updateEmployeeProfile);
+app.put('/api/update/employee/:employeeId', employeeController.updateEmployeeProfile);
 app.get('/api/employee/position/:positionId', employeeController.getEmployeesByPosition);
 
 app.post('/api/schedule/generate', scheduleController.generateSchedule);
