@@ -95,8 +95,9 @@ class APIService {
     final responseData = await postToEndpoint(data, 'register');
 
     return Response(message: responseData['message'],
-        empId: (responseData['message'] == "Employee registered successfully")
-            ? responseData['employeeId']
+        token: responseData['token'],
+        empId: (responseData['message'] == 'Login successful')
+            ? responseData['id']
             : null);
   }
 
