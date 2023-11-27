@@ -431,6 +431,22 @@ class APIService {
     return Response(message: responseData['message']);
   }
 
+
+  Future<Response> verifyEmail(String email, String verificationCode) async {
+    final data = {
+      'email': email,
+      'verificationCode': verificationCode,
+    };
+
+    final responseData = await postToEndpoint(data, 'verifyEmail');
+
+    return Response(
+      message: responseData['message'],
+      success: (responseData['message'] == 'Email verified successfully') ? true : false,
+    );
+  }
+
+
 }
 
 class Response {
