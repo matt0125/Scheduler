@@ -695,8 +695,3 @@ function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {
 
   return formattedDate;
 }
-
-
-// Example usage
-console.log(getNextFormattedDateForDayOfWeek(2, '15:30'));
-

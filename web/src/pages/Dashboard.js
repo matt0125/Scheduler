@@ -99,7 +99,7 @@ export default class DemoApp extends React.Component {
 
   componentDidMount() {
     this.fetchPositions();
-    console.log("Startup: ",this.state.shifts);
+    // console.log("Startup: ",this.state.shifts);
   }
 
   renderPositionSelect() {
@@ -193,6 +193,7 @@ export default class DemoApp extends React.Component {
         formattedStartDate = format(sunday);
         formattedEndDate = format(saturday);
       }
+
   
       const data = {
         empId: managerId,
@@ -213,7 +214,7 @@ export default class DemoApp extends React.Component {
       if(response.status !== 404) {
         if (Array.isArray(response.data.shifts)) {
           const formattedShifts = await formatShiftsForCalendar(response.data.shifts);
-          console.log("formatted shifts:", formattedShifts);
+          // console.log("formatted shifts:", formattedShifts);
           this.setState({ shifts: formattedShifts });
         } else {
           // Handle case where response is not an array
@@ -251,6 +252,11 @@ export default class DemoApp extends React.Component {
     // Set the clicked event details in the state and open the modal
     this.setState({ selectedEvent: clickInfo.event, showEventModal: true });
   };
+
+  // Function to handle closing the modal
+  closeEventModal = () => {
+    this.setState({ showEventModal: false });
+  }
 
   handleDateClick = () => {
     // Enable selectMirror when starting selection
@@ -431,7 +437,8 @@ export default class DemoApp extends React.Component {
           </Modal>
           <Modal
             isOpen={showEventModal}
-            onRequestClose={this.closeProfileModal}
+            onRequestClose={this.closeEventModal}
+            ariaHideApp={false}
             contentLabel="Event Modal"
             // Additional modal settings
           >
@@ -563,7 +570,6 @@ export default class DemoApp extends React.Component {
     const shouldDisplayName = eventInfo.event.extendedProps.name && eventInfo.event.extendedProps.name.trim() !== 'undefined';
     
     const eventStyle = {
-      textAlign: 'center',
       color: '#47413d',
     };
   
@@ -576,11 +582,11 @@ export default class DemoApp extends React.Component {
         <div>
           <b>{eventInfo.timeText}</b>
         </div>
-        {shouldDisplayTitle && (
+        {/* {shouldDisplayTitle && (
           <div style={titleStyle}>
             {eventInfo.event.title}
           </div>
-        )}
+        )} */}
         {shouldDisplayName && (
           <div style={titleStyle}>
             {eventInfo.event.extendedProps.name}
@@ -600,24 +606,16 @@ export default class DemoApp extends React.Component {
       };
   
       const startDate = dateInfo.start ? formatToMMDDYYYY(dateInfo.start) : null;
-      var endDate = dateInfo.end ? formatToMMDDYYYY(dateInfo.end) : null;
+      // End date minus one to account for visible dates
+      var endDate = dateInfo.end ? formatToMMDDYYYY(new Date (dateInfo.end - (24 * 60 * 60 * 1000))) : null;
   
-      // Subtract one day from endDate
-      if (endDate) {
-        const endDateTimeStamp = Date.parse(endDate);
-        const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
-        const newEndDate = new Date(endDateTimeStamp - oneDay);
-        endDate = formatToMMDDYYYY(newEndDate);
-      }
-
       await this.fetchShifts(startDate, endDate);
-  
       // Other operations based on visible dates
       // ...
     } catch (error) {
       console.error('Error handling visible dates:', error);
     }
-  };
+  }
   
 
 
@@ -697,8 +695,8 @@ async function formatShiftsForCalendar(shifts) {
     const positionId = shift.templateId.positionId?._id; 
     const title = shift.templateId.positionId?.name;
 
-      const startDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.startTime);
-      const endDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.endTime);
+      const startDateTime = `${shift.date.split("T")[0]}T${shift.templateId.startTime}`;
+      const endDateTime = `${shift.date.split("T")[0]}T${shift.templateId.endTime}`;
 
       formattedShifts.push({
         id: `${shift.templateId._id}`,
@@ -716,30 +714,7 @@ async function formatShiftsForCalendar(shifts) {
 
 
 
-function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {
-  const currentDate = new Date();
-  currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 7 * weekOffset + dayOfWeek);
-
-  // Set the current date to the nearest past Sunday
-  currentDate.setDate(currentDate.getDate() - currentDate.getDay());
-
-  // Calculate the date for the target dayOfWeek
-  currentDate.setDate(currentDate.getDate() + dayOfWeek);
-
-  // Parse the time
-  const [hours, minutes] = time.split(':').map(Number);
-  if (isNaN(hours) || isNaN(minutes)) {
-    throw new Error('Invalid time format');
-  }
-
-  // Set the time
-  currentDate.setHours(hours, minutes, 0); // Setting seconds to 0
-
-  // Format the date in YYYY-MM-DDTHH:MM:SS format
-  // Adjusting for local timezone offset
-  const timezoneOffset = currentDate.getTimezoneOffset() * 60000; // offset in milliseconds
-  const localDate = new Date(currentDate.getTime() - timezoneOffset);
-  let formattedDate = localDate.toISOString().replace(/:\d{2}\.\d{3}Z$/, '');
-
+function getNextFormattedDateForDayOfWeek(date, time) {
+  var formattedDate = `${date.split("T")[0]}T${time}`;
   return formattedDate;
 }
