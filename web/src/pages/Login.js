@@ -8,6 +8,8 @@ import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import logo from "../images/branding-notitle.png";
 
+import { login, isManager } from '../services/api';
+
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -45,29 +47,16 @@ const Login = () => {
       return;
     }
 
-    // Call the backend API to authenticate the user
-    // TODO: Replace this with a real API call
-    const response = await fetch("http://large.poosd-project.com/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: username, password: password }),
-    });
-
-    console.log(JSON.stringify({ username, password }));
-    console.log(response.status);
-
-    const data = await response.json();
-
-    // Check the response status code
+    const response = await login( username, password);
+    
     if (response.status === 200) {
       // Login successful
-      const token = data.token;
-      const id = data.id;
-      console.log(data);
+      const token = response.data.token;
+      const id = response.data.id;
+      console.log(response.data);
       localStorage.setItem('token', token);
       localStorage.setItem('id', id);
+      localStorage.setItem('isMan', await isManager(id));
       navigate('/dashboard');
     } else {
       // Login failed
