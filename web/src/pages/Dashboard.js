@@ -23,6 +23,9 @@ import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 
+import { fetchManager } from '../services/api'; 
+import { fetchPositions } from '../services/api'; 
+
 
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
@@ -98,7 +101,7 @@ export default class DemoApp extends React.Component {
 
 
   componentDidMount() {
-    this.fetchPositions();
+    this.populatePositionsAndColors();
     // console.log("Startup: ",this.state.shifts);
   }
 
@@ -123,25 +126,17 @@ export default class DemoApp extends React.Component {
     );
   }
   
-  
-  
 
-  fetchPositions = async () => {
-    const managerId = localStorage.getItem('id');
+  populatePositionsAndColors = async () => {
     const jwtToken = localStorage.getItem('token');
     
     try {
-      const response = await axios.get(`http://large.poosd-project.com/api/positions/${managerId}`, {
-        headers: {
-          contentType: 'application/json',
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
-  
+      const positions = await fetchPositions();
+      
       let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
       let colorIndex = 0;
   
-      const positionsWithIdsAndColors = response.data.positions.map(position => {
+      const positionsWithIdsAndColors = positions.map(position => {
         if (!positionColors[position._id]) {
           positionColors[position._id] = getNextAvailableColor(positionColors); // Use the utility function
         }
@@ -268,18 +263,6 @@ export default class DemoApp extends React.Component {
     this.setState({
       isOpen: true,
     });
-  
-    try {
-      let jwtToken = localStorage.getItem('token');
-      const response = await axios.get('http://large.poosd-project.com/api/employee/', {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      alert('Employee GOT!');
-    } catch (error) {
-      alert(error);
-    }
   };
   
 
@@ -306,91 +289,6 @@ export default class DemoApp extends React.Component {
     this.handleDateSelect(this.state.selectInfo);
     this.setState({ showPositionModal: false });
   }
-
-  // Adds position to manager
-  addPosition = async (positionName) => {
-    const jwtToken = localStorage.getItem('token');
-    const managerId = localStorage.getItem('id');
-    let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
-  
-    try {
-      const response = await axios.post(`http://large.poosd-project.com/api/positions/manager`, {
-        name: positionName,
-        managerId: managerId
-      }, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-          'Content-Type': 'application/json'
-        },
-      });
-  
-      // Accessing the _id from the newPosition object in the response
-      if (response.data && response.data.newPosition && response.data.newPosition._id) {
-        const newPositionColor = getNextAvailableColor(positionColors);
-        if (newPositionColor) {
-          positionColors[response.data.newPosition._id] = newPositionColor;
-          localStorage.setItem('positionColors', JSON.stringify(positionColors));
-        }
-        this.fetchPositions(); // Refresh the positions list
-      } else {
-        throw new Error('Position data is not in the expected format.');
-      }
-    } catch (error) {
-      console.error('Failed to add position:', error);
-      alert('Failed to add position: ' + error.message);
-    }
-  };
-  
-  
-  
-  
-  
-  
-  
-  // Deletes position connected to manager
-  deletePosition = async (positionId) => {
-    const jwtToken = localStorage.getItem('token');
-  
-    try {
-        // Then, delete all shift templates associated with this position
-      await axios.delete(`http://large.poosd-project.com/api/shift-templates/position/${positionId}`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-          'Content-Type': 'application/json'
-        },
-      });
-      await axios.delete(`http://large.poosd-project.com/api/position/${positionId}`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-          'Content-Type': 'application/json'
-        },
-      });
-  
-      // Use the callback form of setState to ensure the state updates correctly
-      this.setState(prevState => ({
-        positions: prevState.positions.filter(position => position.id !== positionId),
-      }), () => {
-        // Callback to ensure the state is updated before fetching templates
-        this.fetchShifts();
-      });
-  
-    } catch (error) {
-      alert('Failed to delete position: ' + error.message);
-      console.error(error);
-    }
-  };
-
-  togglePosition = (positionId) => {
-    this.setState(prevState => ({
-      positions: prevState.positions.map(position => {
-        if (position.id === positionId) {
-          return { ...position, checked: !position.checked };
-        }
-        return position;
-      }),
-    }));
-  };
-  
 
   render() {
     const { showEmployeeList, positions } = this.state;
