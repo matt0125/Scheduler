@@ -82,7 +82,7 @@ const UpdateAvailability = () => {
 
     try {
       // Replace 'YOUR_API_ENDPOINT' with the actual endpoint of your backend
-      const response = await axios.put('http://large.poosd-project.com/api/employee/654c4136aa30871b5bd30826/availability/654c7e645ef9e3156f0fd1cd', payload,
+      const response = await axios.put('http://large.poosd-project.com/api/employee/6531511e8ca36d13f6ff3917/availability/654a52fe6fb243c628df5e6e', payload,
       {
         headers: {
           contentType: 'application/json',
