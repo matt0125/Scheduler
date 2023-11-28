@@ -227,6 +227,21 @@
   position: relative;
 }
 
+.checkbox_wrapper {
+  position: absolute;
+  right: 55px; /* Adjust based on your design and padding */
+  top: 75%; /* Centers the checkbox vertically */
+  transform: translateY(-50%);
+  z-index: 3; /* Ensure it's above the input field */
+}
+
+/* Assuming you're using an img tag for the eye icon */
+.checkbox_wrapper .eye-icon {
+  width: 20px; /* Adjust the size to your preference */
+  height: 20px; /* Adjust the size to your preference */
+  cursor: pointer;
+}
+
 .checkbox_wrapper input[type="checkbox"] {
   opacity:0;
   position: absolute;
@@ -238,26 +253,31 @@
   z-index: 2;
 }
 
-.checkbox_wrapper input[type="checkbox"] + label{
-  background:url('../images/eye_closed.png') no-repeat;
+.eye-icon {
   position: absolute;
-  right: -150px;
-  bottom: -4px;
+  right: 10px; /* Adjust as necessary */
+  top: 50%;
   transform: translateY(-50%);
-  width: 35px;
-  height: 30px;
-  z-index: 1;
+  width: 24px !important; /* Adjust to your desired size */
+  height: 24px !important; /* Adjust to your desired size */
+  cursor: pointer;
 }
 
-.checkbox_wrapper input[type="checkbox"]:checked + label{
-  background:url('../images/eye_open.png') no-repeat;
+/* Remove the old checkbox label background styles if they are not needed */
+.checkbox_wrapper input[type="checkbox"] + label {
+  background: none;
   position: absolute;
-  right: -150px;
-  bottom: -4px;
+  right: 10px;
+  top: 50%;
   transform: translateY(-50%);
-  width: 35px;
-  height: 30px;
-  z-index: 1;
+  width: 24px; /* Size as desired */
+  height: 24px; /* Size as desired */
+  cursor: pointer;
+}
+
+/* Ensure any checked styles are also removed if they are not needed */
+.checkbox_wrapper input[type="checkbox"]:checked + label {
+  background: none;
 }
 
 
