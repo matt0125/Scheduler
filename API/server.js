@@ -68,6 +68,10 @@ app.put('/api/employee/:employeeId/position/:positionId', employeeController.add
 // Email verification
 app.get('/api/verify-email/:token', employeeController.verifyEmail);
 
+// Password reset endpoints
+app.post('/api/request-password-reset', employeeController.requestPasswordReset);
+app.post('/api/reset-password', employeeController.resetPassword);
+
 // Protected routes below this line
 app.use(authenticateJWT);
 

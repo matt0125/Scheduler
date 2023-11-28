@@ -9,6 +9,7 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const emailPassword = process.env.EMAIL_PASSWORD;
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const emailService = require('./EmailService');
 
 // Was used for unique index testing
 
@@ -102,7 +103,7 @@ exports.registerEmployee = async (req, res) => {
     newEmployee.verificationToken = verificationToken;
 
     // Send verification email (pseudo-code, replace with your email service)
-    sendVerificationEmail(email, verificationToken);
+    emailService.sendVerificationEmail(email, verificationToken);
 
     const savedEmployee = await newEmployee.save();
     console.log('Saved employee with ID:', savedEmployee._id);
@@ -851,41 +852,87 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
-async function sendVerificationEmail(email, token) {
-  // Use your email service to send an email
-  // The email should contain a link to your frontend which calls the verifyEmail endpoint
-  // Example link: https://yourfrontend.com/verify-email?token=xxx
-  // Create reusable transporter object using SMTP transport
-  console.log("password is", emailPassword);
-  const transporter = nodemailer.createTransport({
-    service: 'gmail', // Replace with your email provider
-    auth: {
-      user: 'poosdproject@gmail.com', // Replace with your email
-      pass: emailPassword // Replace with your email password
-    }
-  });
-
-  // Email content
-  const mailOptions = {
-    from: '"Sched" <poosdproject@gmail.com>', // sender address
-    to: email, // list of receivers
-    subject: `${token} is your Sched activation code`, // Subject line
-    html: `
-              <p>Hello,</p>
-              <p>Your Sched activation code is: <strong>${token}</strong></p>
-              <p>You can also activate your account by clicking on the link below:</p>
-              <a href="https://large.poosd-project.com/verify-email/${token}">Verify Email</a>
-              <p>If you did not request this, please ignore this email.</p>
-              <p>Best regards,</p>
-              <p>The Sched Team</p>
-          ` // HTML body
-  };
-
-  // Send email
+exports.requestPasswordReset = async (req, res) => {
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent: %s', info.messageId);
-  } catch (error) {
-    console.error('Error sending email: ', error);
+    const { email } = req.body;
+
+    const employee = await Employee.findOne({ email: email });
+    if (!employee) {
+      return res.status(404).json({ message: 'User does not exist' });
+    }
+
+    // Generate a password reset token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    // Set token validity (e.g., 1 hour)
+    const resetTokenExpires = Date.now() + 3600000; 
+
+    // Save token and its expiry to the database
+    employee.resetPasswordToken = resetToken;
+    employee.resetPasswordExpires = resetTokenExpires;
+    await employee.save();
+
+    // Send email with reset link (pseudo-code)
+    const resetLink = `http://localhost:3001/reset-password/${resetToken}`;
+    emailService.sendPasswordResetEmail(email, resetLink);
+
+    res.status(200).json({ message: 'Password reset email sent' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error in password reset request', err });
+    console.error("There was an error:", err);
   }
-}
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { resetToken, newPassword } = req.body;
+    console.log("resetting!");
+
+    // Password complexity validations
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one uppercase letter' });
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one lowercase letter' });
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one number' });
+    }
+
+    if (!/[^A-Za-z0-9]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one special character' });
+    }
+
+    const employee = await Employee.findOne({
+      resetPasswordToken: resetToken,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!employee) {
+      return res.status(400).json({ message: 'Password reset token is invalid or has expired' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+    console.log("here");
+
+    // Update the password in the database
+    employee.password = hashedPassword;
+    employee.resetPasswordToken = undefined;
+    employee.resetPasswordExpires = undefined;
+    console.log("here");
+    await employee.save();
+
+    res.status(200).json({ message: 'Password has been reset successfully' });
+    console.log("Password has been reset successfully");
+  } catch (err) {
+    res.status(500).json({ message: 'Error resetting password', err });
+    console.error("There was an error:", err);
+    console.log("There was an error:", err);
+  }
+};
