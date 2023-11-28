@@ -292,7 +292,7 @@ const EditProfile = () => {
       >
         <DialogTitle>Employee Registration</DialogTitle>
         <DialogContent>
-          <EmployeeRegistration />
+          <EmployeeRegistration isProfileEdit={true} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseRegistrationModal}>Close</Button>
