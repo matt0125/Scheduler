@@ -77,6 +77,12 @@ exports.registerEmployee = async (req, res) => {
       return res.status(400).json({ message: 'Password must contain at least one special character' });
     }
 
+    // Check if username is unique
+    const existingUser = await Employee.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Username already exists' });
+    }
+
     // Hash password before storing it
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
