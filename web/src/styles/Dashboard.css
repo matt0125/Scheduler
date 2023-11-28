@@ -98,6 +98,15 @@ div.ReactModal__Content.ReactModal__Content--after-open{
     color: #47413d;
 }
 
+.css-1fu7jd5-MuiButtonBase-root-MuiButton-root{
+    background-color: #CDBFB6 !important;
+    color: #47413d !important;
+}
+
+.css-1fu7jd5-MuiButtonBase-root-MuiButton-root:hover{
+    background-color: #8e7e75 !important;
+}
+
 .MuiOutlinedInput-root & .Mui-focused fieldset{
     border-color:#47413d;
 
