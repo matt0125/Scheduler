@@ -150,7 +150,16 @@ const PositionController = {
       console.log("Here: ", error.message);
     }
   },
+  nuke: async (req, res) => {
+    try {
+      await Position.deleteMany({});
+    } catch (error) {
+      console.log('Error nuking positions:', error);
+      res.status(500).json({ message: 'Error nuking positions', error: error.toString() });
+    }
+  },
   
 };
+
 
 module.exports = PositionController;

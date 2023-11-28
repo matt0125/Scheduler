@@ -15,10 +15,19 @@ const VerifyEmail = () => {
         setVerificationCode(e.target.value);
     };
 
+    const [showPopup, setShowPopup] = useState(false);
+    const [showFailPopup, setFailPopup] = useState(false);
+
+    const handleClosePopup = () => {
+        // Close the popup
+        setShowPopup(false);
+        setFailPopup(false);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.get(`http://localhost:3000/api/verify-email/${verificationCode}`);
+            const response = await axios.get(`http://large.poosd-project.com/api/verify-email/${verificationCode}`);
             // Assuming the response contains user role information and it's stored in local storage
             const userRole = localStorage.getItem('userRole'); // Retrieve the user role from local storage
     
@@ -37,6 +46,7 @@ const VerifyEmail = () => {
         } catch (error) {
             console.error('Error during email verification:', error);
             setVerificationStatus('Verification failed. Please check the code and try again.');
+            setFailPopup(true);
         }
     };
     
@@ -45,7 +55,7 @@ const VerifyEmail = () => {
     
 
     return (
-        <div id="register-body">
+        <div id="register-body" onClick={handleClosePopup}>
         <Container>
             <Row>
                 <Col>
@@ -59,7 +69,8 @@ const VerifyEmail = () => {
                 <Col className="column">
                     <img src={vector} className="business-photo" alt="business vector"/>
                 </Col>
-                <Col className="main-column">            
+                <Col className="main-column">  
+                    
                     <div style={{ textAlign: 'center', maxWidth: '500px', margin: 'auto', padding: '20px', fontFamily: 'Arial, sans-serif' }}>
                         <h2 style={{ fontSize: '24px', color: '#333' }}>Verify Your Email</h2>
                         <p style={{ fontSize: '16px', color: '#666' }}>
@@ -76,8 +87,11 @@ const VerifyEmail = () => {
                             <button type="submit" style={{ padding: '10px 20px', fontSize: '16px', backgroundColor: '#49423E', color: 'white', border: 'none', cursor: 'pointer' }}>
                                 Verify Email
                             </button>
-                        </form>
-                        {verificationStatus && <p style={{ marginTop: '20px', color: '#4CAF50' }}>{verificationStatus}</p>}
+                        </form>  
+                        {showFailPopup && (<div id="veri-bad">
+                        <p>Verification failed. Please check the code and try again.</p>
+                        </div>
+                        )}    
                     </div>
                 </Col>
             </Row>

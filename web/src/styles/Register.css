@@ -134,7 +134,7 @@
 
 #good-top-popup{
   position: absolute;
-  top: -10%;
+  top: -40%;
   left: 37.5%;
   background-color: #a0ff99;
   color: #333;
@@ -146,10 +146,34 @@
   z-index: 1;
 }
 
-#bad-top-popup{
+.bad-top-popup{
   position: absolute;
-  top: -10%;
-  left: 37.5%;
+  top: -13%;
+  width: 22%;
+  left:0;
+  right:0;
+  text-align: center;
+  margin-left:auto;
+  margin-right:auto;  
+  background-color: #ff9999;
+  color: #333;
+  padding: 8px;
+  border: 1px solid #cc6666;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 1;
+}
+
+#veri-bad{
+  position: absolute;
+  bottom: -40%;
+  width: 22%;
+  left:0;
+  right:0;
+  text-align: center;
+  margin-left:auto;
+  margin-right:auto;  
   background-color: #ff9999;
   color: #333;
   padding: 8px;
@@ -199,13 +223,40 @@
   z-index: 1;
 }
 
-#reg-eyeball{
+.checkbox_wrapper{
+  position: relative;
+}
+
+.checkbox_wrapper input[type="checkbox"] {
+  opacity:0;
   position: absolute;
-  right: 10px;
-  top: 75%;
+  right: -150px;
+  bottom: -4px;
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
+  z-index: 2;
+}
+
+.checkbox_wrapper input[type="checkbox"] + label{
+  background:url('../images/eye_closed.png') no-repeat;
+  position: absolute;
+  right: -150px;
+  bottom: -4px;
+  transform: translateY(-50%);
+  width: 35px;
+  height: 30px;
+  z-index: 1;
+}
+
+.checkbox_wrapper input[type="checkbox"]:checked + label{
+  background:url('../images/eye_open.png') no-repeat;
+  position: absolute;
+  right: -150px;
+  bottom: -4px;
+  transform: translateY(-50%);
+  width: 35px;
+  height: 30px;
   z-index: 1;
 }
 
