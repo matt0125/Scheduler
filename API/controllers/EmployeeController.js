@@ -9,9 +9,12 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const emailPassword = process.env.EMAIL_PASSWORD;
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+<<<<<<< HEAD
 const emailService = require('./EmailService');
+=======
 const ShiftTemplate = require('../models/ShiftTemplate');
 const Shift = require('../models/Shift');
+>>>>>>> main
 
 // Was used for unique index testing
 
@@ -888,6 +891,9 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
+exports.requestPasswordReset = async (req, res) => {
+=======
 exports.isManager = async (req, res) => {
   try {
     const { empId } = req.params;
@@ -936,8 +942,8 @@ async function sendVerificationEmail(email, token) {
           ` // HTML body
   };
 
-  exports.requestPasswordReset = async (req, res) => {
   // Send email
+>>>>>>> main
   try {
     const { email } = req.body;
 
@@ -965,6 +971,7 @@ async function sendVerificationEmail(email, token) {
     res.status(500).json({ message: 'Error in password reset request', err });
     console.error("There was an error:", err);
   }
+<<<<<<< HEAD
 };
 
 exports.resetPassword = async (req, res) => {
@@ -1021,6 +1028,7 @@ exports.resetPassword = async (req, res) => {
     console.log("There was an error:", err);
   }
 };
+=======
 }
 
 
@@ -1032,3 +1040,4 @@ exports.nuke = async (req, res) => {
     res.status(500).json({ message: 'Error nuking employees', error: error.toString() });
   }
 };
+>>>>>>> main
