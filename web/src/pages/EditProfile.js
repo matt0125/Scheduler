@@ -6,6 +6,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import EmployeeRegistration from './EmployeeRegistration';
 
+
 const EditProfile = () => {
   const navigate = useNavigate();
 
@@ -172,6 +173,7 @@ const EditProfile = () => {
           fullWidth
           label="First Name"
           name="firstName"
+          color="success"
           value={formData.firstName}
           onChange={handleChange}
           margin="normal"
@@ -181,6 +183,7 @@ const EditProfile = () => {
           fullWidth
           label="Last Name"
           name="lastName"
+          color="success"
           value={formData.lastName}
           onChange={handleChange}
           margin="normal"
@@ -190,6 +193,7 @@ const EditProfile = () => {
           fullWidth
           label="Email"
           name="email"
+          color="success"
           value={formData.email}
           onChange={handleChange}
           margin="normal"
@@ -199,6 +203,7 @@ const EditProfile = () => {
           fullWidth
           label="Phone Number"
           name="phone"
+          color="success"
           value={formData.phone || ''}
           onChange={handleChange}
           margin="normal"
