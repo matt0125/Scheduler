@@ -610,6 +610,7 @@ exports.assignManager = async (req, res) => {
 
     // Update the password in the database
     employee.managedBy = managerId;
+    employee.positions = [];
     await employee.save();
 
     res.status(200).json({ message: 'Manager assigned successfully!' });
