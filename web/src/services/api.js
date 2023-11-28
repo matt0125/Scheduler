@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/api'; // Replace with your API base URL
+const API_BASE_URL = 'http://large.poosd-project.com/api'; // Replace with your API base URL
 
 const jwtToken = localStorage.getItem('token');
 

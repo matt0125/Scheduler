@@ -96,8 +96,8 @@ class APIService {
 
     return Response(message: responseData['message'],
         token: responseData['token'],
-        empId: (responseData['message'] == 'Login successful')
-            ? responseData['id']
+        empId: (responseData['message'] == "Employee registered successfully")
+            ? responseData['employeeId']
             : null);
   }
 
@@ -433,20 +433,15 @@ class APIService {
   }
 
 
-  Future<Response> verifyEmail(String email, String verificationCode) async {
-    final data = {
-      'email': email,
-      'verificationCode': verificationCode,
-    };
+  Future<Response> verifyEmail(String token) async {
 
-    final responseData = await postToEndpoint(data, 'verifyEmail');
+    final responseData = await getToEndpoint(null, 'verify-email/${token}');
 
     return Response(
       message: responseData['message'],
       success: (responseData['message'] == 'Email verified successfully') ? true : false,
     );
   }
-
 
 }
 

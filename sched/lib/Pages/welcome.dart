@@ -1,12 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:sched/Services/APIService.dart';
+import '../Services/APIService.dart';
 import '../Models/Employee.dart';
 import '../Models/Position.dart';
 import '../Widgets/popup.dart';
 import '../tabs.dart';
 
-// Add a custom CheckBubble widget
 class CheckBubble extends StatelessWidget {
   final bool isSelected;
   final Color bubbleColor;
@@ -34,7 +32,6 @@ class CheckBubble extends StatelessWidget {
   }
 }
 
-
 class WelcomePage extends StatefulWidget {
   @override
   _WelcomePageState createState() => _WelcomePageState();
@@ -52,26 +49,15 @@ class _WelcomePageState extends State<WelcomePage> {
 
   APIService apiService = APIService();
 
+  TextEditingController _verificationCodeController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    verifyEmail();
+
     populateManagers();
-    // populatePositions();
   }
 
-  Future<void> verifyEmail() async {
-    // check if verified
-
-    while (!_isVerified) {
-      // check again then wait
-      await Future.delayed(Duration(seconds: 5));
-      break;
-    }
-    setState(() {
-      _isVerified = true;
-    });
-  }
 
   Future<void> populateManagers() async {
     await Future.delayed(Duration(seconds: 1));
@@ -96,7 +82,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lets get started!'),
+        title: Text('Let\'s get started!'),
         automaticallyImplyLeading: false,
       ),
       body: Center(
@@ -115,17 +101,74 @@ class _WelcomePageState extends State<WelcomePage> {
             ),
             SizedBox(height: 20),
             !_isVerified
-                ? CircularProgressIndicator()
-                : ElevatedButton(
+                ? Padding(
+              padding: EdgeInsets.symmetric(horizontal: 40),
+              child: TextField(
+                controller: _verificationCodeController,
+                maxLength: 6,
+                textAlign: TextAlign.center,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: 'Enter verification code',
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.blue,
+                      width: 2.0,
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.black,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  // Handle the input
+                },
+              ),
+            )
+                : Container(),
+            SizedBox(height: 20),
+            ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFB1947B),
               ),
-              onPressed: () {
-                setState(() {
-                  _firstPage = false;
-                });
+              onPressed: () async {
+                // Verify email with the entered verification code
+                final enteredCode = _verificationCodeController.text;
+                final response = await apiService.verifyEmail(enteredCode);
+
+                if (response.success!) {
+                  // The verification code is correct, proceed to the next page
+                  setState(() {
+                    _firstPage = false;
+                  });
+                } else {
+                  // The verification code is incorrect, show an error message or handle as needed
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Verification Error"),
+                        content: Text("The entered verification code is incorrect. Please try again."),
+                        actions: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFFB1947B),
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context); // Close the dialog
+                            },
+                            child: Text("OK"),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
               },
-              child: Text('Lets Go!'),
+              child: Text('Let\'s Go!'),
             ),
           ],
         )
