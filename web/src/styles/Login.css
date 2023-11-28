@@ -129,13 +129,47 @@ h1 {
   height: 20px;
 }
 
-#log-eyeball{
+#log-checkbox_wrapper {
   position: absolute;
-  right: 10px;
-  top: 52%;
+  right: 35px; /* Align to the right edge of the password-input-group */
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center; /* Center the icon vertically */
+  padding-right: 10px; /* Add some padding if needed */
+  justify-content: center;
+}
+
+#log-checkbox_wrapper input[type="checkbox"] {
+  opacity:0;
+  position: absolute;
+  left: 90%;
+  bottom: -4px;
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
+  z-index: 2;
+}
+
+#log-checkbox_wrapper input[type="checkbox"] + label{
+  background:url('../images/eye_closed.png') no-repeat;
+  position: absolute;
+  left: 90%;
+  bottom: -4px;
+  transform: translateY(-50%);
+  width: 35px;
+  height: 30px;
+  z-index: 1;
+}
+
+#log-checkbox_wrapper input[type="checkbox"]:checked + label{
+  background:url('../images/eye_open.png') no-repeat;
+  position: absolute;
+  left: 90%;
+  bottom: -4px;
+  transform: translateY(-50%);
+  width: 35px;
+  height: 30px;
   z-index: 1;
 }
 
@@ -149,6 +183,12 @@ h1 {
 
 .password-input-group input {
   z-index: 0;
+}
+
+.eye-icon {
+  width: 24px !important; /* Adjust to your desired size */
+  height: 24px !important; /* Adjust to your desired size */
+  cursor: pointer;
 }
 
 

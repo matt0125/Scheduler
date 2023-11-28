@@ -7,6 +7,9 @@ import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import logo from "../images/branding-notitle.png";
+import eyeOpenSvg from '../images/eye-open-svg.svg';
+import eyeClosedSvg from '../images/eye-closed-svg.svg';
+import { login, isManager } from '../services/api';
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -16,9 +19,9 @@ const Login = () => {
   const [resetEmail, setResetEmail] = useState("");
 
   const navigate = useNavigate();
-
-
   const [showPassword, setShowPassword] = useState(false);
+  const [showFailPopup, setFailPopup] = useState(false);
+
 
   const handlePasswordReset = async () => {
     const email = prompt("Please enter your email for password reset:");
@@ -63,49 +66,45 @@ const Login = () => {
     return errors;
   };
 
-  // Handle the login form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Validate the form
+  
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setUsernameError(errors.username);
       setPasswordError(errors.password);
       return;
     }
-
-    // Call the backend API to authenticate the user
-    // TODO: Replace this with a real API call
-    const response = await fetch("http://localhost:3000/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: username, password: password }),
-    });
-
-    console.log(JSON.stringify({ username, password }));
-    console.log(response.status);
-
-    const data = await response.json();
-
-    // Check the response status code
-    if (response.status === 200) {
+  
+    try {
+      const response = await login(username, password);
       // Login successful
-      const token = data.token;
-      const id = data.id;
-      console.log(data);
+      const token = response.data.token;
+      const id = response.data.id;
       localStorage.setItem('token', token);
       localStorage.setItem('id', id);
+      const isMan = await isManager(id);
+      localStorage.setItem('isMan', isMan);
       navigate('/dashboard');
-    } else {
+    } catch (error) {
       // Login failed
-      alert("Invalid username or password");
+      setFailPopup(true);
       document.getElementById("user-input").focus();
       document.getElementById("pass-input").focus();
-
+      // Log the error or display it to the user
+      console.error('Login failed:', error.response?.data?.message || error.message);
     }
+  };
+  
+  
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
+  };
+  
+  const handleClosePopup = () => {
+    // Close the popup
+    setFailPopup(false);
   };
   
   let url = "/register";
@@ -126,10 +125,14 @@ const Login = () => {
             <img src={vector} className="business-photo" alt="business vector"/>
           </Col>
           <Col className="main-column">
+          {showFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
+            <p>Invalid username or password</p>
+            </div>
+            )}
             <form onSubmit={handleSubmit}>
               <div className="login-box">
                 <h1 class="font-family-katibeh">Login</h1>
-                <h2 class="username">Email(or username)</h2>
+                <h2 class="username">Username</h2>
                 <div class="username-input-group">
                   <img src={emailIcon} alt="email icon" />
                   <input
@@ -145,15 +148,20 @@ const Login = () => {
                 <div class="password-input-group">
                   <img src={passIcon} alt="password icon"></img>
                   <input
-                    type= {showPassword ? "text" : "password"}
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder=""
                     id="pass-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <input id = "log-eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
-                  </input>
+                  <div id="log-checkbox_wrapper" onClick={togglePasswordVisibility}>
+                    <img 
+                      src={showPassword ? eyeOpenSvg : eyeClosedSvg} 
+                      alt="Toggle Password Visibility" 
+                      className="eye-icon"
+                    />
+                  </div>
                 </div>
                 <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
                 <p className="login-register-p">Forgot password?

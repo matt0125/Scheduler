@@ -65,6 +65,8 @@ app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
 app.put('/api/employee/:employeeId/position/:positionId', employeeController.addPositionToEmployee);
 
+app.get('/api/employee/:empId/ismanager', employeeController.isManager);
+
 // Email verification
 app.get('/api/verify-email/:token', employeeController.verifyEmail);
 
@@ -104,12 +106,15 @@ app.put('/api/shifts/:id', shiftController.editShift);
 app.delete('/api/shifts/:id', shiftController.deleteShift);
 
 app.post('/api/shifts/empbydates', shiftController.getShiftByEmployeeAndDate);
+app.post('/api/shifts/managerbydates', shiftController.getShiftByManagerAndDate);
 
 app.get('/api/shifts/date/:date', shiftController.getShiftByDate);
 app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
 
 app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftsByEmployee);
+
+app.post('/api/employee/:empId/timeoff', employeeController.dayOff);
 
 // shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
@@ -124,9 +129,9 @@ app.delete('/api/shift-templates/position/:positionId', shiftTemplateController.
 app.post('/api/position', PositionController.createPosition);
 app.post('/api/positions', PositionController.createMultiplePositions);
 
+app.get('/api/position/:name', PositionController.getPositionByName);
 app.get('/api/position/:id', PositionController.getPosition);
 app.get('/api/position', PositionController.getAllPositions);
-app.get('/api/position/:name', PositionController.getPositionByName);
 
 app.put('/api/position/:id', PositionController.updatePosition);
 app.delete('/api/position/:id', PositionController.deletePosition);
@@ -137,10 +142,20 @@ app.post('/api/positions/manager', positionController.createPositionByManager);
 
 // Update employee
 app.put('/api/employee/:employeeId/password', employeeController.updatePassword);
-app.put('/updateEmployee/:employeeId', employeeController.updateEmployeeProfile);
+app.put('/api/update/employee/:employeeId', employeeController.updateEmployeeProfile);
 app.get('/api/employee/position/:positionId', employeeController.getEmployeesByPosition);
 
 app.post('/api/schedule/generate', scheduleController.generateSchedule);
+
+app.post('/api/nuke/pleasedontdothis/itcannotbereversed/pleasereadbeforesending', (req, res) => {
+  employeeController.nuke(req, res);
+  positionController.nuke(req, res);
+  scheduleController.nuke(req, res);
+  shiftController.nuke(req, res);
+  shiftTemplateController.nuke(req, res);
+
+  res.status(200).json({ message: 'Database nuked successfully' });
+});
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

@@ -134,7 +134,7 @@
 
 #good-top-popup{
   position: absolute;
-  top: -10%;
+  top: -40%;
   left: 37.5%;
   background-color: #a0ff99;
   color: #333;
@@ -146,10 +146,34 @@
   z-index: 1;
 }
 
-#bad-top-popup{
+.bad-top-popup{
   position: absolute;
-  top: -10%;
-  left: 37.5%;
+  top: -13%;
+  width: 22%;
+  left:0;
+  right:0;
+  text-align: center;
+  margin-left:auto;
+  margin-right:auto;  
+  background-color: #ff9999;
+  color: #333;
+  padding: 8px;
+  border: 1px solid #cc6666;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 1;
+}
+
+#veri-bad{
+  position: absolute;
+  bottom: -40%;
+  width: 22%;
+  left:0;
+  right:0;
+  text-align: center;
+  margin-left:auto;
+  margin-right:auto;  
   background-color: #ff9999;
   color: #333;
   padding: 8px;
@@ -199,14 +223,61 @@
   z-index: 1;
 }
 
-#reg-eyeball{
+.checkbox_wrapper{
+  position: relative;
+}
+
+.checkbox_wrapper {
   position: absolute;
-  right: 10px;
-  top: 75%;
+  right: 55px; /* Adjust based on your design and padding */
+  top: 75%; /* Centers the checkbox vertically */
+  transform: translateY(-50%);
+  z-index: 3; /* Ensure it's above the input field */
+}
+
+/* Assuming you're using an img tag for the eye icon */
+.checkbox_wrapper .eye-icon {
+  width: 20px; /* Adjust the size to your preference */
+  height: 20px; /* Adjust the size to your preference */
+  cursor: pointer;
+}
+
+.checkbox_wrapper input[type="checkbox"] {
+  opacity:0;
+  position: absolute;
+  right: -150px;
+  bottom: -4px;
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
-  z-index: 1;
+  z-index: 2;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 10px; /* Adjust as necessary */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px !important; /* Adjust to your desired size */
+  height: 24px !important; /* Adjust to your desired size */
+  cursor: pointer;
+}
+
+/* Remove the old checkbox label background styles if they are not needed */
+.checkbox_wrapper input[type="checkbox"] + label {
+  background: none;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px; /* Size as desired */
+  height: 24px; /* Size as desired */
+  cursor: pointer;
+}
+
+/* Ensure any checked styles are also removed if they are not needed */
+.checkbox_wrapper input[type="checkbox"]:checked + label {
+  background: none;
 }
 
 
