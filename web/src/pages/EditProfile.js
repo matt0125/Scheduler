@@ -216,17 +216,9 @@ const EditProfile = () => {
           fullWidth
           variant="contained"
           onClick={handleSave}
-          sx={{ mt: 3, mb: 3, backgroundColor: '#1976d2' }}
+          sx={{ mt: 3, mb: 1, backgroundColor: '#1976d2' }}
         >
           Save
-        </Button>
-        <Button
-          fullWidth
-          variant="outlined"
-          onClick={handleOpenModal}
-          sx={{ mb: 2 }}
-        >
-          Change Password
         </Button>
         <Button
         fullWidth
