@@ -286,8 +286,13 @@ exports.getTeammates = async (req, res) => {
     .select('-_id firstName lastName email phone positions')
     .populate({path:'positions', select:'-_id name'});
 
-    const manager = await Employee.findById(employee.managedBy).select('-_id firstName lastName email phone positions')
-    .populate({path:'positions', select:'-_id name'});
+    if(employee.managerIdent === true) {
+      const manager = employee;
+    }
+    else {
+      const manager = await Employee.findById(employee.managedBy).select('-_id firstName lastName email phone positions')
+      .populate({path:'positions', select:'-_id name'});
+    }
 
     res.status(200).json({employee: employee, manager: manager, teammates: teammates});
   }
