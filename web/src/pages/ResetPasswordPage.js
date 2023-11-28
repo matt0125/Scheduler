@@ -9,7 +9,7 @@ const ResetPasswordPage = () => {
   const [success, setSuccess] = useState('');
 
   const { resetToken } = useParams();
-  const history = useNavigate();
+  const navigate = useNavigate(); // Corrected variable name
   console.log("Reset token:", resetToken);
 
   const handleResetPassword = async () => {
@@ -25,7 +25,7 @@ const ResetPasswordPage = () => {
       });
       setSuccess(response.data.message);
       // Redirect to login page or elsewhere after successful reset
-      setTimeout(() => history.push('/'), 3000);
+      setTimeout(() => navigate('/'), 3000); // Navigate after a delay to allow user to read the success message
     } catch (err) {
       setError(err.response.data.message || 'An error occurred');
     }
