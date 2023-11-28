@@ -36,37 +36,37 @@ const Login = () => {
     return errors;
   };
 
-  // Handle the login form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Validate the form
+  
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setUsernameError(errors.username);
       setPasswordError(errors.password);
       return;
     }
-
-    const response = await login( username, password);
-    
-    if (response.status === 200) {
+  
+    try {
+      const response = await login(username, password);
       // Login successful
       const token = response.data.token;
       const id = response.data.id;
-      console.log(response.data);
       localStorage.setItem('token', token);
       localStorage.setItem('id', id);
-      localStorage.setItem('isMan', await isManager(id));
+      const isMan = await isManager(id);
+      localStorage.setItem('isMan', isMan);
       navigate('/dashboard');
-    } else {
+    } catch (error) {
       // Login failed
       setFailPopup(true);
       document.getElementById("user-input").focus();
       document.getElementById("pass-input").focus();
-
+      // Log the error or display it to the user
+      console.error('Login failed:', error.response?.data?.message || error.message);
     }
   };
+  
+  
 
   const togglePasswordVisibility = () => {
     setShowPassword(prev => !prev);
