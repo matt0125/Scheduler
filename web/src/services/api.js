@@ -12,6 +12,49 @@ const apiService = axios.create({
   }
 });
 
+export const register = async (data) => {
+  try {
+    delete apiService.defaults.headers.common['Authorization'];
+
+    const response = await apiService.post(`/register`, data);
+    const token = response.data.token;
+
+    // Set Authorization header with the obtained token
+    apiService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data || error.message);
+  }
+};
+
+export const login = async (username, password) => {
+  const data = {
+    username,
+    password
+  };
+
+  try {
+    delete apiService.defaults.headers.common['Authorization'];
+
+    const response = await apiService.post(`/login`, data);
+    const token = response.data.token;
+
+    // Set Authorization header with the obtained token
+    apiService.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+    return response;
+  } catch (error) {
+    throw new Error(error.response?.data || error.message);
+  }
+};
+
+export const isManager = async ( empId ) => {
+  const response = await apiService.get(`/employee/${empId}/isManager`);
+
+  return response.data.isManager;
+}
+
 export const fetchManager = async () => {
   try {
     const empId = localStorage.getItem('id');
@@ -26,7 +69,10 @@ export const fetchManager = async () => {
 
 export const fetchPositions = async () => {
   try {
-    const managerId = (await fetchManager())._id;
+    const isMan = localStorage.getItem('isMan'); 
+
+    const managerId = (isMan === "true") ? localStorage.getItem('id') : (await fetchManager())._id;
+
 
     const response = await apiService.get(`/positions/${managerId}`);
     return response.data.positions;

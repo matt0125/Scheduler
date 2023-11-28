@@ -65,6 +65,8 @@ app.post('/api/register', employeeController.registerEmployee);
 app.post('/api/login', employeeController.loginEmployee);
 app.put('/api/employee/:employeeId/position/:positionId', employeeController.addPositionToEmployee);
 
+app.get('/api/employee/:empId/ismanager', employeeController.isManager);
+
 // Email verification
 app.get('/api/verify-email/:token', employeeController.verifyEmail);
 

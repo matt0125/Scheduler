@@ -137,7 +137,7 @@ const SetEmployeeAvailability = () => {
       console.error('Error updating availability:', error);
     }
 
-    navigate('/');
+    navigate('/dashboard');
 
   };
   
