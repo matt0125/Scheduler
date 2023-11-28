@@ -7,7 +7,8 @@ import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import logo from "../images/branding-notitle.png";
-
+import eyeOpenSvg from '../images/eye-open-svg.svg';
+import eyeClosedSvg from '../images/eye-closed-svg.svg';
 import { login, isManager } from '../services/api';
 
 const Login = () => {
@@ -67,6 +68,10 @@ const Login = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
+  };
+  
   const handleClosePopup = () => {
     // Close the popup
     setFailPopup(false);
@@ -113,18 +118,20 @@ const Login = () => {
                 <div class="password-input-group">
                   <img src={passIcon} alt="password icon"></img>
                   <input
-                    type= {showPassword ? "text" : "password"}
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder=""
                     id="pass-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                <div id="log-checkbox_wrapper">
-                  <input id="log-eyeball" className = "eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
-                  </input>
-                  <label for="log-eyeball"></label>
-                </div>
+                  <div id="log-checkbox_wrapper" onClick={togglePasswordVisibility}>
+                    <img 
+                      src={showPassword ? eyeOpenSvg : eyeClosedSvg} 
+                      alt="Toggle Password Visibility" 
+                      className="eye-icon"
+                    />
+                  </div>
                 </div>
                 <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
                 <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>
