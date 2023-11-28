@@ -9,7 +9,7 @@ import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import phoneIcon from "../images/phone.png";
 
-
+import { register } from '../services/api';
 
 
 const Register = () => {
@@ -103,7 +103,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://large.poosd-project.com/api/register', formData);
+      const response = await register(formData);
       console.log('Registration successful:', response.data);
       console.log("Registered successfully.");
 

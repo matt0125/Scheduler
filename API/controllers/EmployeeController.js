@@ -786,6 +786,24 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
+exports.isManager = async (req, res) => {
+  try {
+    const { empId } = req.params;
+
+    // Find employee with the token
+    const employee = await Employee.findById( empId );
+
+    if (!employee) {
+      return res.status(404).json({ message: 'No employee found with that ID' });
+    }
+
+    res.status(200).json({ isManager: employee.managerIdent, message: 'Success' });
+  } catch (error) {
+    console.log('Error isManager:', error);
+    res.status(500).json({ message: 'Error isManager', error: error.toString() });
+  }
+};
+
 async function sendVerificationEmail(email, token) {
   // Use your email service to send an email
   // The email should contain a link to your frontend which calls the verifyEmail endpoint
