@@ -95,13 +95,7 @@ const EmployeeRegistration = () => {
                         borderWidth: '2px',
                       },
                     },
-                  } : {'& .MuiOutlinedInput-root': {
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#47413d',
-                      borderWidth: '2px',
-                    },
-                  }
-                }
+                  } : {}
               }
                 />
               )}
