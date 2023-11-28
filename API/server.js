@@ -110,6 +110,8 @@ app.post('/api/shifts/manager', shiftController.getShiftByManager);
 
 app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftsByEmployee);
 
+app.post('/api/employee/:empId/timeoff', employeeController.dayOff);
+
 // shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
 app.get('/api/shift-templates/:id', shiftTemplateController.getShiftTemplate);
