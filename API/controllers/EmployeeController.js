@@ -923,7 +923,7 @@ exports.requestPasswordReset = async (req, res) => {
     }
 
     // Generate a password reset token
-    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetToken = crypto.randomBytes(5).toString('hex');
     // Set token validity (e.g., 1 hour)
     const resetTokenExpires = Date.now() + 3600000; 
 
