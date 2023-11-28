@@ -95,8 +95,9 @@ class APIService {
     final responseData = await postToEndpoint(data, 'register');
 
     return Response(message: responseData['message'],
-        empId: (responseData['message'] == "Employee registered successfully")
-            ? responseData['employeeId']
+        token: responseData['token'],
+        empId: (responseData['message'] == 'Login successful')
+            ? responseData['id']
             : null);
   }
 
@@ -430,6 +431,22 @@ class APIService {
     // Check if the response body indicates success
     return Response(message: responseData['message']);
   }
+
+
+  Future<Response> verifyEmail(String email, String verificationCode) async {
+    final data = {
+      'email': email,
+      'verificationCode': verificationCode,
+    };
+
+    final responseData = await postToEndpoint(data, 'verifyEmail');
+
+    return Response(
+      message: responseData['message'],
+      success: (responseData['message'] == 'Email verified successfully') ? true : false,
+    );
+  }
+
 
 }
 

@@ -23,6 +23,9 @@ import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 
+import { fetchManager } from '../services/api'; 
+import { fetchPositions } from '../services/api'; 
+
 
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
@@ -98,8 +101,8 @@ export default class DemoApp extends React.Component {
 
 
   componentDidMount() {
-    this.fetchPositions();
-    console.log("Startup: ",this.state.shifts);
+    this.populatePositionsAndColors();
+    // console.log("Startup: ",this.state.shifts);
   }
 
   renderPositionSelect() {
@@ -123,25 +126,17 @@ export default class DemoApp extends React.Component {
     );
   }
   
-  
-  
 
-  fetchPositions = async () => {
-    const managerId = localStorage.getItem('id');
+  populatePositionsAndColors = async () => {
     const jwtToken = localStorage.getItem('token');
     
     try {
-      const response = await axios.get(`http://large.poosd-project.com/api/positions/${managerId}`, {
-        headers: {
-          contentType: 'application/json',
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
-  
+      const positions = await fetchPositions();
+      
       let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
       let colorIndex = 0;
   
-      const positionsWithIdsAndColors = response.data.positions.map(position => {
+      const positionsWithIdsAndColors = positions.map(position => {
         if (!positionColors[position._id]) {
           positionColors[position._id] = getNextAvailableColor(positionColors); // Use the utility function
         }
@@ -193,6 +188,7 @@ export default class DemoApp extends React.Component {
         formattedStartDate = format(sunday);
         formattedEndDate = format(saturday);
       }
+
   
       const data = {
         empId: managerId,
@@ -213,7 +209,7 @@ export default class DemoApp extends React.Component {
       if(response.status !== 404) {
         if (Array.isArray(response.data.shifts)) {
           const formattedShifts = await formatShiftsForCalendar(response.data.shifts);
-          console.log("formatted shifts:", formattedShifts);
+          // console.log("formatted shifts:", formattedShifts);
           this.setState({ shifts: formattedShifts });
         } else {
           // Handle case where response is not an array
@@ -252,6 +248,11 @@ export default class DemoApp extends React.Component {
     this.setState({ selectedEvent: clickInfo.event, showEventModal: true });
   };
 
+  // Function to handle closing the modal
+  closeEventModal = () => {
+    this.setState({ showEventModal: false });
+  }
+
   handleDateClick = () => {
     // Enable selectMirror when starting selection
     this.setState({ selectMirrorEnabled: true });
@@ -262,18 +263,6 @@ export default class DemoApp extends React.Component {
     this.setState({
       isOpen: true,
     });
-  
-    try {
-      let jwtToken = localStorage.getItem('token');
-      const response = await axios.get('http://large.poosd-project.com/api/employee/', {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      });
-      alert('Employee GOT!');
-    } catch (error) {
-      alert(error);
-    }
   };
   
 
@@ -300,91 +289,6 @@ export default class DemoApp extends React.Component {
     this.handleDateSelect(this.state.selectInfo);
     this.setState({ showPositionModal: false });
   }
-
-  // Adds position to manager
-  addPosition = async (positionName) => {
-    const jwtToken = localStorage.getItem('token');
-    const managerId = localStorage.getItem('id');
-    let positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
-  
-    try {
-      const response = await axios.post(`http://large.poosd-project.com/api/positions/manager`, {
-        name: positionName,
-        managerId: managerId
-      }, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-          'Content-Type': 'application/json'
-        },
-      });
-  
-      // Accessing the _id from the newPosition object in the response
-      if (response.data && response.data.newPosition && response.data.newPosition._id) {
-        const newPositionColor = getNextAvailableColor(positionColors);
-        if (newPositionColor) {
-          positionColors[response.data.newPosition._id] = newPositionColor;
-          localStorage.setItem('positionColors', JSON.stringify(positionColors));
-        }
-        this.fetchPositions(); // Refresh the positions list
-      } else {
-        throw new Error('Position data is not in the expected format.');
-      }
-    } catch (error) {
-      console.error('Failed to add position:', error);
-      alert('Failed to add position: ' + error.message);
-    }
-  };
-  
-  
-  
-  
-  
-  
-  
-  // Deletes position connected to manager
-  deletePosition = async (positionId) => {
-    const jwtToken = localStorage.getItem('token');
-  
-    try {
-        // Then, delete all shift templates associated with this position
-      await axios.delete(`http://large.poosd-project.com/api/shift-templates/position/${positionId}`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-          'Content-Type': 'application/json'
-        },
-      });
-      await axios.delete(`http://large.poosd-project.com/api/position/${positionId}`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-          'Content-Type': 'application/json'
-        },
-      });
-  
-      // Use the callback form of setState to ensure the state updates correctly
-      this.setState(prevState => ({
-        positions: prevState.positions.filter(position => position.id !== positionId),
-      }), () => {
-        // Callback to ensure the state is updated before fetching templates
-        this.fetchShifts();
-      });
-  
-    } catch (error) {
-      alert('Failed to delete position: ' + error.message);
-      console.error(error);
-    }
-  };
-
-  togglePosition = (positionId) => {
-    this.setState(prevState => ({
-      positions: prevState.positions.map(position => {
-        if (position.id === positionId) {
-          return { ...position, checked: !position.checked };
-        }
-        return position;
-      }),
-    }));
-  };
-  
 
   render() {
     const { showEmployeeList, positions } = this.state;
@@ -431,7 +335,8 @@ export default class DemoApp extends React.Component {
           </Modal>
           <Modal
             isOpen={showEventModal}
-            onRequestClose={this.closeProfileModal}
+            onRequestClose={this.closeEventModal}
+            ariaHideApp={false}
             contentLabel="Event Modal"
             // Additional modal settings
           >
@@ -563,7 +468,6 @@ export default class DemoApp extends React.Component {
     const shouldDisplayName = eventInfo.event.extendedProps.name && eventInfo.event.extendedProps.name.trim() !== 'undefined';
     
     const eventStyle = {
-      textAlign: 'center',
       color: '#47413d',
     };
   
@@ -576,11 +480,11 @@ export default class DemoApp extends React.Component {
         <div>
           <b>{eventInfo.timeText}</b>
         </div>
-        {shouldDisplayTitle && (
+        {/* {shouldDisplayTitle && (
           <div style={titleStyle}>
             {eventInfo.event.title}
           </div>
-        )}
+        )} */}
         {shouldDisplayName && (
           <div style={titleStyle}>
             {eventInfo.event.extendedProps.name}
@@ -600,24 +504,16 @@ export default class DemoApp extends React.Component {
       };
   
       const startDate = dateInfo.start ? formatToMMDDYYYY(dateInfo.start) : null;
-      var endDate = dateInfo.end ? formatToMMDDYYYY(dateInfo.end) : null;
+      // End date minus one to account for visible dates
+      var endDate = dateInfo.end ? formatToMMDDYYYY(new Date (dateInfo.end - (24 * 60 * 60 * 1000))) : null;
   
-      // Subtract one day from endDate
-      if (endDate) {
-        const endDateTimeStamp = Date.parse(endDate);
-        const oneDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
-        const newEndDate = new Date(endDateTimeStamp - oneDay);
-        endDate = formatToMMDDYYYY(newEndDate);
-      }
-
       await this.fetchShifts(startDate, endDate);
-  
       // Other operations based on visible dates
       // ...
     } catch (error) {
       console.error('Error handling visible dates:', error);
     }
-  };
+  }
   
 
 
@@ -697,8 +593,8 @@ async function formatShiftsForCalendar(shifts) {
     const positionId = shift.templateId.positionId?._id; 
     const title = shift.templateId.positionId?.name;
 
-      const startDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.startTime);
-      const endDateTime = getNextFormattedDateForDayOfWeek(shift.templateId.dayOfWeek, shift.templateId.endTime);
+      const startDateTime = `${shift.date.split("T")[0]}T${shift.templateId.startTime}`;
+      const endDateTime = `${shift.date.split("T")[0]}T${shift.templateId.endTime}`;
 
       formattedShifts.push({
         id: `${shift.templateId._id}`,
@@ -716,30 +612,7 @@ async function formatShiftsForCalendar(shifts) {
 
 
 
-function getNextFormattedDateForDayOfWeek(dayOfWeek, time, weekOffset = 0) {
-  const currentDate = new Date();
-  currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 7 * weekOffset + dayOfWeek);
-
-  // Set the current date to the nearest past Sunday
-  currentDate.setDate(currentDate.getDate() - currentDate.getDay());
-
-  // Calculate the date for the target dayOfWeek
-  currentDate.setDate(currentDate.getDate() + dayOfWeek);
-
-  // Parse the time
-  const [hours, minutes] = time.split(':').map(Number);
-  if (isNaN(hours) || isNaN(minutes)) {
-    throw new Error('Invalid time format');
-  }
-
-  // Set the time
-  currentDate.setHours(hours, minutes, 0); // Setting seconds to 0
-
-  // Format the date in YYYY-MM-DDTHH:MM:SS format
-  // Adjusting for local timezone offset
-  const timezoneOffset = currentDate.getTimezoneOffset() * 60000; // offset in milliseconds
-  const localDate = new Date(currentDate.getTime() - timezoneOffset);
-  let formattedDate = localDate.toISOString().replace(/:\d{2}\.\d{3}Z$/, '');
-
+function getNextFormattedDateForDayOfWeek(date, time) {
+  var formattedDate = `${date.split("T")[0]}T${time}`;
   return formattedDate;
 }
