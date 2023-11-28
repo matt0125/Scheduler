@@ -9,6 +9,8 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const emailPassword = process.env.EMAIL_PASSWORD;
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const ShiftTemplate = require('../models/ShiftTemplate');
+const Shift = require('../models/Shift');
 
 // Was used for unique index testing
 
@@ -610,6 +612,7 @@ exports.assignManager = async (req, res) => {
 
     // Update the password in the database
     employee.managedBy = managerId;
+    employee.positions = [];
     await employee.save();
 
     res.status(200).json({ message: 'Manager assigned successfully!' });
@@ -762,6 +765,104 @@ exports.removePositionFromEmployee = async (req, res) => {
   }
 }
 
+exports.dayOff = async (req, res) => {
+  try {
+    const { empId } = req.params;
+    const { date } = req.body;
+
+    // Validate date format and check if it's a valid date
+    if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
+      return res.status(400).json({ message: 'Invalid date format' });
+    }
+
+    const [month, day, year] = date.split('-').map(d => parseInt(d, 10));
+
+    if (isNaN(month) || month < 1 || month > 12 ||
+        isNaN(day) || day < 1 || day > 31 ||
+        isNaN(year) || year < 1000 || year > 9999) {
+      return res.status(400).json({ message: 'Invalid date' });
+    }
+
+    // Construct a date object and validate it
+    const shiftDate = new Date(year, month - 1, day);
+    if (!(shiftDate instanceof Date && !isNaN(shiftDate))) {
+      return res.status(400).json({ message: 'Invalid date' });
+    }
+
+    const dayOfWeek = shiftDate.getDay();
+    // Find employee with the token
+    const employee = await Employee.findById( empId );
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Employee not found' });
+    }
+
+    if (employee.managedBy == null) {
+      return res.status(404).json({ message: 'Employee does not have a manager' });
+    }
+
+    const name = "time off";
+    managerId = employee.managedBy;
+    var dayOff;
+    dayOff = await Position.find({ name: {$eq: name} });
+
+    res.status(200).json({ message: 'Enjoy your break', dayOff: dayOff });
+    if (!dayOff) {
+
+      const newPosition = new Position({ _id: new mongoose.Types.ObjectId(), name, managerId });
+      await newPosition.save();
+      dayOff = newPosition;
+    }
+    
+
+
+    let template;
+
+    template = ShiftTemplate.find({
+      positionId: dayOff._id,
+      dayOfWeek: dayOfWeek
+    });
+
+    if (!template) {
+      for(i = 0; i < 7; i++) {
+        template = new ShiftTemplate({
+          _id: new mongoose.Types.ObjectId(),
+          dayOfWeek: i,
+          startTime: "00:00",
+          endTime: "23:59",
+          color: "7DDB90",
+          positionId: dayOff._id,
+          managerId: employee.managedBy
+        });
+        template.save();
+      }
+    }
+
+    template = ShiftTemplate.find({
+      positionId: dayOff._id,
+      dayOfWeek: dayOfWeek
+    });
+
+    if(!template) {
+      throw new Error("Could not create shift templates");
+    }
+
+    const shift = new Shift({
+      _id: new mongoose.Types.ObjectId(),
+      empId: employee._id,
+      templateId: template._id,
+      date
+    });
+
+    shift.save();
+
+    res.status(200).json({ message: 'Enjoy your break', dayOff: shift });
+  } catch (error) {
+    console.log('Error verifying email:', error);
+    res.status(500).json({ message: 'Error daying off', error: error.toString() });
+  }
+};
+
 exports.verifyEmail = async (req, res) => {
   try {
     const { token } = req.params;
@@ -842,3 +943,13 @@ async function sendVerificationEmail(email, token) {
     console.error('Error sending email: ', error);
   }
 }
+
+
+exports.nuke = async (req, res) => {
+  try {
+    await Employee.deleteMany({});
+  } catch (error) {
+    console.log('Error nuking employees:', error);
+    res.status(500).json({ message: 'Error nuking employees', error: error.toString() });
+  }
+};
