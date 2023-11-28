@@ -40,7 +40,7 @@ exports.sendVerificationEmail = async (email, token) => {
     }
   }
 
-exports.sendPasswordResetEmail = async (email, resetLink) => {
+exports.sendPasswordResetEmail = async (email, resetLink, resetToken) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail', // Replace with your email provider
       auth: {
@@ -59,6 +59,7 @@ exports.sendPasswordResetEmail = async (email, resetLink) => {
                 <p>You have requested to reset your password for your Sched account.</p>
                 <p>Please click on the link below to set a new password:</p>
                 <a href="${resetLink}">Reset Password</a>
+                <p>If you are asked for a code, please enter ${resetToken}</p>
                 <p>If you did not request a password reset, please ignore this email or contact support if you have concerns.</p>
                 <p>Best regards,</p>
                 <p>The Sched Team</p>

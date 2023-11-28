@@ -934,7 +934,7 @@ exports.requestPasswordReset = async (req, res) => {
 
     // Send email with reset link (pseudo-code)
     const resetLink = `http://localhost:3001/reset-password/${resetToken}`;
-    emailService.sendPasswordResetEmail(email, resetLink);
+    emailService.sendPasswordResetEmail(email, resetLink, resetToken);
 
     res.status(200).json({ message: 'Password reset email sent' });
   } catch (err) {
