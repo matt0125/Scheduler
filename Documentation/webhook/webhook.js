@@ -9,7 +9,7 @@ app.use(express.json());
 app.post('/webhook', (req, res) => {
   const { ref } = req.body;
   let isMain;
-  
+  console.log(ref);
   if (ref === 'refs/heads/main') {
     isMain = true;
     console.log('Received push event for main branch');
@@ -93,5 +93,5 @@ app.post('/webhook', (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log(`Webhook server is running on port ${PORT}`);
+  console.log(`Webhook server is running on port 3000`);
 });
