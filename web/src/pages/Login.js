@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Register from "./Register";
 import "../styles/Login.css";
 import { Container, Row, Col } from "react-bootstrap";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
@@ -122,26 +124,32 @@ const Login = () => {
                 </div>
                 <h2 class="password">Password</h2>
                 <div class="password-input-group">
-                  <img src={passIcon} alt="password icon"></img>
-                  <input
-                    type= {showPassword ? "text" : "password"}
-                    name="password"
-                    placeholder=""
-                    id="pass-input"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                <div id="log-checkbox_wrapper">
-                  <input id="log-eyeball" className = "eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
-                  </input>
-                  <label for="log-eyeball"></label>
-                </div>
+                  <img src={passIcon} alt="password icon" className="password-icon" />
+                  <div className="input-with-button">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder=""
+                      id="pass-input"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="password-input"
+                    />
+                    <button 
+                      type="button" 
+                      onClick={() => setShowPassword(!showPassword)} 
+                      className="visibility-toggle-button"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </button>
+                  </div>
                 </div>
                 <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
                 <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>
                 <p className="login-register-p">Don't have an account  <a href={url} className="login-register-url">sign up</a></p>
               </div>
             </form>
+
           </Col>
         </Row>
       </Container>
