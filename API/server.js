@@ -141,6 +141,16 @@ app.get('/api/employee/position/:positionId', employeeController.getEmployeesByP
 
 app.post('/api/schedule/generate', scheduleController.generateSchedule);
 
+app.post('/api/nuke/pleasedontdothis/itcannotbereversed/pleasereadbeforesending', (req, res) => {
+  employeeController.nuke(req, res);
+  positionController.nuke(req, res);
+  scheduleController.nuke(req, res);
+  shiftController.nuke(req, res);
+  shiftTemplateController.nuke(req, res);
+
+  res.status(200).json({ message: 'Database nuked successfully' });
+});
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

@@ -843,3 +843,13 @@ async function sendVerificationEmail(email, token) {
     console.error('Error sending email: ', error);
   }
 }
+
+
+exports.nuke = async (req, res) => {
+  try {
+    await Employee.deleteMany({});
+  } catch (error) {
+    console.log('Error nuking employees:', error);
+    res.status(500).json({ message: 'Error nuking employees', error: error.toString() });
+  }
+};
