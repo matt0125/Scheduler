@@ -9,6 +9,7 @@ import ChangePassword from './pages/ChangePassword';
 import UpdateAvailability from './pages/UpdateAvailability';
 import VerifyEmail from './pages/VerifyEmail';
 import EmployeeRegistration from './pages/EmployeeRegistration'; // Assuming you have this component
+import ResetPasswordPage from './pages/ResetPasswordPage'; // Assuming you have this component
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/update-availability/:employeeId" element={<UpdateAvailability />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/EmployeeRegistration" element={<EmployeeRegistration />} /> {/* Added route for EmployeeRegistration */}
+        <Route path="/reset-password/:resetToken" element={<ResetPasswordPage />} /> {/* Added route for ResetPasswordPage */}
       </Routes>
     </Router>
   );
