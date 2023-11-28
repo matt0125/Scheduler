@@ -4,6 +4,7 @@ import { Container, Button, Typography, Box, FormControl, Snackbar, TextField } 
 import Autocomplete from '@mui/lab/Autocomplete';
 import PositionSelector from '../components/PositionSelector';
 import SetEmployeeAvailability from '../components/SetEmployeeAvailability'; // Import the SetEmployeeAvailability component
+import '../styles/EmployeeRegistration.css';
 
 const EmployeeRegistration = () => {
   const [manager, setManager] = useState(null);
@@ -94,7 +95,14 @@ const EmployeeRegistration = () => {
                         borderWidth: '2px',
                       },
                     },
-                  } : {}}
+                  } : {'& .MuiOutlinedInput-root': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#47413d',
+                      borderWidth: '2px',
+                    },
+                  }
+                }
+              }
                 />
               )}
             />
