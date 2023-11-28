@@ -173,7 +173,7 @@ const EditProfile = () => {
           fullWidth
           label="First Name"
           name="firstName"
-          color="success"
+          color="primary"
           value={formData.firstName}
           onChange={handleChange}
           margin="normal"
@@ -183,7 +183,7 @@ const EditProfile = () => {
           fullWidth
           label="Last Name"
           name="lastName"
-          color="success"
+          color="primary"
           value={formData.lastName}
           onChange={handleChange}
           margin="normal"
@@ -193,7 +193,7 @@ const EditProfile = () => {
           fullWidth
           label="Email"
           name="email"
-          color="success"
+          color="primary"
           value={formData.email}
           onChange={handleChange}
           margin="normal"
@@ -203,7 +203,7 @@ const EditProfile = () => {
           fullWidth
           label="Phone Number"
           name="phone"
-          color="success"
+          color="primary"
           value={formData.phone || ''}
           onChange={handleChange}
           margin="normal"

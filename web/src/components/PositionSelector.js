@@ -85,7 +85,14 @@ const PositionSelector = ({ managerId, onPositionSelection }) => {
                       borderColor: 'green',
                       borderWidth: '2px',
                     },
-                  } : {}}
+                  } : {'& .MuiOutlinedInput-root': {
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: '#47413d',
+                      borderWidth: '2px',
+                    },
+                  }
+                }
+              }
                 />
               )}
             />

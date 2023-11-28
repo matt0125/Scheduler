@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
+import '../styles/Dashboard.css'
 
 const SetEmployeeAvailability = () => {
   const navigate = useNavigate();
