@@ -1,26 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Autocomplete from '@mui/lab/Autocomplete';
-import { Container, Button, Typography, Box, TextField, FormControl, Snackbar } from '@mui/material';
+import { Container, Button, Typography, Box, TextField, FormControl } from '@mui/material';
 
-const PositionSelector = ({ managerId, onPositionSelection }) => {
+const PositionSelector = () => {
   const [positions, setPositions] = useState([]);
   const [selectedPosition, setSelectedPosition] = useState(null);
-  const [error, setError] = useState(false);
 
   useEffect(() => {
+    const managerId = localStorage.getItem('selectedManagerId');
     if (managerId) {
       const jwtToken = localStorage.getItem('token');
       axios
-        .get(`http://large.poosd-project.com/api/positions/${managerId}`, {
+        .get(`http://localhost:3000/api/positions/${managerId}`, {
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${jwtToken}`,
           },
         })
         .then((response) => {
-          if (Array.isArray(response.data.positions)) {
-            setPositions(response.data.positions);
+          console.log('Positions:', response.data.positions);
+          if (Array.isArray(response.data.positions)) { // Check if response data is an array
+            setPositions(response.data.positions); // Adjust this based on your API response structure
           } else {
             console.error('Error: API response data is not an array');
           }
@@ -29,35 +30,24 @@ const PositionSelector = ({ managerId, onPositionSelection }) => {
           console.error('Error fetching positions:', error);
         });
     }
-  }, [managerId]);
+  }, []);
 
-  useEffect(() => {
-    // After positions are set, check for the selected position in local storage
-    const storedPositionId = localStorage.getItem('selectedPositionId');
-    if (storedPositionId) {
-      const storedPosition = positions.find(position => position._id === storedPositionId);
-      setSelectedPosition(storedPosition);
-    }
-  }, [positions]); // This effect should run whenever positions change
+  // Custom filter function
+  const customFilterOptions = (options, { inputValue }) =>
+    options.filter((option) =>
+      option.name.toLowerCase().includes(inputValue.toLowerCase())
+    );
 
   const handlePositionChange = (event, value) => {
-    setSelectedPosition(value);
-    if (value) {
-      localStorage.setItem('selectedPositionId', value._id);
-    } else {
-      localStorage.removeItem('selectedPositionId');
-    }
+    setSelectedPosition(value); // Store the entire position object or just an identifier as needed
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = () => {
     if (selectedPosition) {
-      setError(false);
-      // Call onPositionSelection only here, on successful submit
-      onPositionSelection(true);
+      localStorage.setItem('selectedPosition', JSON.stringify(selectedPosition)); // Store the position object as a string
+      alert(`Position ${selectedPosition.name} saved!`); // Feedback for the user
     } else {
-      setError(true);
-      onPositionSelection(false); // Optionally inform the parent component of the error state
+      alert('Please select a position.');
     }
   };
 
@@ -75,18 +65,9 @@ const PositionSelector = ({ managerId, onPositionSelection }) => {
               getOptionLabel={(option) => option.name}
               value={selectedPosition}
               onChange={handlePositionChange}
+              filterOptions={customFilterOptions} // Use the custom filter function here
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="What is your position?"
-                  variant="outlined"
-                  sx={selectedPosition ? {
-                    '& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'green',
-                      borderWidth: '2px',
-                    },
-                  } : {}}
-                />
+                <TextField {...params} label="What is your position?" variant="outlined" style={{ minWidth: '250px' }} />
               )}
             />
           </FormControl>
@@ -99,12 +80,6 @@ const PositionSelector = ({ managerId, onPositionSelection }) => {
             Submit
           </Button>
         </Box>
-        <Snackbar
-          open={error}
-          autoHideDuration={6000}
-          onClose={() => setError(false)}
-          message="Please select a position"
-        />
       </Box>
     </Container>
   );

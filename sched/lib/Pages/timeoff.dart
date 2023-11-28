@@ -17,93 +17,94 @@ class _TimeOffScreenState extends State<TimeOffScreen> {
           color: Color(0xFF49423E),
         ),
       ),
-      body: SingleChildScrollView( // Wrap with SingleChildScrollView
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Image.asset(
-                  'assets/icon/Sched logo.png',
-                  fit: BoxFit.contain,
-                  width: 150,
-                  height: 150,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Image.asset(
+                'assets/icon/Sched logo.png',
+                fit: BoxFit.contain, // You can adjust BoxFit to your needs
+                width: 150,  // Specify the desired width
+                height: 150, // Specify the desired height
+              ),
+
+              SizedBox(height: 100), // Added white space
+              Text(
+                'Please select your desired time off',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF49423E),
                 ),
-                SizedBox(height: 100),
-                Text(
-                  'Please select your desired time off',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF49423E),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        child: Text(dateRange?.start == null
-                            ? 'Select Start Date'
-                            : '${dateRange!.start.year}/${dateRange!.start.month}/${dateRange!.start.day}'),
-                        onPressed: () => pickStartDate(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFB1947B),
-                        ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      child: Text(dateRange?.start == null
+                          ? 'Select Start Date'
+                          : '${dateRange!.start.year}/${dateRange!.start.month}/${dateRange!.start.day}'),
+                      onPressed: () => pickStartDate(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFB1947B),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        child: Text(dateRange?.end == null
-                            ? 'Select End Date'
-                            : '${dateRange!.end.year}/${dateRange!.end.month}/${dateRange!.end.day}'),
-                        onPressed: () => pickEndDate(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFB1947B),
-                        ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      child: Text(dateRange?.end == null
+                          ? 'Select End Date'
+                          : '${dateRange!.end.year}/${dateRange!.end.month}/${dateRange!.end.day}'),
+                      onPressed: () => pickEndDate(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFB1947B),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Total time off: ${calculateTotalDays()} days',
-                  style: TextStyle(fontSize: 32),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    if (dateRange is DateTimeRange) {
-                      showConfirmationDialog(context);
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: Text('No Date Range Selected'),
-                            content: Text('Please select a date range before submitting.'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('OK'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-                  },
-                  child: Text('Submit'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF49423E),
                   ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Total time off: ${calculateTotalDays()} days',
+                style: TextStyle(fontSize: 32),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  if (dateRange is DateTimeRange) {
+                    // Show a confirmation dialog before saving the selected date range
+                    showConfirmationDialog(context);
+                  } else {
+                    // Handle the case where no date range is selected
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text('No Date Range Selected'),
+                          content: Text('Please select a date range before submitting.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+                child: Text('Submit'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF49423E),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

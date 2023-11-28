@@ -308,93 +308,6 @@ exports.getShiftByManager = async (req, res) => {
   }
 };
 
-exports.getShiftByManagerAndDate = async (req, res) => {
-  try {
-    console.log('Fetching for shifts by employee ID and date...');
-    
-    const { startDate, endDate, empId } = req.body;
-
-    for(i = 0; i < 2; i++)
-    {
-      if (i == 0)
-        date = startDate;
-      else
-        date = endDate;
-      // Validate date format and check if it's a valid date
-      if (!/^\d{2}-\d{2}-\d{4}$/.test(date)) {
-        return res.status(400).json({ message: 'Invalid date format' });
-      }
-  
-      const [month, day, year] = date.split('-').map(d => parseInt(d, 10));
-  
-      if (isNaN(month) || month < 1 || month > 12 ||
-          isNaN(day) || day < 1 || day > 31 ||
-          isNaN(year) || year < 1000 || year > 9999) {
-        return res.status(400).json({ message: 'Invalid date' });
-      }
-  
-      // Construct a date object and validate it
-      const shiftDate = new Date(year, month - 1, day);
-      if (!(shiftDate instanceof Date && !isNaN(shiftDate))) {
-        return res.status(400).json({ message: 'Invalid date' });
-      }
-    }
-
-    const employee = await Employee.findById(empId);
-    var manager;
-    if (!employee.managerIdent) {
-      manager = await Employee.findById(employee.managedBy);
-    }
-    else {
-      manager = employee;
-    }
-
-    const employees = await Employee.find({managedBy: manager._id});
-
-    shifts = [];
-
-    for (emp of employees) {
-      const empShifts = await Shift.find({
-        empId: emp._id,
-        date: {
-          $gte: startDate,
-          $lte: endDate,
-        },
-      }).populate({
-        path: 'empId',
-        model: Employee,
-        select: 'firstName lastName',
-      }).populate({
-        path: 'templateId',
-        model: ShiftTemplate,
-        select: 'startTime endTime positionId',
-      }).populate({
-        path: 'templateId',
-        populate: {
-          path: 'positionId',
-          model: Position,
-          select: 'name'
-        },
-      });
-
-      for (shift of empShifts) {
-        shifts.push(shift);
-      }
-    }
-
-    if (!shifts || shifts.length === 0) {
-      return res.status(404).json({ message: 'No shifts found for the specified manager and date range' });
-    }
-
-    res.status(200).json({shifts: shifts});
-  } 
-  
-  catch (error) {
-    res.status(500).json({ message: 'Error fetching shifts by manager and date range', error: error.toString() });
-    console.error('There was an error fetching shifts by manager and date range', error);
-  }
-};
-
 exports.deleteShiftsByEmployee = async (req, res) => {
   try {
     const { empId } = req.params;
@@ -412,14 +325,5 @@ exports.deleteShiftsByEmployee = async (req, res) => {
   } catch (error) {
     console.error('Error deleting shifts by employee:', error);
     res.status(500).json({ message: 'Failed to delete shifts by employee', error: error.toString() });
-  }
-};
-
-exports.nuke = async (req, res) => {
-  try {
-    await Shift.deleteMany({});
-  } catch (error) {
-    console.log('Error nuking shifts:', error);
-    res.status(500).json({ message: 'Error nuking shifts', error: error.toString() });
   }
 };

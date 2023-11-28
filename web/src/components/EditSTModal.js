@@ -24,7 +24,7 @@ function EditSTModal({ onAction, positionId, isOpen, date, empId, templateId, te
             const token = localStorage.getItem('token');
     
             // Make the request using Axios
-            const response = await axios.get(`http://large.poosd-project.com/api/employee/position/${positionId}`, {
+            const response = await axios.get(`http://localhost:3000/api/employee/position/${positionId}`, {
                 headers: {
                     ContentType: 'application/json', // Tell the server we are sending this over as JSON
                     Authorization: `Bearer ${token}` // Add the token to the Authorization header

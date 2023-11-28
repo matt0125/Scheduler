@@ -163,13 +163,3 @@ exports.deleteShiftTemplatesByPosition = async (req, res) => {
     console.error('There was an error deleting shift templates by position', error);
   }
 };
-
-exports.nuke = async (req, res) => {
-  try {
-    await ShiftTemplate.deleteMany({});
-
-  } catch (error) {
-    console.log('Error nuking shiftTemplates:', error);
-    res.status(500).json({ message: 'Error nuking shiftTemplates', error: error.toString() });
-  }
-};

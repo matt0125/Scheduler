@@ -82,10 +82,14 @@ class _SignUpPageState extends State<SignUpPage> {
           message: response.message,
         ).show(context);
       } else {
+        final loginResponse = await apiService.login(
+          username,
+          password,
+        );
 
-        if (response.empId != null) {
-          await DataService.writeEmpId(response.empId!);
-          await DataService.writeJWT(response.token!);
+        if (loginResponse.empId != null) {
+          await DataService.writeEmpId(loginResponse.empId!);
+          await DataService.writeJWT(loginResponse.token!);
 
           Navigator.pushReplacement(
             context,
@@ -96,7 +100,7 @@ class _SignUpPageState extends State<SignUpPage> {
         } else {
           Popup(
             title: 'Error',
-            message: response.message,
+            message: loginResponse.message,
           ).show(context);
         }
       }

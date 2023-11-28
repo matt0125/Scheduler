@@ -194,11 +194,3 @@ exports.generateSchedule = async (req, res) => {
       }
 };
 
-exports.nuke = async (req, res) => {
-    try {
-      await Schedule.deleteMany({});
-    } catch (error) {
-      console.log('Error nuking schedule:', error);
-      res.status(500).json({ message: 'Error nuking schedule', error: error.toString() });
-    }
-  };

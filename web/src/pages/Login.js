@@ -8,8 +8,6 @@ import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import logo from "../images/branding-notitle.png";
 
-import { login, isManager } from '../services/api';
-
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -18,9 +16,9 @@ const Login = () => {
   const [resetEmail, setResetEmail] = useState("");
 
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [showFailPopup, setFailPopup] = useState(false);
 
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const handlePasswordReset = async () => {
     const email = prompt("Please enter your email for password reset:");
@@ -77,29 +75,37 @@ const Login = () => {
       return;
     }
 
-    const response = await login( username, password);
-    
+    // Call the backend API to authenticate the user
+    // TODO: Replace this with a real API call
+    const response = await fetch("http://localhost:3000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: username, password: password }),
+    });
+
+    console.log(JSON.stringify({ username, password }));
+    console.log(response.status);
+
+    const data = await response.json();
+
+    // Check the response status code
     if (response.status === 200) {
       // Login successful
-      const token = response.data.token;
-      const id = response.data.id;
-      console.log(response.data);
+      const token = data.token;
+      const id = data.id;
+      console.log(data);
       localStorage.setItem('token', token);
       localStorage.setItem('id', id);
-      localStorage.setItem('isMan', await isManager(id));
       navigate('/dashboard');
     } else {
       // Login failed
-      setFailPopup(true);
+      alert("Invalid username or password");
       document.getElementById("user-input").focus();
       document.getElementById("pass-input").focus();
 
     }
-  };
-
-  const handleClosePopup = () => {
-    // Close the popup
-    setFailPopup(false);
   };
   
   let url = "/register";
@@ -120,14 +126,10 @@ const Login = () => {
             <img src={vector} className="business-photo" alt="business vector"/>
           </Col>
           <Col className="main-column">
-          {showFailPopup && (<div className="bad-top-popup" onClick={handleClosePopup}>
-            <p>Invalid username or password</p>
-            </div>
-            )}
             <form onSubmit={handleSubmit}>
               <div className="login-box">
                 <h1 class="font-family-katibeh">Login</h1>
-                <h2 class="username">Username</h2>
+                <h2 class="username">Email(or username)</h2>
                 <div class="username-input-group">
                   <img src={emailIcon} alt="email icon" />
                   <input
@@ -150,11 +152,8 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                <div id="log-checkbox_wrapper">
-                  <input id="log-eyeball" className = "eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
+                  <input id = "log-eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
                   </input>
-                  <label for="log-eyeball"></label>
-                </div>
                 </div>
                 <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
                 <p className="login-register-p">Forgot password?
