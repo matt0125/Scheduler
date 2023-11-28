@@ -110,6 +110,8 @@ app.post('/api/shifts/manager', shiftController.getShiftByManager);
 
 app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftsByEmployee);
 
+app.post('/api/employee/:empId/timeoff', employeeController.dayOff);
+
 // shift templates
 app.post('/api/shift-templates', shiftTemplateController.createShiftTemplate);
 app.get('/api/shift-templates/:id', shiftTemplateController.getShiftTemplate);
@@ -123,9 +125,9 @@ app.delete('/api/shift-templates/position/:positionId', shiftTemplateController.
 app.post('/api/position', PositionController.createPosition);
 app.post('/api/positions', PositionController.createMultiplePositions);
 
+app.get('/api/position/:name', PositionController.getPositionByName);
 app.get('/api/position/:id', PositionController.getPosition);
 app.get('/api/position', PositionController.getAllPositions);
-app.get('/api/position/:name', PositionController.getPositionByName);
 
 app.put('/api/position/:id', PositionController.updatePosition);
 app.delete('/api/position/:id', PositionController.deletePosition);
@@ -140,6 +142,16 @@ app.put('/api/update/employee/:employeeId', employeeController.updateEmployeePro
 app.get('/api/employee/position/:positionId', employeeController.getEmployeesByPosition);
 
 app.post('/api/schedule/generate', scheduleController.generateSchedule);
+
+app.post('/api/nuke/pleasedontdothis/itcannotbereversed/pleasereadbeforesending', (req, res) => {
+  employeeController.nuke(req, res);
+  positionController.nuke(req, res);
+  scheduleController.nuke(req, res);
+  shiftController.nuke(req, res);
+  shiftTemplateController.nuke(req, res);
+
+  res.status(200).json({ message: 'Database nuked successfully' });
+});
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

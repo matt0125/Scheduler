@@ -414,3 +414,12 @@ exports.deleteShiftsByEmployee = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete shifts by employee', error: error.toString() });
   }
 };
+
+exports.nuke = async (req, res) => {
+  try {
+    await Shift.deleteMany({});
+  } catch (error) {
+    console.log('Error nuking shifts:', error);
+    res.status(500).json({ message: 'Error nuking shifts', error: error.toString() });
+  }
+};

@@ -102,7 +102,7 @@ const Login = () => {
             <form onSubmit={handleSubmit}>
               <div className="login-box">
                 <h1 class="font-family-katibeh">Login</h1>
-                <h2 class="username">Email(or username)</h2>
+                <h2 class="username">Username</h2>
                 <div class="username-input-group">
                   <img src={emailIcon} alt="email icon" />
                   <input
