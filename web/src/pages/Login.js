@@ -16,10 +16,40 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
+
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showFailPopup, setFailPopup] = useState(false);
 
+
+  const handlePasswordReset = async () => {
+    const email = prompt("Please enter your email for password reset:");
+    if (!email) {
+      alert("Please enter your email");
+      return;
+    }
+  
+    // Call the API to send password reset email
+    try {
+      const response = await fetch("http://localhost:3000/api/request-password-reset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email }),
+      });
+  
+      if (response.status === 200) {
+        alert("Password reset email sent. Please check your inbox.");
+      } else {
+        alert("Failed to send password reset email.");
+      }
+    } catch (error) {
+      console.error("Error sending password reset email: ", error);
+    }
+  };
+  
 
 
   // Validate the username and password
@@ -134,7 +164,9 @@ const Login = () => {
                   </div>
                 </div>
                 <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
-                <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>
+                <p className="login-register-p">Forgot password?
+                  <a href="#!" onClick={handlePasswordReset} className="login-register-url">click here</a>
+                </p>
                 <p className="login-register-p">Don't have an account  <a href={url} className="login-register-url">sign up</a></p>
               </div>
             </form>

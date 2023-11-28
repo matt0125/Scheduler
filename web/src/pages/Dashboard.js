@@ -6,8 +6,6 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import "../styles/Dashboard.css";
-import logo from "../images/branding.png";
-import profile from "../images/profile-button.svg";
 import axios from 'axios';
 import Modal from 'react-modal';
 import FormControl from '@mui/material/FormControl';
@@ -25,6 +23,7 @@ import Box from '@mui/material/Box';
 
 import { fetchManager } from '../services/api'; 
 import { fetchPositions } from '../services/api'; 
+import TopBarComponent from '../components/topBar'
 
 
 // Define your color choices here based on the image provided
@@ -61,30 +60,6 @@ export default class DemoApp extends React.Component {
     }));
   };
 
-   // Function to handle opening the modal
-   openProfileModal = () => {
-    this.setState({ showProfileModal: true });
-  }
-
-  // Function to handle closing the modal
-  closeProfileModal = () => {
-    this.setState({ showProfileModal: false });
-  }
-
-  // Function to handle sign out
-  handleSignOut = () => {
-    localStorage.clear();
-    this.props.navigate('/'); // Use the navigate function passed as a prop
-  }
-
-  // Function to handle edit profile
-  handleEditProfile = () => {
-    // Assuming the employee ID is stored in localStorage
-    const employeeId = localStorage.getItem('id'); 
-
-    // Navigate to the EditProfile page with the employee ID
-    this.props.navigate(`/edit-profile/${employeeId}`);
-  };
   
   openEditSTModal = (id) => {
     this.setState({ showEditSTModal: true });
@@ -307,20 +282,7 @@ export default class DemoApp extends React.Component {
       <div className='demo-app'>
         {this.renderPositionModal()}
         <div className='demo-app-main'>
-          <img src={logo} alt="sched logo" className="logo"></img>
-          <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
-          <Modal isOpen={this.state.showProfileModal} onRequestClose={this.closeProfileModal}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-              <Stack spacing={2} direction="row" justifyContent="center" alignItems="center" sx={{ p: 2 }}>
-              <Button id='edit-button' variant="contained" color="primary" onClick={this.handleEditProfile}>
-                  Edit Profile
-                </Button>
-                <Button variant="contained" color="primary" onClick={this.handleSignOut}>
-                  Sign Out
-              </Button>
-              </Stack>
-            </Box>
-          </Modal>
+          <TopBarComponent/>
           <Modal 
             isOpen={this.state.showEditSTModal} 
             onRequestClose={this.closeEditSTModal}

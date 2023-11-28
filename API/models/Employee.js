@@ -43,6 +43,8 @@ const EmployeeSchema = new Schema({
   phone: { type: String, default: '' },
   managerIdent: { type: Boolean, default: false },
   verificationToken: { type: String, default: '' },
+  resetPasswordToken: { type: String, default: '' },
+  resetPasswordExpires: { type: Date },
   managedBy: {
     type: Schema.Types.ObjectId,
     ref: 'Employee'
