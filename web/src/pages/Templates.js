@@ -411,14 +411,6 @@ export default class DemoApp extends React.Component {
             */
           />
            <div className='demo-app-sidebar'>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.toggleList}
-            style={{ marginBottom: '10px' }}
-          >
-            {showEmployeeList ? 'Show Positions' : 'Show Employees'}
-          </Button>
           
           {showEmployeeList ? (
             <EmployeeList
