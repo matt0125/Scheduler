@@ -127,14 +127,14 @@ exports.getShiftTemplateByManager = async (req, res) => {
       return res.status(400).json({ message: 'Manager ID is required' });
     }
 
-    const shiftTemplates = await ShiftTemplate.find({ managerId });
+    const shiftTemplates = await ShiftTemplate.find({ managerId }).populate({path:'positionId', model: Position});
 
     if (!shiftTemplates || shiftTemplates.length === 0) {
       console.log('No shift templates found for this manager');
       return res.status(200).json({ message: 'No shift templates found for this manager', shiftTemplates: [] });
     }
 
-    res.status(200).json(shiftTemplates);
+    res.status(200).json({shiftTemplates: shiftTemplates});
   } catch (error) {
     res.status(500).json({ message: 'Error fetching shift templates for the manager', error });
     console.error('There was an error fetching shift templates for the manager', error);
