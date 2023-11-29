@@ -531,6 +531,27 @@ exports.updatePassword = async (req, res) => {
       return res.status(401).json({ message: 'Current password is incorrect' });
     }
 
+    // Password complexity validations
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one uppercase letter' });
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one lowercase letter' });
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one number' });
+    }
+
+    if (!/[^A-Za-z0-9]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one special character' });
+    }
+
     // Hash the new password
     const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
 
