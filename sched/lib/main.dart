@@ -6,9 +6,12 @@ import 'Pages/dailyschedule.dart';
 import 'Pages/forgotPassword.dart';
 import 'Pages/login.dart'; // Import the LoginPage from login.dart
 import 'Pages/passwordCode.dart';
+import 'Pages/profile.dart';
 import 'Pages/register.dart'; // Import the SignUpPage from register.dart
 import 'package:sched/Pages/welcome.dart';
 import 'package:sched/Services/DataService.dart';
+
+import 'Pages/updatePassword.dart';
 
 
 void main() async {
@@ -57,6 +60,8 @@ class MyApp extends StatelessWidget {
         '/dailyschedule/:date': (context, {arguments} ) => DailySchedulePage(date: arguments['date']),
         '/forgotPassword': (context) => ForgotPasswordPage(),
         '/passwordCode': (context) => PasswordCodePage(),
+        //'/updatePassword': (context) => UpdatePasswordPage(),
+        '/profile': (context) => ProfileTab(),
       },
     );
   }

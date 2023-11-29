@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sched/Pages/profile.dart';
 
 import '../Services/APIService.dart';
+import '../tabs.dart';
+import 'dashboard.dart';
 
 class AvailabilityScreen extends StatefulWidget {
   @override
@@ -26,9 +29,14 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Color customColor = Color(0xFF49423E);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Select your availability', style: TextStyle(color: Color(0xFF49423E))),
+        title: Text('Set Availability'),
+        iconTheme: IconThemeData(
+          color: Color(0xFF49423E),
+        ),
       ),
       body: _loading ? Center(child: CircularProgressIndicator()) :
       Column(
