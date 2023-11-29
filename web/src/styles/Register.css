@@ -487,3 +487,12 @@
     place-items: center;
   }
 }
+
+.new-pass{
+  padding-bottom: 50px;
+  position: relative;
+}
+
+.confirm-pass{
+  position: relative;
+}

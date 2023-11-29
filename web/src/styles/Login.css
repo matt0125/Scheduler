@@ -299,6 +299,36 @@ h1 {
   
 }
 
+#reset-photo{
+  padding-top: 70px;
+}
 
+.checkbox_wrapper1 img{
+  right: 15px;
+  top: 23px;
+}
 
+.checkbox_wrapper2 img{
+  right: 15px;
+  top: 23px;
+}
+
+.pass-popup{
+  position: absolute;
+  left: 335px;
+  top: 120px;
+  background-color: #ff9999;
+  color: #333;
+  padding: 8px;
+  border: 1px solid #cc6666;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.reset-message{
+  margin: auto;
+  margin-left: 41%;
+  width: 200px;
+}
 

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Register from "./Register";
 import "../styles/Login.css";
 import { Container, Row, Col } from "react-bootstrap";
+import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
@@ -21,33 +22,40 @@ const Login = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showFailPopup, setFailPopup] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
 
-  const handlePasswordReset = async () => {
-    const email = prompt("Please enter your email for password reset:");
-    if (!email) {
-      
-      return;
-    }
-  
+  const handlePasswordReset = () => {
+    setOpenModal(true); // Open the Material-UI modal instead of using prompt
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false);
+  };
+
+  const submitPasswordReset = async (event) => {
+    event.preventDefault(); // Prevent the form from causing a page refresh
     // Call the API to send password reset email
     try {
-      const response = await fetch("http://localhost:3000/api/request-password-reset", {
+      const response = await fetch("http://large.poosd-project.com/api/request-password-reset", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email }),
+        body: JSON.stringify({ email: resetEmail }),
       });
   
       if (response.status === 200) {
-       
+        // Handle success
+        console.log("Reset email sent successfully");
       } else {
-        
+        // Handle error
+        console.error("Failed to send reset email");
       }
     } catch (error) {
       console.error("Error sending password reset email: ", error);
     }
+    handleModalClose(); // Close the modal after submit
   };
   
 
@@ -173,6 +181,38 @@ const Login = () => {
           </Col>
         </Row>
       </Container>
+      <Modal
+        open={openModal}
+        onClose={handleModalClose}
+        aria-labelledby="password-reset-modal"
+        aria-describedby="password-reset-form"
+      >
+        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4, outline: 'none' }}>
+          <Typography id="password-reset-modal" variant="h6" component="h2">
+            Password Reset
+          </Typography>
+          <Box component="form" onSubmit={submitPasswordReset} noValidate sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+            />
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+              Send Reset Link
+            </Button>
+            <Button fullWidth variant="outlined" sx={{ mt: 2 }} onClick={handleModalClose}>
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       </div>
   );
 };
