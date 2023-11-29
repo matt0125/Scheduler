@@ -36,7 +36,7 @@ const ResetPasswordPage = () => {
     }
 
     try {
-      const response = await axios.post('http:large.poosd-project.com/large/api/reset-password', {
+      const response = await axios.post('http://large.poosd-project.com/large/api/reset-password', {
         resetToken,
         newPassword,
       });
