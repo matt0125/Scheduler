@@ -313,10 +313,10 @@ h1 {
   top: 23px;
 }
 
-.pass-popup{
+.pass-popup1{
   position: absolute;
-  left: 335px;
-  top: 120px;
+  left: 0px;
+  top: 48px;
   background-color: #ff9999;
   color: #333;
   padding: 8px;

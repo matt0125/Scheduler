@@ -127,7 +127,7 @@ const ResetPasswordPage = () => {
                     className="eye-icon"
                   />
           </div>
-          {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
+          {formErrors.password && <div className="pass-popup1">{formErrors.password}</div>}
           </div>
 
           <div class="confirm-pass">
