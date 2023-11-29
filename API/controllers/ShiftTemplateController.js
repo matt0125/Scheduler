@@ -5,7 +5,7 @@ const Employee = require('../models/Employee');
 
 exports.createShiftTemplate = async (req, res) => {
   try {
-    console.log("Creating shift template...");
+    //console.log("Creating shift template...");
 
     const { dayOfWeek, startTime, endTime, color, positionId, managerId } = req.body;
 
@@ -20,39 +20,37 @@ exports.createShiftTemplate = async (req, res) => {
       managerId,
     });
 
-    console.log("The new shift template is ", newShiftTemplate);
+    //console.log("The new shift template is ", newShiftTemplate);
 
     // Save to the database
     try {
       await newShiftTemplate.save();
     } catch (e) {
-      console.log("ERRROR")
-      console.log(e.message);
       throw new Error("Failed to create shift template");
     }
     
     
-    console.log('New shift template created: ', newShiftTemplate);
+    //console.log('New shift template created: ', newShiftTemplate);
 
     res.status(201).json(newShiftTemplate);
   } 
   
   catch (error) {
     res.status(400).json({ message: 'Failed to create shift template', error });
-    console.log('There was an error creating shift template', error);
+    //console.log('There was an error creating shift template', error);
   }
 };
 
 exports.getShiftTemplate = async (req, res) => {
   try {
-    console.log("Fetching shift template...");
+    //console.log("Fetching shift template...");
 
     const { id } = req.params;
 
     const shiftTemplate = await ShiftTemplate.findById(id);
 
-    console.log('id: ', id);
-    console.log('shiftTemplate: ', shiftTemplate);
+    //console.log('id: ', id);
+    //console.log('shiftTemplate: ', shiftTemplate);
 
     if (!shiftTemplate) {
       return res.status(404).json({ message: 'Shift template not found'});
@@ -63,7 +61,7 @@ exports.getShiftTemplate = async (req, res) => {
 
   catch (error) {
     res.status(500).json({ message: 'Error fetching shift template', error: error });
-    console.error('There was an error fetching shift template', error );
+    //console.error('There was an error fetching shift template', error );
   }
 }
 

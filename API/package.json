@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "start": "nodemon ./server.js",
-        "test": "jest"
+        "test": "jest --verbose"
     },
     "dependencies": {
         "bcrypt": "^5.1.1",

@@ -7,8 +7,8 @@ const Position  = require('../models/Position');
 exports.createShift = async (req, res) => {
   
   try {
-    console.log('Creating shift...');
-    console.log('Type of Employee in controller:', typeof Employee);
+    //console.log('Creating shift...');
+    //console.log('Type of Employee in controller:', typeof Employee);
     
     const { date, empId, templateId } = req.body;
 
@@ -59,7 +59,6 @@ exports.createShift = async (req, res) => {
     const tEndHour = parseInt(template.endTime.split(":")[0]);
 
     for(i = tStartHour; i <= tEndHour; i++) {
-      console.log("i: ", i);
       if (!employee.availability[dayOfWeek][i]) {
         return res.status(400).json({ message: 'Employee is not available at this time' });
       }
@@ -80,7 +79,7 @@ exports.createShift = async (req, res) => {
   } 
   
   catch (error) {
-    console.log('Error creating shift:', error)
+    //console.log('Error creating shift:', error)
     res.status(400).json({ message: 'Failed to create shift', error: error.toString() });
   }
 };

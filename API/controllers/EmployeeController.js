@@ -166,7 +166,6 @@ exports.loginEmployee = async (req, res) => {
     return res.json({ message: 'Login successful', id: user._id, token: token });
   } catch (error) {
     res.status(500).json({ message: 'Error authenticating user', error });
-    console.error("There was an error logging in:", error);
   }
 };
 

@@ -3,6 +3,7 @@ const Shift = require('../models/Shift');
 const Employee = require('../models/Employee');
 const ShiftTemplate = require('../models/ShiftTemplate');
 const { createShift } = require('../controllers/ShiftController');
+const { getShift } = require('../controllers/ShiftController');
 
 jest.mock('../models/Shift');
 jest.mock('../models/Employee');
@@ -94,7 +95,64 @@ describe('createShift', () => {
         expect(Employee.findById).toHaveBeenCalledWith('emp123');
         expect(mockPopulate).toHaveBeenCalledWith('positions');
     });
-    
-    
-    
 });
+
+describe('getShift', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should successfully retrieve a shift', async () => {
+        const mockShift = {
+            _id: 'shift123',
+            // Add other shift properties here
+        };
+
+        Shift.findById = jest.fn().mockResolvedValue(mockShift);
+
+        const req = { params: { id: 'shift123' } };
+        const res = {
+            status: jest.fn(() => res),
+            json: jest.fn()
+        };
+
+        await getShift(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(mockShift);
+        expect(Shift.findById).toHaveBeenCalledWith('shift123');
+    });
+
+    it('should return 404 when shift is not found', async () => {
+        Shift.findById = jest.fn().mockResolvedValue(null);
+
+        const req = { params: { id: 'nonexistentId' } };
+        const res = {
+            status: jest.fn(() => res),
+            json: jest.fn()
+        };
+
+        await getShift(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ message: 'Shift not found' });
+    });
+
+    it('should return 400 for a failed shift retrieval', async () => {
+        const mockError = new Error('Failed to fetch shift');
+        Shift.findById = jest.fn().mockRejectedValue(mockError);
+
+        const req = { params: { id: 'badId' } };
+        const res = {
+            status: jest.fn(() => res),
+            json: jest.fn()
+        };
+
+        await getShift(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ message: 'Failed to get shift', error: mockError.toString() });
+    });
+
+});
+
