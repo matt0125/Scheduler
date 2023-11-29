@@ -299,6 +299,29 @@ h1 {
   
 }
 
+#reset-photo{
+  padding-top: 70px;
+}
 
+.checkbox_wrapper img{
+  right: 215px;
+  top: -110px;
+}
+
+.checkbox_wrapper2 img{
+  left: 666px;
+  top: 175px;
+}
+
+.pass-popup{
+  position: absolute;
+  background-color: #ff9999;
+  color: #333;
+  padding: 8px;
+  border: 1px solid #cc6666;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1;
+}
 
 
