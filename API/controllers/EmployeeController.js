@@ -818,72 +818,30 @@ exports.dayOff = async (req, res) => {
       return res.status(400).json({ message: 'Invalid date' });
     }
 
+
+
     const dayOfWeek = shiftDate.getDay();
+    
     // Find employee with the token
     const employee = await Employee.findById( empId );
-
+    
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
-
+    
     if (employee.managedBy == null) {
       return res.status(404).json({ message: 'Employee does not have a manager' });
     }
-
+    
     const name = "time off";
     managerId = employee.managedBy;
-    var dayOff;
-    dayOff = await Position.find({ name: {$eq: name} });
-
-    res.status(200).json({ message: 'Enjoy your break', dayOff: dayOff });
-    if (!dayOff) {
-
-      const newPosition = new Position({ _id: new mongoose.Types.ObjectId(), name, managerId });
-      await newPosition.save();
-      dayOff = newPosition;
-    }
     
+    const dayOff = await getOrGenerateDayOffPosition(managerId);
 
+    const template = await getOrGenerateDayOffTemplate(managerId, dayOfWeek, dayOff._id);
+    
+    const shift = await getOrGenerateDayOffShift(empId, template._id, shiftDate);
 
-    let template;
-
-    template = ShiftTemplate.find({
-      positionId: dayOff._id,
-      dayOfWeek: dayOfWeek
-    });
-
-    if (!template) {
-      for(i = 0; i < 7; i++) {
-        template = new ShiftTemplate({
-          _id: new mongoose.Types.ObjectId(),
-          dayOfWeek: i,
-          startTime: "00:00",
-          endTime: "23:59",
-          color: "7DDB90",
-          positionId: dayOff._id,
-          managerId: employee.managedBy
-        });
-        template.save();
-      }
-    }
-
-    template = ShiftTemplate.find({
-      positionId: dayOff._id,
-      dayOfWeek: dayOfWeek
-    });
-
-    if(!template) {
-      throw new Error("Could not create shift templates");
-    }
-
-    const shift = new Shift({
-      _id: new mongoose.Types.ObjectId(),
-      empId: employee._id,
-      templateId: template._id,
-      date
-    });
-
-    shift.save();
 
     res.status(200).json({ message: 'Enjoy your break', dayOff: shift });
   } catch (error) {
@@ -891,6 +849,79 @@ exports.dayOff = async (req, res) => {
     res.status(500).json({ message: 'Error daying off', error: error.toString() });
   }
 };
+
+async function getOrGenerateDayOffPosition(managerId) {
+  try {
+    
+    const name = "day off";
+
+    const exists = await Position.find({ name: {$eq: name}, managerId: {$exists: true, $eq: managerId} });
+
+    if (exists.length != 0) {
+      return exists[0];
+    }
+    else {
+
+      newPosition = await new Position({ _id: new mongoose.Types.ObjectId(), name: name, managerId: managerId}).save();
+
+      return newPosition;
+    }
+
+  } catch (error) {
+    console.error('Error occurred:', error);
+    throw error;
+  }
+}
+
+
+async function getOrGenerateDayOffTemplate(managerId, dayOfWeek, positionId) {
+  try {
+    
+    const exists = await ShiftTemplate.find({ managerId: {$exists: true, $eq: managerId}, positionId: positionId, dayOfWeek: dayOfWeek });
+
+    if (exists.length != 0) {
+      return exists[0];
+    }
+    else {
+
+      newTemplate = new ShiftTemplate({ _id: new mongoose.Types.ObjectId(), positionId: positionId, dayOfWeek: dayOfWeek,  managerId: managerId}).save();
+
+      return newTemplate;
+    }
+
+  } catch (error) {
+    console.error('Error occurred:', error);
+    throw error;
+  }
+}
+
+
+async function getOrGenerateDayOffShift(empId, templateId, date) {
+  try {
+    
+    const exists = await Shift.find({ empId: empId,
+      templateId: templateId,
+      date: date });
+
+    if (exists.length != 0) {
+      return exists[0];
+    }
+    else {
+      newShift = new Shift({
+        _id: new mongoose.Types.ObjectId(),
+        empId: empId,
+        templateId: templateId,
+        date: date
+      }).save();
+      
+      return newShift;
+    }
+
+  } catch (error) {
+    console.error('Error occurred:', error);
+    throw error;
+  }
+}
 
 exports.verifyEmail = async (req, res) => {
   try {
