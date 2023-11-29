@@ -685,14 +685,16 @@ async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 2
     const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime);
     const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime);
 
-    formattedTemplates.push({
-      id: `${template._id}`,
-      title: title,
-      start: startDateTime,
-      end: endDateTime,
-      color: positionColors[positionId] || '#000000', // Default color if not found
-      positionId: positionId
-    });
+    if(title != 'day off') {
+      formattedTemplates.push({
+        id: `${template._id}`,
+        title: title,
+        start: startDateTime,
+        end: endDateTime,
+        color: positionColors[positionId] || '#000000', // Default color if not found
+        positionId: positionId
+      });
+    }
   }
 
   return formattedTemplates;
