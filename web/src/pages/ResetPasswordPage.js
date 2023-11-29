@@ -118,7 +118,7 @@ const ResetPasswordPage = () => {
             name="password"
             onChange={(e) => setNewPassword(e.target.value)}
           />
-          <div className="checkbox_wrapper" onClick={togglePasswordVisibility}>
+          <div className="checkbox_wrapper1" onClick={togglePasswordVisibility}>
                   <img
                     src={showPassword ? eyeOpenSvg : eyeClosedSvg}
                     alt="Toggle Password Visibility"
