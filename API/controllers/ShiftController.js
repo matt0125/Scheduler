@@ -55,10 +55,11 @@ exports.createShift = async (req, res) => {
     }
 
     // Validate employee's availability
-    tStartHour = template.startTime.split(":")[0];
-    tEndHour = template.endTime.split(":")[0];
+    const tStartHour = parseInt(template.startTime.split(":")[0]);
+    const tEndHour = parseInt(template.endTime.split(":")[0]);
 
     for(i = tStartHour; i <= tEndHour; i++) {
+      console.log("i: ", i);
       if (!employee.availability[dayOfWeek][i]) {
         return res.status(400).json({ message: 'Employee is not available at this time' });
       }

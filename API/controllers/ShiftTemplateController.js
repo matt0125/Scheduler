@@ -20,10 +20,7 @@ exports.createShiftTemplate = async (req, res) => {
       managerId,
     });
 
-    console.log(newShiftTemplate);
-    
-    console.log(dayOfWeek);
-    console.log(positionId);
+    console.log("The new shift template is ", newShiftTemplate);
 
     // Save to the database
     try {
@@ -31,6 +28,7 @@ exports.createShiftTemplate = async (req, res) => {
     } catch (e) {
       console.log("ERRROR")
       console.log(e.message);
+      throw new Error("Failed to create shift template");
     }
     
     

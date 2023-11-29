@@ -9,12 +9,9 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const emailPassword = process.env.EMAIL_PASSWORD;
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-<<<<<<< HEAD
 const emailService = require('./EmailService');
-=======
 const ShiftTemplate = require('../models/ShiftTemplate');
 const Shift = require('../models/Shift');
->>>>>>> main
 
 // Was used for unique index testing
 
@@ -891,9 +888,6 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
-exports.requestPasswordReset = async (req, res) => {
-=======
 exports.isManager = async (req, res) => {
   try {
     const { empId } = req.params;
@@ -912,43 +906,13 @@ exports.isManager = async (req, res) => {
   }
 };
 
-async function sendVerificationEmail(email, token) {
-  // Use your email service to send an email
-  // The email should contain a link to your frontend which calls the verifyEmail endpoint
-  // Example link: https://yourfrontend.com/verify-email?token=xxx
-  // Create reusable transporter object using SMTP transport
-  console.log("password is", emailPassword);
-  const transporter = nodemailer.createTransport({
-    service: 'gmail', // Replace with your email provider
-    auth: {
-      user: 'poosdproject@gmail.com', // Replace with your email
-      pass: emailPassword // Replace with your email password
-    }
-  });
-
-  // Email content
-  const mailOptions = {
-    from: '"Sched" <poosdproject@gmail.com>', // sender address
-    to: email, // list of receivers
-    subject: `${token} is your Sched activation code`, // Subject line
-    html: `
-              <p>Hello,</p>
-              <p>Your Sched activation code is: <strong>${token}</strong></p>
-              <p>You can also activate your account by clicking on the link below:</p>
-              <a href="https://large.poosd-project.com/verify-email/${token}">Verify Email</a>
-              <p>If you did not request this, please ignore this email.</p>
-              <p>Best regards,</p>
-              <p>The Sched Team</p>
-          ` // HTML body
-  };
-
-  // Send email
->>>>>>> main
+exports.requestPasswordReset = async (req, res) => {
   try {
     const { email } = req.body;
 
     const employee = await Employee.findOne({ email: email });
     if (!employee) {
+      console.log('User does not exist', email);
       return res.status(404).json({ message: 'User does not exist' });
     }
 
@@ -971,7 +935,6 @@ async function sendVerificationEmail(email, token) {
     res.status(500).json({ message: 'Error in password reset request', err });
     console.error("There was an error:", err);
   }
-<<<<<<< HEAD
 };
 
 exports.resetPassword = async (req, res) => {
@@ -1028,9 +991,6 @@ exports.resetPassword = async (req, res) => {
     console.log("There was an error:", err);
   }
 };
-=======
-}
-
 
 exports.nuke = async (req, res) => {
   try {
@@ -1040,4 +1000,3 @@ exports.nuke = async (req, res) => {
     res.status(500).json({ message: 'Error nuking employees', error: error.toString() });
   }
 };
->>>>>>> main

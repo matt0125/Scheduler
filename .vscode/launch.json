@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jest All",
+            "program": "/Users/evannaderi/Documents/UCF_POOSD/ShiftSmart/Scheduler/API/node_modules/.bin/jest",
+            "args": ["--runInBand"],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        }
+    ]
+}
