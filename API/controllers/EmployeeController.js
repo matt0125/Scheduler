@@ -877,14 +877,14 @@ async function getOrGenerateDayOffPosition(managerId) {
 async function getOrGenerateDayOffTemplate(managerId, dayOfWeek, positionId) {
   try {
     
-    const exists = await ShiftTemplate.find({ managerId: {$exists: true, $eq: managerId}, positionId: positionId, dayOfWeek: dayOfWeek });
+    const exists = await ShiftTemplate.find({ managerId: {$exists: true, $eq: managerId}, positionId: positionId, dayOfWeek: dayOfWeek, startTime:'0:00', endTime: '23:59'});
 
     if (exists.length != 0) {
       return exists[0];
     }
     else {
 
-      newTemplate = new ShiftTemplate({ _id: new mongoose.Types.ObjectId(), positionId: positionId, dayOfWeek: dayOfWeek,  managerId: managerId}).save();
+      newTemplate = new ShiftTemplate({ _id: new mongoose.Types.ObjectId(), positionId: positionId, dayOfWeek: dayOfWeek,  managerId: managerId, startTime:'0:00', endTime: '23:59'}).save();
 
       return newTemplate;
     }
