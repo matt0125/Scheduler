@@ -74,7 +74,6 @@ export default class DemoApp extends React.Component {
 
   componentDidMount() {
     this.fetchPositions();
-    console.log("Startup: ",this.state.shiftTemplates);
   }
 
   renderPositionSelect() {
@@ -149,7 +148,6 @@ export default class DemoApp extends React.Component {
     const jwtToken = localStorage.getItem('token');
   
     try {
-      console.log(managerId);
       const response = await axios.get(`http://large.poosd-project.com/api/shift-templates/manager/${managerId}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
@@ -159,32 +157,26 @@ export default class DemoApp extends React.Component {
   
       // Check if the response is an array
       if (Array.isArray(response.data.shiftTemplates)) {
-        console.log("response data is ", response.data);
         const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data.shiftTemplates);
-        console.log("formatted shift template:", formattedShiftTemplates);
         this.setState({ shiftTemplates: formattedShiftTemplates });
       } else {
         // Handle case where response is not an array
         console.error('Response is not an array', response.data);
-        console.log()
         this.setState({ shiftTemplates: [] });
         this.setState({ selectMirrorEnabled: false });
       }
       // calendarApi = selectInfo.view.calendar;
-      // console.log("this is being added: ", shiftTemplates[0]);
       // calendarApi.addEvent(shiftTemplates[0])
     } catch (error) {
       
       console.log(error);
       this.setState({ shiftTemplates: [] }); // Reset to empty array on error
     }
-    console.log("After startup: ", this.state.shiftTemplates);
   }
   
 
   handlePositionSelect = (event) => {
     const selectedId = event.target.value;
-    console.log('Selected position ID:', selectedId); // Should log the selected position's ID
   
     if (selectedId) {
       this.setState({ selectedPositionId: selectedId });
@@ -324,7 +316,6 @@ export default class DemoApp extends React.Component {
 
   handleEventClick = (clickInfo) => {
     // Handle event click action
-    console.log('Event clicked:', clickInfo.event);
     // Set the clicked event details in the state and open the modal
     this.setState({ selectedEvent: clickInfo.event, showEventModal: true });
   };
@@ -449,7 +440,6 @@ export default class DemoApp extends React.Component {
           selectable={true}
           selectMirror={true}
           dayMaxEvents={true}
-          weekday= {'long'}
           weekends={this.state.weekendsVisible}
           events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
           select={this.triggerHandleDateSelect}
@@ -510,9 +500,6 @@ export default class DemoApp extends React.Component {
     if (this.state.selectedPositionId) {
       try {
         const jwtToken = localStorage.getItem('token');
-        console.log(convertToStandardTime(selectInfo.startStr));
-        console.log(convertToStandardTime(selectInfo.endStr));
-        console.log(getDayOfWeek(selectInfo.startStr));
         const response = await axios.post('http://large.poosd-project.com/api/shift-templates', {
           dayOfWeek: getDayOfWeek(selectInfo.startStr), // convert startStr to day of week
           startTime: convertToStandardTime(selectInfo.startStr),
@@ -560,7 +547,6 @@ export default class DemoApp extends React.Component {
   // Make this be able to add employees to shift temmplates 
   handleEventDelete = (clickInfo) => {
     if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
-      console.log(clickInfo.id);
       const eventId = clickInfo.id.split('-')[0]; // Extract original template ID
       const url = `http://large.poosd-project.com/api/shift-templates/${eventId}`;
 
@@ -588,7 +574,6 @@ export default class DemoApp extends React.Component {
   };
   
   handleEventEdit = (clickInfo) => {
-    console.log("The clikc info is: ", clickInfo);
     this.setState({ selectedShiftTemplateId: clickInfo.id.substring(0,24) });
     this.setState({ selectedShiftTemplate: clickInfo});
     this.openEditSTModal(clickInfo._def.extendedProps.positionId.substring(0, 24));
@@ -662,7 +647,6 @@ async function getPositionTitle(positionId) {
   // Retrieve the JWT token from local storage
   const jwtToken = localStorage.getItem('token');
 
-  console.log("Position ID is:", positionId);
 
   // Make a GET request using Axios
   return axios.get(url, {

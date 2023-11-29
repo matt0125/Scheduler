@@ -77,7 +77,6 @@ export default class DemoApp extends React.Component {
 
   componentDidMount() {
     this.populatePositionsAndColors();
-    // console.log("Startup: ",this.state.shifts);
   }
 
   renderPositionSelect() {
@@ -184,7 +183,6 @@ export default class DemoApp extends React.Component {
       if(response.status !== 404) {
         if (Array.isArray(response.data.shifts)) {
           const formattedShifts = await formatShiftsForCalendar(response.data.shifts);
-          // console.log("formatted shifts:", formattedShifts);
           this.setState({ shifts: formattedShifts });
         } else {
           // Handle case where response is not an array
@@ -217,9 +215,6 @@ export default class DemoApp extends React.Component {
   };
   
   handleEventClick = (clickInfo) => {
-    // Handle event click action
-    console.log('Event clicked:', clickInfo.event);
-    // Set the clicked event details in the state and open the modal
     this.setState({ selectedEvent: clickInfo.event, showEventModal: true });
   };
 
@@ -309,6 +304,7 @@ export default class DemoApp extends React.Component {
                     ? selectedEvent.title.replace(/\b\w/g, (char) => char.toUpperCase())
                     : 'No Position'}
                 </h2>
+                <p>{selectedEvent.extendedProps.name}</p>
                 <p>Date: {new Date(selectedEvent.start).toLocaleDateString()}</p>
                 <p>
                   Time: {new Date(selectedEvent.start).toLocaleTimeString([], { timeStyle: 'short' })} -{' '}
@@ -383,9 +379,6 @@ export default class DemoApp extends React.Component {
     if (this.state.selectedPositionId) {
       try {
         const jwtToken = localStorage.getItem('token');
-        console.log(convertToStandardTime(selectInfo.startStr));
-        console.log(convertToStandardTime(selectInfo.endStr));
-        console.log(getDayOfWeek(selectInfo.startStr));
         const response = await axios.post('http://large.poosd-project.com/api/shift-templates', {
           dayOfWeek: getDayOfWeek(selectInfo.startStr), // convert startStr to day of week
           startTime: convertToStandardTime(selectInfo.startStr),
@@ -520,7 +513,6 @@ async function getPositionTitle(positionId) {
   // Retrieve the JWT token from local storage
   const jwtToken = localStorage.getItem('token');
 
-  console.log("Position ID is:", positionId);
 
   // Make a GET request using Axios
   return axios.get(url, {

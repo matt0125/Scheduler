@@ -61,7 +61,6 @@ const EditProfile = () => {
   }, []);
 
   useEffect(() => {
-    console.log(formData); // This will log the formData when it's updated
   }, [formData]);
   
 
@@ -89,9 +88,6 @@ const EditProfile = () => {
           Authorization: `Bearer ${jwtToken}`,
         },
       });
-      console.log('Data sent:', dataToSend);
-      
-      console.log('Server response:', response.data);
     } catch (error) {
       console.error('Error updating profile', error);
       
@@ -108,7 +104,6 @@ const EditProfile = () => {
   };
 
   const handlePasswordChange = async () => {
-    console.log(`Current Password: ${currentPassword}, New Password: ${newPassword}, Confirm New Password: ${confirmNewPassword}`);
   
     if (newPassword.trim() !== confirmNewPassword.trim()) {
       
@@ -224,7 +219,7 @@ const EditProfile = () => {
         <Button
           fullWidth
           variant="contained"
-          onClick={handleSave}
+          onClick={async () => {await handleSave(); goBack();}}
           sx={{ mt: 3, mb: 1, backgroundColor: '#1976d2' }}
         >
           Save
