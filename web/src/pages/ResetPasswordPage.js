@@ -59,7 +59,7 @@ const ResetPasswordPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
+    setNewPassword(e.target.value)
     validateField(name, value);
   };
 
@@ -106,8 +106,10 @@ const ResetPasswordPage = () => {
           <img src={vector} id='reset-photo' className="business-photo" alt="business vector"/>
         </Col>
         <Col className="main-column">
-        {error && <div style={{ color: 'red' , alignItems: 'center'}}>{error}</div>}
+        <div className='reset-message'>
+        {error && <div style={{ color: 'red'}}>{error}</div>}
         {success && <div style={{ color: 'green' }}>{success}</div>}
+        </div>
         <div className="login-box">
         <h2 class="font-family-katibeh">Reset Password</h2>
         <div class="new-pass">
@@ -116,7 +118,7 @@ const ResetPasswordPage = () => {
             placeholder="New Password"
             value={newPassword}
             name="password"
-            onChange={(e) => setNewPassword(e.target.value)}
+            onChange={handleChange}
           />
           <div className="checkbox_wrapper1" onClick={togglePasswordVisibility}>
                   <img
@@ -145,6 +147,7 @@ const ResetPasswordPage = () => {
           </div>
         <button className="submit-button" onClick={handleResetPassword}>Reset Password</button>
         </div>
+       
         </Col>
       </Row>
     </Container>

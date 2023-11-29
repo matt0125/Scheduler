@@ -304,17 +304,19 @@ h1 {
 }
 
 .checkbox_wrapper1 img{
-  right: 215px;
-  top: -110px;
+  right: 270px;
+  top: 95px;
 }
 
 .checkbox_wrapper2 img{
   left: 666px;
-  top: 175px;
+  top: 192px;
 }
 
 .pass-popup{
   position: absolute;
+  left: 335px;
+  top: 120px;
   background-color: #ff9999;
   color: #333;
   padding: 8px;
@@ -324,4 +326,9 @@ h1 {
   z-index: 1;
 }
 
+.reset-message{
+  margin: auto;
+  margin-left: 41%;
+  width: 200px;
+}
 
