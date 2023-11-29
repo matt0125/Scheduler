@@ -50,10 +50,9 @@ body
     border-radius: 10px; /* Rounded corners */
     outline: none;
     padding: 20px;
-    width: 30%; /* Set to a percentage of the screen width */
+    width: 30vw; /* Set to a percentage of the screen width */
     max-width: 500px; /* Maximum width of the modal */
-    height: 10%; /* Set to a percentage of the screen width */
-    max-height: 500px; /* Maximum width of the modal */
+    max-height: 25vh; /* Maximum width of the modal */
     box-shadow: 0 5px 10px rgba(0,0,0,0.2); /* Shadow for pop effect */
 }
 .ReactModal__Content button{

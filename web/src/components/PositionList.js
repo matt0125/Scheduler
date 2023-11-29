@@ -7,19 +7,24 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
   const [newPositionName, setNewPositionName] = useState('');
 
   const listStyle = {
-    display: 'grid', // Using CSS Grid
-    gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', // Creating columns
-    gridGap: '10px', // Space between grid items
+    display: 'flex', // Using Flexbox for the list
+    flexDirection: 'row', // Stack items horizontally
+    gap: '10px', // Space between items
     maxHeight: '300px',
     overflowY: 'auto',
     border: '1px solid #ccc',
     padding: '10px',
+    flexWrap: 'wrap', // Allow items to wrap to the next line if they exceed the container width
   };
 
   const listItemStyle = {
     display: 'flex', // Using Flexbox for the list item layout
     alignItems: 'center',
     gap: '10px',
+    minWidth: '100px', // Set a minimum width for each list item
+    padding: '8px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
   };
 
   const handleAddClick = () => {
@@ -32,7 +37,7 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
   };
 
   return (
-    <div style={{ margin: '10px', width: '100%' }}>
+    <div style={{ margin: '10px', width: '99%' }}>
       <div style={listStyle}>
         {positions.map((position) => (
           <div key={position.id} style={listItemStyle}>
