@@ -137,13 +137,13 @@ const ResetPasswordPage = () => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-          </div>
           <div className="checkbox_wrapper2" onClick={togglePasswordVisibility2}>
                   <img
                     src={showPassword2 ? eyeOpenSvg : eyeClosedSvg}
                     alt="Toggle Password Visibility"
                     className="eye-icon"
                   />
+          </div>
           </div>
         <button className="submit-button" onClick={handleResetPassword}>Reset Password</button>
         </div>
