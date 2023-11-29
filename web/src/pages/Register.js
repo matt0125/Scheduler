@@ -126,7 +126,7 @@ const Register = () => {
       setShowPopup(true);
     } catch (err) {
       console.log('Error during registration:', err);
-      if (err.response.data.message === "Username already exists") {
+      if (err.message === "Username already exists") {
         setUserFailPopup(true);
       }
       else{
