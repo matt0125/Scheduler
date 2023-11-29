@@ -33,31 +33,29 @@ const Login = () => {
     setOpenModal(false);
   };
 
-  const submitPasswordReset = async () => {
-    const email = prompt("Please enter your email for password reset:");
-    if (!email) {
-      
-      return;
-    }
-  
+  const submitPasswordReset = async (event) => {
+    event.preventDefault(); // Prevent the form from causing a page refresh
     // Call the API to send password reset email
     try {
-      const response = await fetch("http://localhost:3000/api/request-password-reset", {
+      const response = await fetch("http://large.poosd-project.com/api/request-password-reset", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email }),
+        body: JSON.stringify({ email: resetEmail }),
       });
   
       if (response.status === 200) {
-        handleModalClose(); // Close the modal on submit
+        // Handle success
+        console.log("Reset email sent successfully");
       } else {
-        
+        // Handle error
+        console.error("Failed to send reset email");
       }
     } catch (error) {
       console.error("Error sending password reset email: ", error);
     }
+    handleModalClose(); // Close the modal after submit
   };
   
 
