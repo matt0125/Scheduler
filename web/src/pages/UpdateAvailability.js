@@ -142,7 +142,7 @@ const UpdateAvailability = () => {
   return (
     <Container className="update-Avail-Page">
       <Row className="justify-content-center align-items-center full-height"> 
-        <Col xs={12} md={2}>
+        <Col xs={12} md={2} className="d-flex align-items-center">
           <div className="logo-container">
             <h1>Sched</h1>
             <img src={logo} alt="sched logo" className="logo"></img>
