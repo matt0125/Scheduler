@@ -954,7 +954,7 @@ exports.requestPasswordReset = async (req, res) => {
     await employee.save();
 
     // Send email with reset link (pseudo-code)
-    const resetLink = `http://localhost:3001/reset-password/${resetToken}`;
+    const resetLink = `http://large.poosd-project.com/reset-password/${resetToken}`;
     emailService.sendPasswordResetEmail(email, resetLink, resetToken);
 
     res.status(200).json({ message: 'Password reset email sent' });

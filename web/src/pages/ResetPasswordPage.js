@@ -36,7 +36,7 @@ const ResetPasswordPage = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/api/reset-password', {
+      const response = await axios.post('http://large.poosd-project.com/api/reset-password', {
         resetToken,
         newPassword,
       });
@@ -127,7 +127,7 @@ const ResetPasswordPage = () => {
                     className="eye-icon"
                   />
           </div>
-          {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
+          {formErrors.password && <div className="pass-popup1">{formErrors.password}</div>}
           </div>
 
           <div class="confirm-pass">

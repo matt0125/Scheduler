@@ -63,7 +63,7 @@ class _PasswordCodePageState extends State<PasswordCodePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: 45),
+                      SizedBox(height: 14),
                       SchedLogoImage(),
                       SizedBox(height: 5),
                       Text(
