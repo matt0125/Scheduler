@@ -26,11 +26,11 @@ const UpdateAvailability = () => {
     position: '',
     days: {
       Mon: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Tue: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Wed: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Thu: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Fri: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
-      Sat: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
+      Tues: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
+      Wed:  { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
+      Thur: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
+      Fri:  { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
+      Sat:  { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
       Sun: { available: false, startTime: '8:00 am', endTime: '9:00 pm' },
     },
   });
@@ -73,30 +73,42 @@ const UpdateAvailability = () => {
     }
 
     Object.keys(availability.days).forEach((day) => {
-      payload.availability.push({
-        dayOfWeek: day,
-        startTime: availability.days[day].startTime,
-        endTime: availability.days[day].endTime,
-      });
+      if (availability.days[day].available){
+        payload.availability.push({
+          dayOfWeek: getDayOfWeekNumber(day),
+          oldStartTime: '',
+          oldEndTime: '',
+          newStartTime: availability.days[day].startTime,
+          newEndTime: availability.days[day].endTime,
+        });
+      }
     });
 
     try {
       // Replace 'YOUR_API_ENDPOINT' with the actual endpoint of your backend
-      const response = await axios.put('http://large.poosd-project.com/api/employee/6531511e8ca36d13f6ff3917/availability/654a52fe6fb243c628df5e6e', payload,
+      const response = await axios.put('http://large.poosd-project.com/api/employee/65654c3fdbea74b48cd63dfb/availabilityByString', payload,
       {
         headers: {
-          contentType: 'application/json',
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${jwtToken}`,
         },
       });
 
-      // Handle the response as needed
-      console.log(response.data);
-      alert('Availability updated successfully!');
+      console.log('Response status: ', response.status);
+      console.log('Response data: ', response.data);
+
+      if(response.status === 200){
+        alert('Availability updated successfully!');
+      }
+      else {
+        console.warn('Unexpected status code: ', response.status);
+        alert('Failed to update availability.');
+      }
     } catch (error) {
       if (error.isAxiosError) {
         console.error('Axios Error:', error.message);
         console.error('Axios Response:', error.response);
+        console.error('Response header: ', error.response.headers);
       } else {
         // Other types of errors
         console.error('Error updating availability:', error);
@@ -106,9 +118,30 @@ const UpdateAvailability = () => {
     }
   };
 
+  const getDayOfWeekNumber = (day) => {
+    switch(day) {
+      case 'Mon':
+        return 1;
+      case 'Tue':
+        return 2;
+      case 'Wed':
+        return 3;
+      case 'Thu':
+        return 4;
+      case 'Fri':
+        return 5;
+      case 'Sat':
+        return 6;
+      case 'Sun':
+        return 7;
+      default:
+        return 0;
+    }
+  }
+
   return (
     <Container className="update-Avail-Page">
-      <Row>
+      <Row className="justify-content-center align-items-center full-height"> 
         <Col xs={12} md={2}>
           <div className="logo-container">
             <h1>Sched</h1>
@@ -131,6 +164,10 @@ const UpdateAvailability = () => {
                         onChange={() => handleCheckboxChange(day)}
                       />
                       {day}:
+                      {day === 'Wed' && '\u00a0'}
+                      {day === 'Fri' && '\u00a0\u00a0\u00a0'}
+                      {day === 'Sat' && '\u00a0\u00a0 '}
+                      {day === 'Sun' && '\u00a0'}
                     </label>
                   </Col>
                   {/* Separate columns for start and end select dropdowns */}

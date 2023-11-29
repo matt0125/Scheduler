@@ -77,8 +77,8 @@
     margin-bottom: 10px;
 }
 
-.update-Avail-Page .availabilities .start, 
-.update-Avail-Page .availabilities .end {
+.update-Avail-Page .availabilities .start-column, 
+.update-Avail-Page .availabilities .end-column {
     display: flex;
     flex-direction: column;
     margin-left: 10px;
