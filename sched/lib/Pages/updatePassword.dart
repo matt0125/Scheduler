@@ -136,7 +136,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
 
                           if (response.empId == null) {
                             Popup(
-                              title: 'Error',
+                              title: 'Success!',
                               message: response.message,
                             ).show(context);
                             ScaffoldMessenger.of(context).showSnackBar(

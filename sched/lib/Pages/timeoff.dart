@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../Services/APIService.dart';
+
 class TimeOffScreen extends StatefulWidget {
   @override
   _TimeOffScreenState createState() => _TimeOffScreenState();
@@ -7,7 +9,7 @@ class TimeOffScreen extends StatefulWidget {
 
 class _TimeOffScreenState extends State<TimeOffScreen> {
   DateTimeRange? dateRange;
-
+  APIService apiService = APIService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,14 +195,41 @@ class _TimeOffScreenState extends State<TimeOffScreen> {
     }
   }
 
-  void saveSelectedDateRange() {
-    // You can save the selected date range or perform any necessary actions here.
-    // Modify this function according to your specific requirements.
-    // The selected date range is available in the 'dateRange' variable.
-    print('Selected Date Range: ${dateRange!.start} - ${dateRange!.end}');
-    //convert to date objects
-    //dont forget to await
+  void saveSelectedDateRange() async {
+    if (dateRange != null) {
+      final start = dateRange!.start;
+      final end = dateRange!.end;
+
+      // Calculate the total days in the range
+      final totalDays = end.difference(start).inDays + 1;
+
+      // Create a list of individual date objects
+      List<DateTime> dateList = [];
+      for (int i = 0; i < totalDays; i++) {
+        DateTime currentDate = start.add(Duration(days: i));
+        dateList.add(currentDate);
+      }
+
+      // Iterate through the date list and perform actions for each date
+      await Future.forEach(dateList, (DateTime date) async {
+        // Call your API service to assign the person to a "timeoff" position for each date
+        final response = await apiService.dayOff(date.toLocal().toString());
+
+        // Check the response and handle accordingly
+        if (response.success! == true) {
+          print('Time off requested successfully for date: $date');
+        } else {
+          print('Failed to request time off for date: $date. Error: ${response.message}');
+        }
+      });
+
+      // Show a message or perform any other actions after processing all dates
+      print('Time off requests submitted successfully!');
+    } else {
+      print('No date range selected.');
+    }
   }
+
 
   void showConfirmationDialog(BuildContext context) {
     showDialog(

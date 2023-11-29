@@ -61,7 +61,7 @@ class ForgotPasswordPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: 45),
+                      SizedBox(height: 13),
                       SchedLogoImage(),
                       SizedBox(height: 100),
                       Text(
