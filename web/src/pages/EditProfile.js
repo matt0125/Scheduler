@@ -5,6 +5,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import EmployeeRegistration from './EmployeeRegistration';
+import TopBarComponent from '../components/topBar'
 
 
 const EditProfile = () => {
@@ -164,7 +165,10 @@ const EditProfile = () => {
   };
 
   return (
+    <Container maxWidth="xxl">
+      <TopBarComponent/>
     <Container maxWidth="sm">
+
       <Typography variant="h4" gutterBottom align="center">
         Edit Profile
       </Typography>
@@ -294,6 +298,7 @@ const EditProfile = () => {
           <Button onClick={handleCloseRegistrationModal}>Close</Button>
         </DialogActions>
       </Dialog>
+    </Container>
     </Container>
   );
 };

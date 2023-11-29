@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { List, ListItem, Checkbox, ListItemText, IconButton, Button, TextField } from '@mui/material';
+import { List, ListItem, ListItemText, IconButton, Button, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) => {
@@ -7,10 +7,19 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
   const [newPositionName, setNewPositionName] = useState('');
 
   const listStyle = {
+    display: 'grid', // Using CSS Grid
+    gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', // Creating columns
+    gridGap: '10px', // Space between grid items
     maxHeight: '300px',
-    overflowY: 'scroll',
+    overflowY: 'auto',
     border: '1px solid #ccc',
-    padding: 0,
+    padding: '10px',
+  };
+
+  const listItemStyle = {
+    display: 'flex', // Using Flexbox for the list item layout
+    alignItems: 'center',
+    gap: '10px',
   };
 
   const handleAddClick = () => {
@@ -23,27 +32,20 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
   };
 
   return (
-    <div style={{ margin: '10px', width: '300px' }}>
-      <List style={listStyle}>
+    <div style={{ margin: '10px', width: '100%' }}>
+      <div style={listStyle}>
         {positions.map((position) => (
-          <ListItem key={position.id} dense button>
+          <div key={position.id} style={listItemStyle}>
             <div
               style={{
                 width: '20px',
                 height: '20px',
                 backgroundColor: position.color,
                 borderRadius: '50%',
-                marginRight: '10px'
               }}
             />
             <ListItemText 
-              primary={position.name} 
-              style={{
-                maxWidth: 'calc(100% - 60px)', // Adjust the value as needed
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}
+              primary={position.name}
             />
             <IconButton
               edge="end"
@@ -52,9 +54,9 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
             >
               <DeleteIcon />
             </IconButton>
-          </ListItem>
+          </div>
         ))}
-      </List>
+      </div>
       {showInput ? (
         <div>
           <TextField

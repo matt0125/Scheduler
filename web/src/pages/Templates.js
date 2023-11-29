@@ -605,7 +605,7 @@ function getNextColor() {
 }
 
 // Shift templatese now can be shown for 12 week, We can change this number if we want
-async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 12) {
+async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 2) {
   const formattedTemplates = [];
   const positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
 
