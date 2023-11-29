@@ -5,7 +5,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import EmployeeRegistration from './EmployeeRegistration';
-import TopBarComponent from '../components/topBar'
+import TopBarComponent from '../components/navBar'
 
 
 const EditProfile = () => {
@@ -90,11 +90,11 @@ const EditProfile = () => {
         },
       });
       console.log('Data sent:', dataToSend);
-      alert('Profile updated successfully!');
+      
       console.log('Server response:', response.data);
     } catch (error) {
       console.error('Error updating profile', error);
-      alert('Error updating profile');
+      
     }
   };
   
@@ -111,14 +111,14 @@ const EditProfile = () => {
     console.log(`Current Password: ${currentPassword}, New Password: ${newPassword}, Confirm New Password: ${confirmNewPassword}`);
   
     if (newPassword.trim() !== confirmNewPassword.trim()) {
-      alert("New passwords don't match.");
+      
       return;
     }
   
     let jwtToken = localStorage.getItem('token');
     let employeeId = localStorage.getItem('id');
     if (!employeeId) {
-      alert('No employee ID found in local storage.');
+     
       return;
     }
   
@@ -135,11 +135,11 @@ const EditProfile = () => {
         },
       });
   
-      alert('Password updated successfully!');
+      
       handleCloseModal();
     } catch (error) {
       console.error('Error updating password:', error);
-      alert(`Error updating password: ${error.response?.data?.message || error.message}`);
+      
     }
   };
   

@@ -415,6 +415,35 @@ exports.deleteShiftsByEmployee = async (req, res) => {
   }
 };
 
+exports.deleteShiftsByRangeAndManager = async (req, res) => {
+  const { start, end, managerId } = req.body;
+  try {
+    // Convert start and end dates from MM-DD-YYYY string format to Date objects
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+
+    
+    const emps = await Employee.find({
+      managedBy: managerId
+    }).select('_id');
+    
+    for(const emp of emps) {
+      await Shift.deleteMany({
+        $and: [
+          { date: { $gte: startDate, $lte: endDate } },
+          { empId: { $exists: true, $eq: emp._id } } // ManagerId exists and matches the provided managerId
+        ]
+      });
+    }
+
+
+    res.status(200).json({ message: "Shifts deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting shifts", error: error.toString() });
+  }
+};
+
 exports.nuke = async (req, res) => {
   try {
     await Shift.deleteMany({});

@@ -23,7 +23,7 @@ import Box from '@mui/material/Box';
 
 import { fetchManager } from '../services/api'; 
 import { fetchPositions } from '../services/api'; 
-import TopBarComponent from '../components/topBar'
+import TopBarComponent from '../components/navBar'
 
 
 // Define your color choices here based on the image provided
@@ -198,7 +198,7 @@ export default class DemoApp extends React.Component {
       }
       
     } catch (error) {
-      alert('Failed to fetch shifts: ' + error.message);
+      
       console.log(error);
       this.setState({ shifts: [] }); // Reset to empty array on error
     }
@@ -411,11 +411,11 @@ export default class DemoApp extends React.Component {
         // calendarApi.addEvent(event);
         this.fetchShifts();
       } catch (error) {
-        alert(error);
+        
       }
 
     } else {
-      alert('You must select a position first.');
+      
     }
   }
 

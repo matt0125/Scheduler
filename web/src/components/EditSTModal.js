@@ -1,117 +1,139 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/Dashboard.css';
-import ScrollableList from './ScrollableList';
-import { List, ListItem, ListItemText, Button, ListSubheader } from '@mui/material';
-import axios from 'axios';
+import Modal from 'react-modal';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import MenuItem from '@mui/material/MenuItem'; // Import MenuItem from @mui/material
 
-function EditSTModal({ onAction, positionId, isOpen, date, empId, templateId, template }) {
-    const [selectedItemIds, setSelectedItemIds] = useState([]);
-    const [employees, setEmployees] = useState([]);
+import { getShiftTemplate, updateShiftTemplate, fetchPositions, getPositionName } from '../services/api';
 
-    useEffect(() => {
-        if (isOpen) {
-            fetchEmployeesByPosition();
-        }
-    }, [isOpen, positionId]);
+export default function EditSTModal(props) {
+  const { isOpen, templateId, empId, template, closeEditSTModal } = props;
+  const [shiftTemplate, setShiftTemplate] = useState(null);
+  const [editedShiftTemplate, setEditedShiftTemplate] = useState({
+    positionId: '',
+    startTime: '',
+    endTime: ''
+  });
+  const [positions, setPositions] = useState([]);
+  const [selectedPositionName, setSelectedPositionName] = useState('');
 
-    const fetchEmployeesByPosition = async () => {
-        try {
-            console.log("Position ID is: " + positionId);
-            console.log("Employee ID is: " + empId);
-            console.log("Template ID is: " + templateId);
-            console.log("Date is: " + convertDate(template._instance.range.start));
-            // Retrieve the authorization token from local storage
-            const token = localStorage.getItem('token');
-    
-            // Make the request using Axios
-            const response = await axios.get(`http://large.poosd-project.com/api/employee/position/${positionId}`, {
-                headers: {
-                    ContentType: 'application/json', // Tell the server we are sending this over as JSON
-                    Authorization: `Bearer ${token}` // Add the token to the Authorization header
-                }
-            });
-    
-            // Assuming the response data structure has an 'employees' field
-            setEmployees(response.data.employees);
-            console.log(response.data.employees);
-        } catch (error) {
-            console.error('Error fetching employees:', error);
-            // Handle error state as needed
-        }
-    };
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // Fetch positions
+        const fetchedPositions = await fetchPositions(); // Assuming fetchPositions returns positions as an array of objects { _id, name }
+        setPositions(fetchedPositions);
 
-    const handleAssignShiftButtonClick = () => {
-        if(selectedItemIds.length > 0) {
-          assignShifts(selectedItemIds);
-        } else {
-            alert("None selected!");
-        }
-    };
-
-    const assignShifts = async (selectedItemIds) => {
-        // TODO: implement this
-        console.log("assigning shift");
-        console.log(selectedItemIds);
-        
-
-        const token = localStorage.getItem('token');
-
-        // Setting up the Axios configuration for the POST request
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        };
-
-        for (let id of selectedItemIds) {
-            try {
-                const postData = {
-                    date: convertDate(template._instance.range.start),
-                    empId: id,
-                    templateId: templateId
-                };
-    
-                const response = await axios.post('http://large.poosd-project.com/api/shifts', postData, config);
-                console.log(`Shift assigned to employee ${id}:`, response.data);
-            } catch (error) {
-                console.error(`Error assigning shift to employee ${id}:`, error);
-            }
-        }
-
+        // Fetch shift template
+        const fetchedShiftTemplate = await getShiftTemplate(templateId);
+        setShiftTemplate(fetchedShiftTemplate);
+        setSelectedPositionName(await getPositionName(fetchedShiftTemplate.positionId));
+        setEditedShiftTemplate({
+          positionId: fetchedShiftTemplate.positionId,
+          startTime: fetchedShiftTemplate.startTime,
+          endTime: fetchedShiftTemplate.endTime
+        });
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     }
 
-    return (
-        <div className='editSTModal'>
-            <h3>Assign Shift Template</h3>
-            <ScrollableList items={employees} selectedItemIds={selectedItemIds} setSelectedItemIds={setSelectedItemIds} />
-            <Button
-                variant="contained" 
-                color="primary" 
-                onClick={handleAssignShiftButtonClick} 
-                disabled={selectedItemIds.length === 0}
-            >
-                Assign Employee to Shift
-            </Button>
-        </div>
-    );
+    if (isOpen && templateId) {
+      fetchData();
+    }
+  }, [isOpen, templateId]);
+
+  
+  const handleEdit = async () => {
+    try {
+      // Find position ID based on selectedPositionName
+      const selectedPosition = positions.find((pos) => pos.name === selectedPositionName);
+      if (!selectedPosition) {
+        console.error('Position not found');
+        return;
+      }
+
+      // Update the shift template with the selected position ID
+      await updateShiftTemplate(
+        shiftTemplate._id,
+        selectedPosition._id,
+        editedShiftTemplate.startTime,
+        editedShiftTemplate.endTime,
+        shiftTemplate.dayOfWeek
+      );
+      // Optionally, close the modal after successful update
+      closeEditSTModal();
+    } catch (error) {
+      console.error('Error updating shift template:', error);
+      // Handle error state or display error message to the user
+    }
+  };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setEditedShiftTemplate({
+      ...editedShiftTemplate,
+      [name]: value
+    });
+  };
+
+  const handlePositionChange = (event) => {
+    setSelectedPositionName(event.target.value);
+  };
+
+  return (
+    <Modal isOpen={isOpen} onRequestClose={closeEditSTModal}>
+      <h2>Edit Shift Template</h2>
+      {shiftTemplate && (
+        <>
+          <TextField
+            label="Position"
+            select
+            value={selectedPositionName}
+            onChange={handlePositionChange}
+            fullWidth
+            margin="normal"
+          >
+            {positions.map((position) => (
+              <MenuItem key={position._id} value={position.name}>
+                {position.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <Stack direction="row" spacing={2}>
+            <TextField
+              label="Start Time"
+              name="startTime"
+              type="time"
+              value={editedShiftTemplate.startTime}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              inputProps={{
+                step: 300, // 5 minutes
+              }}
+            />
+            <TextField
+              label="End Time"
+              name="endTime"
+              type="time"
+              value={editedShiftTemplate.endTime}
+              onChange={handleInputChange}
+              fullWidth
+              margin="normal"
+              inputProps={{
+                step: 300, // 5 minutes
+              }}
+            />
+          </Stack>
+          <Button variant="contained" onClick={handleEdit}>
+            Save Changes
+          </Button>
+        </>
+      )}
+    </Modal>
+  );
 }
-
-function convertDate(dateString) {
-    // Parse the input date string
-    const date = new Date(dateString);
-
-    // Extract the month, day, and year
-    let month = (date.getMonth() + 1).toString();
-    let day = date.getDate().toString();
-    let year = date.getFullYear().toString();
-
-    // Ensure month and day are in MM and DD format
-    month = month.length === 1 ? '0' + month : month;
-    day = day.length === 1 ? '0' + day : day;
-
-    // Return the formatted date string
-    return `${month}-${day}-${year}`;
-}
-
-export default EditSTModal;

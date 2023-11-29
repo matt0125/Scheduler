@@ -112,6 +112,7 @@ app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
 
 app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftsByEmployee);
+app.post('/api/manager/shifts/delete', shiftController.deleteShiftsByRangeAndManager);
 
 app.post('/api/employee/:empId/timeoff', employeeController.dayOff);
 

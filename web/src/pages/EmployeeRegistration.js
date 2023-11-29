@@ -80,7 +80,7 @@ const EmployeeRegistration = () => {
                   {...params}
                   label="Who's your manager (Enter Username)?"
                   variant="outlined"
-                  style={{ minWidth: '250px' }}
+                  style={{ minWidth: '260px' }}
                   InputProps={{
                     ...params.InputProps,
                     style: {

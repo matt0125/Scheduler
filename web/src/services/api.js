@@ -82,6 +82,43 @@ export const fetchPositions = async () => {
   }
 };
 
+export const getPositionName = async (id) => {
+  try {
+    const response = await apiService.get(`/position/${id}`);
+    return response.data.name;
 
+  } catch (error) {
+    throw new Error(error.response?.data || error.message);
+  }
+};
+
+
+export const getShiftTemplate = async ( id ) => {
+  try {
+    const response = await apiService.get(`/shift-templates/${id}`);
+    return response.data;
+
+  } catch (error) {
+    throw new Error(error.response?.data || error.message);
+  }
+};
+
+export const updateShiftTemplate = async ( templateId, positionId, startTime, endTime, dayOfWeek ) => {
+  try {
+    const data = {
+      dayOfWeek: dayOfWeek,
+      startTime: startTime,
+      endTime: endTime,
+      positionId: positionId,
+      managerId: localStorage.getItem('id')
+    }
+
+    const response = await apiService.put(`/shift-templates/${templateId}`, data);
+    return response.data;
+
+  } catch (error) {
+    throw new Error(error.response?.data || error.message);
+  }
+};
 
 export default apiService;

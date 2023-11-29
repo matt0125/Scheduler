@@ -22,7 +22,7 @@ import EmployeeList from '../components/EmployeeList'; // Adjust the path as nee
 import { Button } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import TopBarComponent from '../components/topBar'
+import TopBarComponent from '../components/navBar'
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -174,7 +174,7 @@ export default class DemoApp extends React.Component {
       // console.log("this is being added: ", shiftTemplates[0]);
       // calendarApi.addEvent(shiftTemplates[0])
     } catch (error) {
-      alert('Failed to fetch shift templates: ' + error.message);
+      
       console.log(error);
       this.setState({ shiftTemplates: [] }); // Reset to empty array on error
     }
@@ -212,9 +212,9 @@ export default class DemoApp extends React.Component {
           Authorization: `Bearer ${jwtToken}`,
         },
       });
-      alert('Employee GOT!');
+      
     } catch (error) {
-      alert(error);
+      
     }
   };
   
@@ -273,7 +273,7 @@ export default class DemoApp extends React.Component {
       }
     } catch (error) {
       console.error('Failed to add position:', error);
-      alert('Failed to add position: ' + error.message);
+      
     }
   };
   
@@ -306,7 +306,7 @@ export default class DemoApp extends React.Component {
       });
   
     } catch (error) {
-      alert('Failed to delete position: ' + error.message);
+    
       console.error(error);
     }
   };
@@ -354,18 +354,14 @@ export default class DemoApp extends React.Component {
         {this.renderPositionModal()}
         <div className='demo-app-main'>
         <TopBarComponent/>
-        <Modal 
-          isOpen={this.state.showEditSTModal} 
-          onRequestClose={this.closeEditSTModal}
-        > 
           <EditSTModal 
             isOpen={this.state.showEditSTModal} 
             positionId={this.state.shiftTemplatePositionId}
             templateId={this.state.selectedShiftTemplateId}
             empId={localStorage.getItem('id')}
             template={this.state.selectedShiftTemplate}
+            closeEditSTModal = {this.closeEditSTModal}
           />
-        </Modal>
         <Modal
           isOpen={showEventModal}
           onRequestClose={this.closeEventModal}
@@ -542,7 +538,7 @@ export default class DemoApp extends React.Component {
         // calendarApi.addEvent(event);
         this.fetchShiftTemplates();
       } catch (error) {
-        alert(error);
+        
       }
       
       
@@ -551,7 +547,7 @@ export default class DemoApp extends React.Component {
       // const templateId = 'TEMPLATE_ID';
       // const date = formatDate(event.start, { year: 'numeric', month: '2-digit', day: '2-digit' });
     } else {
-      alert('You must select a position first.');
+     
     }
   }
 
@@ -582,11 +578,11 @@ export default class DemoApp extends React.Component {
         const updatedShiftTemplates = this.state.shiftTemplates.filter(event => !event.id.startsWith(`${eventId}-`));
         this.setState({ shiftTemplates: updatedShiftTemplates });
     
-        alert("Event deleted successfully.");
+        
       })
       .catch(error => {
         console.error('Error:', error);
-        alert("Failed to delete the event: " + error);
+        
       });
     }
   };

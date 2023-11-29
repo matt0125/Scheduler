@@ -83,10 +83,10 @@ const UpdateAvailability = () => {
       const response = await axios.post('YOUR_API_ENDPOINT', payload);
       // Handle the response as needed
       console.log(response.data);
-      alert('Availability updated successfully!');
+      
     } catch (error) {
       console.error('There was an error updating the availability:', error);
-      alert('Failed to update availability.');
+      
     }
   };
 

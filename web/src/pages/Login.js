@@ -26,7 +26,7 @@ const Login = () => {
   const handlePasswordReset = async () => {
     const email = prompt("Please enter your email for password reset:");
     if (!email) {
-      alert("Please enter your email");
+      
       return;
     }
   
@@ -41,9 +41,9 @@ const Login = () => {
       });
   
       if (response.status === 200) {
-        alert("Password reset email sent. Please check your inbox.");
+       
       } else {
-        alert("Failed to send password reset email.");
+        
       }
     } catch (error) {
       console.error("Error sending password reset email: ", error);
