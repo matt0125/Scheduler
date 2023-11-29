@@ -65,7 +65,7 @@ const EmployeeRegistration = () => {
     <Container maxWidth="sm">
       <Box sx={{ marginTop: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography variant="h5" component="h1" gutterBottom>
-          Employee Registration
+          Employee Update
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <FormControl fullWidth margin="normal">

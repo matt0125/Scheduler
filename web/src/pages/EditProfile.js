@@ -287,7 +287,6 @@ const EditProfile = () => {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Employee Registration</DialogTitle>
         <DialogContent>
           <EmployeeRegistration />
         </DialogContent>
