@@ -5,6 +5,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import EmployeeRegistration from './EmployeeRegistration';
+import TopBarComponent from '../components/navBar'
+
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -59,7 +61,6 @@ const EditProfile = () => {
   }, []);
 
   useEffect(() => {
-    console.log(formData); // This will log the formData when it's updated
   }, [formData]);
   
 
@@ -87,12 +88,9 @@ const EditProfile = () => {
           Authorization: `Bearer ${jwtToken}`,
         },
       });
-      console.log('Data sent:', dataToSend);
-      alert('Profile updated successfully!');
-      console.log('Server response:', response.data);
     } catch (error) {
       console.error('Error updating profile', error);
-      alert('Error updating profile');
+      
     }
   };
   
@@ -106,17 +104,16 @@ const EditProfile = () => {
   };
 
   const handlePasswordChange = async () => {
-    console.log(`Current Password: ${currentPassword}, New Password: ${newPassword}, Confirm New Password: ${confirmNewPassword}`);
   
     if (newPassword.trim() !== confirmNewPassword.trim()) {
-      alert("New passwords don't match.");
+      
       return;
     }
   
     let jwtToken = localStorage.getItem('token');
     let employeeId = localStorage.getItem('id');
     if (!employeeId) {
-      alert('No employee ID found in local storage.');
+     
       return;
     }
   
@@ -133,11 +130,11 @@ const EditProfile = () => {
         },
       });
   
-      alert('Password updated successfully!');
+      
       handleCloseModal();
     } catch (error) {
       console.error('Error updating password:', error);
-      alert(`Error updating password: ${error.response?.data?.message || error.message}`);
+      
     }
   };
   
@@ -163,7 +160,10 @@ const EditProfile = () => {
   };
 
   return (
+    <Container maxWidth="xxl">
+      <TopBarComponent/>
     <Container maxWidth="sm">
+
       <Typography variant="h4" gutterBottom align="center">
         Edit Profile
       </Typography>
@@ -172,6 +172,7 @@ const EditProfile = () => {
           fullWidth
           label="First Name"
           name="firstName"
+          color="primary"
           value={formData.firstName}
           onChange={handleChange}
           margin="normal"
@@ -181,6 +182,7 @@ const EditProfile = () => {
           fullWidth
           label="Last Name"
           name="lastName"
+          color="primary"
           value={formData.lastName}
           onChange={handleChange}
           margin="normal"
@@ -190,6 +192,7 @@ const EditProfile = () => {
           fullWidth
           label="Email"
           name="email"
+          color="primary"
           value={formData.email}
           onChange={handleChange}
           margin="normal"
@@ -199,6 +202,7 @@ const EditProfile = () => {
           fullWidth
           label="Phone Number"
           name="phone"
+          color="primary"
           value={formData.phone || ''}
           onChange={handleChange}
           margin="normal"
@@ -215,18 +219,10 @@ const EditProfile = () => {
         <Button
           fullWidth
           variant="contained"
-          onClick={handleSave}
-          sx={{ mt: 3, mb: 3, backgroundColor: '#1976d2' }}
+          onClick={async () => {await handleSave(); goBack();}}
+          sx={{ mt: 3, mb: 1, backgroundColor: '#1976d2' }}
         >
           Save
-        </Button>
-        <Button
-          fullWidth
-          variant="outlined"
-          onClick={handleOpenModal}
-          sx={{ mb: 2 }}
-        >
-          Change Password
         </Button>
         <Button
         fullWidth
@@ -290,7 +286,6 @@ const EditProfile = () => {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Employee Registration</DialogTitle>
         <DialogContent>
           <EmployeeRegistration />
         </DialogContent>
@@ -298,6 +293,7 @@ const EditProfile = () => {
           <Button onClick={handleCloseRegistrationModal}>Close</Button>
         </DialogActions>
       </Dialog>
+    </Container>
     </Container>
   );
 };

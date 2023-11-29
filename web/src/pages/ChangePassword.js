@@ -13,15 +13,14 @@ const ChangePassword = ({ employeeId }) => {
 
   const handleSubmit = async () => {
     if (passwords.newPassword !== passwords.confirmPassword) {
-      alert('Passwords do not match!');
+      
       return;
     }
 
     try {
       await axios.put(`http://large.poosd-project.com/api/employees/change-password/${employeeId}`, { password: passwords.newPassword });
-      alert('Password updated successfully!');
+      
     } catch (error) {
-      alert(error);
       console.error('Error updating password', error);
     }
   };

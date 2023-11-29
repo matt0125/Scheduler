@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../Models/FullShift.dart';
 import '../Services/APIService.dart';
 
-
 class DailySchedulePage extends StatefulWidget {
   final String date; // The specific date you want to display
 
@@ -25,6 +24,10 @@ class _DailySchedulePageState extends State<DailySchedulePage> {
 
   void getShifts() async {
     _shifts = await api.GetShiftsByDate(widget.date);
+
+    // Sort the shifts based on shift start time
+    _shifts.sort((a, b) => a.shiftStartTime!.compareTo(b.shiftStartTime!));
+
     setState(() {
       _isLoading = false;
     });
@@ -32,11 +35,12 @@ class _DailySchedulePageState extends State<DailySchedulePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Filter shifts for the specific date
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Daily Schedule"),
+        iconTheme: IconThemeData(
+          color: Color(0xFF49423E),
+        ),
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
@@ -62,7 +66,8 @@ class ShiftText extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("${shift.fullName} - ${shift.printPositionTitle}", style: TextStyle(fontSize: 22)),
+          Text("${shift.fullName} - ${shift.printPositionTitle}",
+              style: TextStyle(fontSize: 22)),
           Text("${shift.printTime}", style: TextStyle(fontSize: 18)),
           SizedBox(height: 5),
           Divider(),

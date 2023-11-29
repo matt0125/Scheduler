@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { List, ListItem, Checkbox, ListItemText, IconButton, Button, TextField } from '@mui/material';
+import { List, ListItem, ListItemText, IconButton, Button, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) => {
@@ -7,10 +7,24 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
   const [newPositionName, setNewPositionName] = useState('');
 
   const listStyle = {
+    display: 'flex', // Using Flexbox for the list
+    flexDirection: 'row', // Stack items horizontally
+    gap: '10px', // Space between items
     maxHeight: '300px',
-    overflowY: 'scroll',
+    overflowY: 'auto',
     border: '1px solid #ccc',
-    padding: 0,
+    padding: '10px',
+    flexWrap: 'wrap', // Allow items to wrap to the next line if they exceed the container width
+  };
+
+  const listItemStyle = {
+    display: 'flex', // Using Flexbox for the list item layout
+    alignItems: 'center',
+    gap: '10px',
+    minWidth: '100px', // Set a minimum width for each list item
+    padding: '8px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
   };
 
   const handleAddClick = () => {
@@ -23,27 +37,20 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
   };
 
   return (
-    <div style={{ margin: '10px', width: '300px' }}>
-      <List style={listStyle}>
+    <div style={{ margin: '10px', width: '99%' }}>
+      <div style={listStyle}>
         {positions.map((position) => (
-          <ListItem key={position.id} dense button>
+          <div key={position.id} style={listItemStyle}>
             <div
               style={{
                 width: '20px',
                 height: '20px',
                 backgroundColor: position.color,
                 borderRadius: '50%',
-                marginRight: '10px'
               }}
             />
             <ListItemText 
-              primary={position.name} 
-              style={{
-                maxWidth: 'calc(100% - 60px)', // Adjust the value as needed
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}
+              primary={position.name}
             />
             <IconButton
               edge="end"
@@ -52,9 +59,9 @@ const PositionList = ({ positions, onToggle, onAddPosition, onDeletePosition }) 
             >
               <DeleteIcon />
             </IconButton>
-          </ListItem>
+          </div>
         ))}
-      </List>
+      </div>
       {showInput ? (
         <div>
           <TextField

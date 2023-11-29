@@ -85,7 +85,8 @@ const PositionSelector = ({ managerId, onPositionSelection }) => {
                       borderColor: 'green',
                       borderWidth: '2px',
                     },
-                  } : {}}
+                  } : {}
+              }
                 />
               )}
             />

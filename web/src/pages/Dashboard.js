@@ -6,8 +6,6 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import { INITIAL_EVENTS, createEventId } from './event-utils'
 import "../styles/Dashboard.css";
-import logo from "../images/branding.png";
-import profile from "../images/profile-button.svg";
 import axios from 'axios';
 import Modal from 'react-modal';
 import FormControl from '@mui/material/FormControl';
@@ -25,6 +23,7 @@ import Box from '@mui/material/Box';
 
 import { fetchManager } from '../services/api'; 
 import { fetchPositions } from '../services/api'; 
+import TopBarComponent from '../components/navBar'
 
 
 // Define your color choices here based on the image provided
@@ -61,30 +60,6 @@ export default class DemoApp extends React.Component {
     }));
   };
 
-   // Function to handle opening the modal
-   openProfileModal = () => {
-    this.setState({ showProfileModal: true });
-  }
-
-  // Function to handle closing the modal
-  closeProfileModal = () => {
-    this.setState({ showProfileModal: false });
-  }
-
-  // Function to handle sign out
-  handleSignOut = () => {
-    localStorage.clear();
-    this.props.navigate('/'); // Use the navigate function passed as a prop
-  }
-
-  // Function to handle edit profile
-  handleEditProfile = () => {
-    // Assuming the employee ID is stored in localStorage
-    const employeeId = localStorage.getItem('id'); 
-
-    // Navigate to the EditProfile page with the employee ID
-    this.props.navigate(`/edit-profile/${employeeId}`);
-  };
   
   openEditSTModal = (id) => {
     this.setState({ showEditSTModal: true });
@@ -102,7 +77,6 @@ export default class DemoApp extends React.Component {
 
   componentDidMount() {
     this.populatePositionsAndColors();
-    // console.log("Startup: ",this.state.shifts);
   }
 
   renderPositionSelect() {
@@ -209,7 +183,6 @@ export default class DemoApp extends React.Component {
       if(response.status !== 404) {
         if (Array.isArray(response.data.shifts)) {
           const formattedShifts = await formatShiftsForCalendar(response.data.shifts);
-          // console.log("formatted shifts:", formattedShifts);
           this.setState({ shifts: formattedShifts });
         } else {
           // Handle case where response is not an array
@@ -223,7 +196,7 @@ export default class DemoApp extends React.Component {
       }
       
     } catch (error) {
-      alert('Failed to fetch shifts: ' + error.message);
+      
       console.log(error);
       this.setState({ shifts: [] }); // Reset to empty array on error
     }
@@ -242,9 +215,6 @@ export default class DemoApp extends React.Component {
   };
   
   handleEventClick = (clickInfo) => {
-    // Handle event click action
-    console.log('Event clicked:', clickInfo.event);
-    // Set the clicked event details in the state and open the modal
     this.setState({ selectedEvent: clickInfo.event, showEventModal: true });
   };
 
@@ -307,20 +277,7 @@ export default class DemoApp extends React.Component {
       <div className='demo-app'>
         {this.renderPositionModal()}
         <div className='demo-app-main'>
-          <img src={logo} alt="sched logo" className="logo"></img>
-          <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
-          <Modal isOpen={this.state.showProfileModal} onRequestClose={this.closeProfileModal}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-              <Stack spacing={2} direction="row" justifyContent="center" alignItems="center" sx={{ p: 2 }}>
-                <Button variant="contained" color="primary" onClick={this.handleSignOut}>
-                  Sign Out
-                </Button>
-                <Button variant="outlined" color="primary" onClick={this.handleEditProfile}>
-                  Edit Profile
-                </Button>
-              </Stack>
-            </Box>
-          </Modal>
+          <TopBarComponent/>
           <Modal 
             isOpen={this.state.showEditSTModal} 
             onRequestClose={this.closeEditSTModal}
@@ -347,6 +304,7 @@ export default class DemoApp extends React.Component {
                     ? selectedEvent.title.replace(/\b\w/g, (char) => char.toUpperCase())
                     : 'No Position'}
                 </h2>
+                <p>{selectedEvent.extendedProps.name}</p>
                 <p>Date: {new Date(selectedEvent.start).toLocaleDateString()}</p>
                 <p>
                   Time: {new Date(selectedEvent.start).toLocaleTimeString([], { timeStyle: 'short' })} -{' '}
@@ -421,9 +379,6 @@ export default class DemoApp extends React.Component {
     if (this.state.selectedPositionId) {
       try {
         const jwtToken = localStorage.getItem('token');
-        console.log(convertToStandardTime(selectInfo.startStr));
-        console.log(convertToStandardTime(selectInfo.endStr));
-        console.log(getDayOfWeek(selectInfo.startStr));
         const response = await axios.post('http://large.poosd-project.com/api/shift-templates', {
           dayOfWeek: getDayOfWeek(selectInfo.startStr), // convert startStr to day of week
           startTime: convertToStandardTime(selectInfo.startStr),
@@ -449,11 +404,11 @@ export default class DemoApp extends React.Component {
         // calendarApi.addEvent(event);
         this.fetchShifts();
       } catch (error) {
-        alert(error);
+        
       }
 
     } else {
-      alert('You must select a position first.');
+      
     }
   }
 
@@ -558,7 +513,6 @@ async function getPositionTitle(positionId) {
   // Retrieve the JWT token from local storage
   const jwtToken = localStorage.getItem('token');
 
-  console.log("Position ID is:", positionId);
 
   // Make a GET request using Axios
   return axios.get(url, {

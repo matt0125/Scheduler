@@ -9,7 +9,6 @@ const shiftController = require('./controllers/ShiftController');
 const positionController = require('./controllers/PositionController');
 const { create } = require('domain');
 const jwt = require('jsonwebtoken');
-const PositionController = require('./controllers/PositionController');
 const scheduleController = require('./controllers/ScheduleController');
 const secretKey = process.env.JWT_SECRET_KEY;
 
@@ -113,6 +112,7 @@ app.get('/api/shifts/employee/:empId', shiftController.getShiftByEmployee);
 app.post('/api/shifts/manager', shiftController.getShiftByManager);
 
 app.delete('/api/shifts/employee/:empId', shiftController.deleteShiftsByEmployee);
+app.post('/api/manager/shifts/delete', shiftController.deleteShiftsByRangeAndManager);
 
 app.post('/api/employee/:empId/timeoff', employeeController.dayOff);
 
@@ -126,17 +126,16 @@ app.get('/api/shift-templates/manager/:managerId', shiftTemplateController.getSh
 app.delete('/api/shift-templates/position/:positionId', shiftTemplateController.deleteShiftTemplatesByPosition);
 
 // Positions
-app.post('/api/position', PositionController.createPosition);
-app.post('/api/positions', PositionController.createMultiplePositions);
+app.post('/api/position', positionController.createPosition);
+app.post('/api/positions', positionController.createMultiplePositions);
 
-app.get('/api/position/:id', PositionController.getPosition);
-app.get('/api/position', PositionController.getAllPositions);
-app.get('/api/position/:name', PositionController.getPositionByName);
+// app.get('/api/position/:name', positionController.getPositionByName);
+app.get('/api/position/:id', positionController.getPosition);
+app.get('/api/position', positionController.getAllPositions);
 
-app.put('/api/position/:id', PositionController.updatePosition);
-app.delete('/api/position/:id', PositionController.deletePosition);
+app.put('/api/position/:id', positionController.updatePosition);
+app.delete('/api/position/:id', positionController.deletePosition);
 
-app.get('/api/position/:positionId', positionController.getPosition);
 app.get('/api/positions/:managerId', positionController.getPositionsByManager);
 app.post('/api/positions/manager', positionController.createPositionByManager);
 

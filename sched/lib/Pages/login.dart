@@ -105,7 +105,8 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: _togglePasswordVisibility,
                           ),
                         ),
-                        const SizedBox(height: 40.0),
+                        const SizedBox(height: 20.0),
+                        forgotPassword(),
                         ElevatedButton(
                           onPressed: _login,
                           style: ButtonStyle(
@@ -269,6 +270,37 @@ class NoAccountText extends StatelessWidget {
         fontWeight: FontWeight.w400,
         height: -0.10,
         color: Color(0xFF49423E),
+      ),
+    );
+  }
+}
+
+class forgotPassword extends StatelessWidget {
+  const forgotPassword({Key? key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 20.0, // Adjust the height as needed
+      child: TextButton(
+        onPressed: () {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            '/forgotPassword',
+            ModalRoute.withName('/'),
+          );
+        },
+        child: const Text(
+          'Forgot password?',
+          style: TextStyle(
+            fontFamily: 'Katibeh',
+            fontSize: 17.0,
+            fontWeight: FontWeight.w400,
+            color: Color(0xFF3995F6),
+            height: -1,
+            decoration: TextDecoration.underline,
+          ),
+        ),
       ),
     );
   }

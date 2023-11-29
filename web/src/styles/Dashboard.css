@@ -39,32 +39,39 @@ body
 
 /* Modal Content */
 .ReactModal__Content {
-    background-color: #add8e6;
+    background-color: #DBC1AC;
     position: relative;
     top: auto;
     left: auto;
     right: auto;
     bottom: auto;
     margin: 0 auto;
-    border: 1px solid #ccc;
+    border: 1px solid #52545C;
     border-radius: 10px; /* Rounded corners */
     outline: none;
     padding: 20px;
-    width: 30%; /* Set to a percentage of the screen width */
+    width: 30vw; /* Set to a percentage of the screen width */
     max-width: 500px; /* Maximum width of the modal */
-    height: 50%; /* Set to a percentage of the screen width */
-    max-height: 500px; /* Maximum width of the modal */
+    max-height: 25vh; /* Maximum width of the modal */
     box-shadow: 0 5px 10px rgba(0,0,0,0.2); /* Shadow for pop effect */
 }
-
+.ReactModal__Content button{
+    background-color: #CDBFB6;
+    color: #47413d;
+    font-weight: bold;
+}
+.ReactModal__Content button:hover{
+    background-color: #8e7e75;
+}
 .centered-modal {
+    background-color: #DBC1AC;
     position: relative;
     top: auto;
     left: auto;
     right: auto;
     bottom: auto;
     margin: 0 auto;
-    border: 1px solid #ccc;
+    border: 1px solid #52545C;
     border-radius: 10px; /* Rounded corners */
     outline: none;
     padding: 20px;
@@ -80,3 +87,30 @@ body
     flex-direction: column;
     align-items: center;
   }
+
+div.ReactModal__Content.ReactModal__Content--after-open{
+    background:#DBC1AC !important;
+}
+
+.MuiBox-root button{
+    background-color: #CDBFB6;
+    color: #47413d;
+}
+
+.css-1fu7jd5-MuiButtonBase-root-MuiButton-root{
+    background-color: #CDBFB6 !important;
+    color: #47413d !important;
+}
+
+.css-1fu7jd5-MuiButtonBase-root-MuiButton-root:hover{
+    background-color: #8e7e75 !important;
+}
+
+.MuiOutlinedInput-root & .Mui-focused fieldset{
+    border-color:#47413d;
+
+}
+
+.MuiBox-root button:hover{
+    background-color: #8e7e75;
+}

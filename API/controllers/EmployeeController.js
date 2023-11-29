@@ -9,9 +9,9 @@ const secretKey = process.env.JWT_SECRET_KEY;
 const emailPassword = process.env.EMAIL_PASSWORD;
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-const emailService = require('./EmailService');
 const ShiftTemplate = require('../models/ShiftTemplate');
 const Shift = require('../models/Shift');
+const emailService = require('./EmailService');
 
 // Was used for unique index testing
 
@@ -275,19 +275,26 @@ exports.getTeammates = async (req, res) => {
     const { employeeId } = req.params; // Get the employee ID from the request parameters
 
     // Find the employee by ID
-    const employee = await Employee.findById(employeeId).select('-_id firstName lastName email phone managedBy positions')
+    const employee = await Employee.findById(employeeId).select(' firstName lastName email phone managedBy managerIdent positions')
     .populate({path:'positions', select:'-_id name'});
 
     if (!employee) {
       return res.status(404).json({ message: 'Employee not found' });
     }
 
-    const teammates = await Employee.find({managedBy: { $exists: true, $ne: null, $eq: employee.managedBy }, _id: { $ne: employeeId}})
+    const teammates = await Employee.find({managedBy: { $exists: true, $ne: null, $eq: (employee.managerIdent ? employee._id : employee.managedBy) }, _id: { $ne: employeeId}})
     .select('-_id firstName lastName email phone positions')
     .populate({path:'positions', select:'-_id name'});
 
-    const manager = await Employee.findById(employee.managedBy).select('-_id firstName lastName email phone positions')
-    .populate({path:'positions', select:'-_id name'});
+    let manager;
+
+    if(employee.managerIdent === true) {
+      manager = employee;
+    }
+    else {
+      manager = await Employee.findById(employee.managedBy).select('-_id firstName lastName email phone positions')
+      .populate({path:'positions', select:'-_id name'});
+    }
 
     res.status(200).json({employee: employee, manager: manager, teammates: teammates});
   }
@@ -522,6 +529,27 @@ exports.updatePassword = async (req, res) => {
     const isMatch = await bcrypt.compare(currentPassword, employee.password);
     if (!isMatch) {
       return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    // Password complexity validations
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one uppercase letter' });
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one lowercase letter' });
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one number' });
+    }
+
+    if (!/[^A-Za-z0-9]/.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must contain at least one special character' });
     }
 
     // Hash the new password
@@ -917,7 +945,7 @@ exports.requestPasswordReset = async (req, res) => {
     }
 
     // Generate a password reset token
-    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetToken = crypto.randomBytes(5).toString('hex');
     // Set token validity (e.g., 1 hour)
     const resetTokenExpires = Date.now() + 3600000; 
 
@@ -928,7 +956,7 @@ exports.requestPasswordReset = async (req, res) => {
 
     // Send email with reset link (pseudo-code)
     const resetLink = `http://localhost:3001/reset-password/${resetToken}`;
-    emailService.sendPasswordResetEmail(email, resetLink);
+    emailService.sendPasswordResetEmail(email, resetLink, resetToken);
 
     res.status(200).json({ message: 'Password reset email sent' });
   } catch (err) {
@@ -999,4 +1027,5 @@ exports.nuke = async (req, res) => {
     console.log('Error nuking employees:', error);
     res.status(500).json({ message: 'Error nuking employees', error: error.toString() });
   }
+
 };

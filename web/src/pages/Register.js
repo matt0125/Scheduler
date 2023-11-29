@@ -8,6 +8,8 @@ import logo from "../images/branding-notitle.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import phoneIcon from "../images/phone.png";
+import eyeOpenSvg from '../images/eye-open-svg.svg';
+import eyeClosedSvg from '../images/eye-closed-svg.svg';
 
 import { register } from '../services/api';
 
@@ -157,6 +159,10 @@ const Register = () => {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
+  };
+
   let url = "/";
   return (
     <div id="register-body" onClick={handleClosePopup}>
@@ -203,17 +209,24 @@ const Register = () => {
                 <input type="text" name="username" placeholder="" required onChange={handleChange} />
                 {formErrors.username && <div className="user-popup">{formErrors.username}</div>}
               </div>
-              <div class="pass-input-group"> 
-              <h2 class="input-font">Password</h2>
-              <img src={passIcon} alt="pass icon" /> 
-                <input type = {showPassword ? "text" : "password"} name="password" placeholder="" required onChange={handleChange}>
-                </input>
+              <div className="pass-input-group">
+                <h2 className="input-font">Password</h2>
+                <img src={passIcon} alt="pass icon" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder=""
+                  required
+                  onChange={handleChange}
+                />
+                <div className="checkbox_wrapper" onClick={togglePasswordVisibility}>
+                  <img
+                    src={showPassword ? eyeOpenSvg : eyeClosedSvg}
+                    alt="Toggle Password Visibility"
+                    className="eye-icon"
+                  />
+                </div>
                 {formErrors.password && <div className="pass-popup">{formErrors.password}</div>}
-              <div class="checkbox_wrapper">
-                <input id="reg-eyeball" className = "eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
-                </input>
-                <label for="reg-eyeball"></label>
-              </div>
               </div>
               <div class="email-input-group">
               <h2 class="input-font">Email</h2>

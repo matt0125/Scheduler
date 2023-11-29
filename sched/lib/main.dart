@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:sched/tabs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Pages/dailyschedule.dart';
+import 'Pages/forgotPassword.dart';
 import 'Pages/login.dart'; // Import the LoginPage from login.dart
+import 'Pages/passwordCode.dart';
+import 'Pages/profile.dart';
 import 'Pages/register.dart'; // Import the SignUpPage from register.dart
 import 'package:sched/Pages/welcome.dart';
 import 'package:sched/Services/DataService.dart';
+
+import 'Pages/updatePassword.dart';
 
 
 void main() async {
@@ -53,6 +58,10 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(), // Set the LoginPage as the initial route
          '/signup': (context) => const SignUpPage(), // Define a named route for the SignUpPage
         '/dailyschedule/:date': (context, {arguments} ) => DailySchedulePage(date: arguments['date']),
+        '/forgotPassword': (context) => ForgotPasswordPage(),
+        '/passwordCode': (context) => PasswordCodePage(),
+        //'/updatePassword': (context) => UpdatePasswordPage(),
+        '/profile': (context) => ProfileTab(),
       },
     );
   }

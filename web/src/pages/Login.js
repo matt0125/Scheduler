@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import Register from "./Register";
 import "../styles/Login.css";
 import { Container, Row, Col } from "react-bootstrap";
+import { Modal, Box, Typography, TextField, Button } from "@mui/material";
 import vector from "../images/table-meeting.png";
 import emailIcon from "../images/email.png";
 import passIcon from "../images/password.png";
 import logo from "../images/branding-notitle.png";
-
+import eyeOpenSvg from '../images/eye-open-svg.svg';
+import eyeClosedSvg from '../images/eye-closed-svg.svg';
 import { login, isManager } from '../services/api';
 
 const Login = () => {
@@ -15,10 +17,47 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
+
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showFailPopup, setFailPopup] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
+
+  const handlePasswordReset = () => {
+    setOpenModal(true); // Open the Material-UI modal instead of using prompt
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false);
+  };
+
+  const submitPasswordReset = async (event) => {
+    event.preventDefault(); // Prevent the form from causing a page refresh
+    // Call the API to send password reset email
+    try {
+      const response = await fetch("http://large.poosd-project.com/api/request-password-reset", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+  
+      if (response.status === 200) {
+        // Handle success
+        console.log("Reset email sent successfully");
+      } else {
+        // Handle error
+        console.error("Failed to send reset email");
+      }
+    } catch (error) {
+      console.error("Error sending password reset email: ", error);
+    }
+    handleModalClose(); // Close the modal after submit
+  };
+  
 
 
   // Validate the username and password
@@ -35,38 +74,42 @@ const Login = () => {
     return errors;
   };
 
-  // Handle the login form submission
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Validate the form
+  
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setUsernameError(errors.username);
       setPasswordError(errors.password);
       return;
     }
-
-    const response = await login( username, password);
-    
-    if (response.status === 200) {
+  
+    try {
+      const response = await login(username, password);
       // Login successful
       const token = response.data.token;
       const id = response.data.id;
-      console.log(response.data);
       localStorage.setItem('token', token);
       localStorage.setItem('id', id);
-      localStorage.setItem('isMan', await isManager(id));
+      const isMan = await isManager(id);
+      localStorage.setItem('isMan', isMan);
       navigate('/dashboard');
-    } else {
+    } catch (error) {
       // Login failed
       setFailPopup(true);
       document.getElementById("user-input").focus();
       document.getElementById("pass-input").focus();
-
+      // Log the error or display it to the user
+      console.error('Login failed:', error.response?.data?.message || error.message);
     }
   };
+  
+  
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(prev => !prev);
+  };
+  
   const handleClosePopup = () => {
     // Close the popup
     setFailPopup(false);
@@ -113,27 +156,63 @@ const Login = () => {
                 <div class="password-input-group">
                   <img src={passIcon} alt="password icon"></img>
                   <input
-                    type= {showPassword ? "text" : "password"}
+                    type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder=""
                     id="pass-input"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                <div id="log-checkbox_wrapper">
-                  <input id="log-eyeball" className = "eyeball" type="checkbox" value = {showPassword} onChange={() => setShowPassword((prev) => !prev)}>
-                  </input>
-                  <label for="log-eyeball"></label>
-                </div>
+                  <div id="log-checkbox_wrapper" onClick={togglePasswordVisibility}>
+                    <img 
+                      src={showPassword ? eyeOpenSvg : eyeClosedSvg} 
+                      alt="Toggle Password Visibility" 
+                      className="eye-icon"
+                    />
+                  </div>
                 </div>
                 <button onClick={ handleSubmit } type="submit" className="submit-button">Login</button>
-                <p className="login-register-p">Forgot password? <a href={""} className="login-register-url">click here</a></p>
+                <p className="login-register-p">Forgot password?
+                  <a href="#!" onClick={handlePasswordReset} className="login-register-url">click here</a>
+                </p>
                 <p className="login-register-p">Don't have an account  <a href={url} className="login-register-url">sign up</a></p>
               </div>
             </form>
           </Col>
         </Row>
       </Container>
+      <Modal
+        open={openModal}
+        onClose={handleModalClose}
+        aria-labelledby="password-reset-modal"
+        aria-describedby="password-reset-form"
+      >
+        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', boxShadow: 24, p: 4, outline: 'none' }}>
+          <Typography id="password-reset-modal" variant="h6" component="h2">
+            Password Reset
+          </Typography>
+          <Box component="form" onSubmit={submitPasswordReset} noValidate sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+            />
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+              Send Reset Link
+            </Button>
+            <Button fullWidth variant="outlined" sx={{ mt: 2 }} onClick={handleModalClose}>
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       </div>
   );
 };

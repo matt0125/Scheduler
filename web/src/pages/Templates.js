@@ -20,6 +20,13 @@ import EditSTModal from '../components/EditSTModal';
 import PositionList from '../components/PositionList';
 import EmployeeList from '../components/EmployeeList'; // Adjust the path as needed
 import { Button } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import TopBarComponent from '../components/navBar'
+
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 // Define your color choices here based on the image provided
 const colorChoices = ['#bdccb8', '#b9c4cc', '#eb7364', '#ef9a59', '#f4c7bc' , '#cbdef0', '#eac8dd', '#f8edce', '#fefebd', '#c7b7cc', '#f7d09c', '#bbaff6'];
@@ -29,6 +36,7 @@ const getNextAvailableColor = (positionColors) => {
   const availableColors = colorChoices.filter(color => !usedColors.has(color));
   return availableColors.length > 0 ? availableColors[0] : null; // return null or a default color if all are used
 };
+
 
 export default class DemoApp extends React.Component {
   state = {
@@ -53,31 +61,6 @@ export default class DemoApp extends React.Component {
       showEmployeeList: !prevState.showEmployeeList,
     }));
   };
-
-   // Function to handle opening the modal
-   openProfileModal = () => {
-    this.setState({ showProfileModal: true });
-  }
-
-  // Function to handle closing the modal
-  closeProfileModal = () => {
-    this.setState({ showProfileModal: false });
-  }
-
-  // Function to handle sign out
-  handleSignOut = () => {
-    localStorage.clear();
-    this.props.navigate('/'); // Use the navigate function passed as a prop
-  }
-
-  // Function to handle edit profile
-  handleEditProfile = () => {
-    // Assuming the employee ID is stored in localStorage
-    const employeeId = localStorage.getItem('id'); 
-
-    // Navigate to the EditProfile page with the employee ID
-    this.props.navigate(`/edit-profile/${employeeId}`);
-  };
   
   openEditSTModal = (id) => {
     this.setState({ showEditSTModal: true });
@@ -91,7 +74,6 @@ export default class DemoApp extends React.Component {
 
   componentDidMount() {
     this.fetchPositions();
-    console.log("Startup: ",this.state.shiftTemplates);
   }
 
   renderPositionSelect() {
@@ -166,7 +148,6 @@ export default class DemoApp extends React.Component {
     const jwtToken = localStorage.getItem('token');
   
     try {
-      console.log(managerId);
       const response = await axios.get(`http://large.poosd-project.com/api/shift-templates/manager/${managerId}`, {
         headers: {
           Authorization: `Bearer ${jwtToken}`,
@@ -175,33 +156,27 @@ export default class DemoApp extends React.Component {
       });
   
       // Check if the response is an array
-      if (Array.isArray(response.data)) {
-        console.log("response data is ", response.data);
-        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data);
-        console.log("formatted shift template:", formattedShiftTemplates);
+      if (Array.isArray(response.data.shiftTemplates)) {
+        const formattedShiftTemplates = await formatShiftTemplatesForCalendar(response.data.shiftTemplates);
         this.setState({ shiftTemplates: formattedShiftTemplates });
       } else {
         // Handle case where response is not an array
         console.error('Response is not an array', response.data);
-        console.log()
         this.setState({ shiftTemplates: [] });
         this.setState({ selectMirrorEnabled: false });
       }
       // calendarApi = selectInfo.view.calendar;
-      // console.log("this is being added: ", shiftTemplates[0]);
       // calendarApi.addEvent(shiftTemplates[0])
     } catch (error) {
-      alert('Failed to fetch shift templates: ' + error.message);
+      
       console.log(error);
       this.setState({ shiftTemplates: [] }); // Reset to empty array on error
     }
-    console.log("After startup: ", this.state.shiftTemplates);
   }
   
 
   handlePositionSelect = (event) => {
     const selectedId = event.target.value;
-    console.log('Selected position ID:', selectedId); // Should log the selected position's ID
   
     if (selectedId) {
       this.setState({ selectedPositionId: selectedId });
@@ -229,9 +204,9 @@ export default class DemoApp extends React.Component {
           Authorization: `Bearer ${jwtToken}`,
         },
       });
-      alert('Employee GOT!');
+      
     } catch (error) {
-      alert(error);
+      
     }
   };
   
@@ -290,14 +265,9 @@ export default class DemoApp extends React.Component {
       }
     } catch (error) {
       console.error('Failed to add position:', error);
-      alert('Failed to add position: ' + error.message);
+      
     }
   };
-  
-  
-  
-  
-  
   
   
   // Deletes position connected to manager
@@ -328,7 +298,7 @@ export default class DemoApp extends React.Component {
       });
   
     } catch (error) {
-      alert('Failed to delete position: ' + error.message);
+    
       console.error(error);
     }
   };
@@ -343,10 +313,29 @@ export default class DemoApp extends React.Component {
       }),
     }));
   };
+
+  handleEventClick = (clickInfo) => {
+    // Handle event click action
+    // Set the clicked event details in the state and open the modal
+    this.setState({ selectedEvent: clickInfo.event, showEventModal: true });
+  };
+  
+  closeEventModal = () => {
+    this.setState({ showEventModal: false });
+  };
+
+  getDayOfWeek = (dateString) => {
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const date = new Date(dateString);
+    const dayOfWeek = daysOfWeek[date.getDay()];
+    return dayOfWeek;
+  };
   
 
   render() {
     const { showEmployeeList, positions } = this.state;
+    const { showEventModal, selectedEvent } = this.state;
+
     // Only render the calendar if colors are loaded
       if (!this.state.colorsLoaded) {
         return <div>Loading...</div>; // Or a spinner, or some other loading indicator
@@ -355,60 +344,112 @@ export default class DemoApp extends React.Component {
       <div className='demo-app'>
         {this.renderPositionModal()}
         <div className='demo-app-main'>
-        <img src={logo} alt="sched logo" className="logo"></img>
-        <img className="profile-button" src={profile} alt="Profile Button" onClick={this.openProfileModal} />
-        <Modal isOpen={this.state.showProfileModal} onRequestClose={this.closeProfileModal}>
-            <button onClick={this.handleSignOut}>Sign Out</button>
-            <button onClick={this.handleEditProfile}>Edit Profile</button>
-        </Modal>
-        <Modal 
-          isOpen={this.state.showEditSTModal} 
-          onRequestClose={this.closeEditSTModal}
-        > 
-            <EditSTModal 
-              isOpen={this.state.showEditSTModal} 
-              positionId={this.state.shiftTemplatePositionId}
-              templateId={this.state.selectedShiftTemplateId}
-              empId={localStorage.getItem('id')}
-              template={this.state.selectedShiftTemplate}
-            />
-        </Modal>
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: 'timeGridWeek,timeGridDay'
-            }}
-            allDaySlot={false}
-            height={520}
-            scrollTime={"09:00:00"}
-            initialView='timeGridWeek'
-            editable={true}
-            selectable={true}
-            selectMirror={true}
-            dayMaxEvents={true}
-            weekends={this.state.weekendsVisible}
-            events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
-            select={this.triggerHandleDateSelect}
-            eventContent={this.renderEventContent} // custom render function
-            eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
-            dateClick={this.handleDateClick}
-            /* you can update a remote database when these fire:
-            eventAdd={function(){}}
-            eventChange={function(){}}
-            eventRemove={function(){}}
-            */
+        <TopBarComponent/>
+          <EditSTModal 
+            isOpen={this.state.showEditSTModal} 
+            positionId={this.state.shiftTemplatePositionId}
+            templateId={this.state.selectedShiftTemplateId}
+            empId={localStorage.getItem('id')}
+            template={this.state.selectedShiftTemplate}
+            closeEditSTModal = {this.closeEditSTModal}
           />
-           <div className='demo-app-sidebar'>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.toggleList}
-            style={{ marginBottom: '10px' }}
-          >
-            {showEmployeeList ? 'Show Positions' : 'Show Employees'}
-          </Button>
+        <Modal
+          isOpen={showEventModal}
+          onRequestClose={this.closeEventModal}
+          ariaHideApp={false}
+          contentLabel="Event Modal"
+          // Additional modal settings
+          style={{
+            content: {
+              position: 'relative',
+            },
+          }}
+        >
+          {selectedEvent && (
+            <div style={{ position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                <button
+                  style={{
+                    position: 'absolute',
+                    top: '-10px',
+                    right: '-10px',
+                    background: 'none',
+                    border: 'none',
+                    fontSize: '24px',
+                    cursor: 'pointer',
+                  }}
+                  onClick={this.closeEventModal}
+                >
+                  &#10006;
+                </button>
+              </div>
+              <div style={{ marginBottom: '20px' }}>
+                {/* Vertical spacer */}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <h2 style={{ flex: 1 }}>
+                  {selectedEvent.title !== 'undefined' && selectedEvent.title !== null
+                    ? selectedEvent.title.replace(/\b\w/g, (char) => char.toUpperCase())
+                    : 'No Position'}
+                </h2>
+                <div>
+                  <EditIcon
+                    className="event-edit-button"
+                    onClick={() => {
+                      this.closeEventModal();
+                      this.handleEventEdit(selectedEvent);
+                    }}
+                    aria-label="Edit event"
+                    style={{ cursor: 'pointer', marginRight: '5px', fontSize: '24px' }}
+                  />
+                  <DeleteIcon
+                    className="event-delete-button"
+                    onClick={() => {
+                      this.closeEventModal();
+                      this.handleEventDelete(selectedEvent);
+                    }}
+                    aria-label="Delete event"
+                    style={{ cursor: 'pointer', fontSize: '24px' }}
+                  />
+                </div>
+              </div>
+              <p>
+                {this.getDayOfWeek(selectedEvent.start)}: {new Date(selectedEvent.start).toLocaleTimeString([], { timeStyle: 'short' })} -{' '}
+                {new Date(selectedEvent.end).toLocaleTimeString([], { timeStyle: 'short' })}
+              </p>
+            </div>
+          )}
+        </Modal>
+        <FullCalendar
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          headerToolbar={{
+            left: '',
+            center: '',
+            right: ''
+          }}
+          views={{
+            timeGridWeek: {
+              dayHeaderFormat: { weekday: 'long' } // This will show full day names (e.g., "Monday") without dates
+            }
+          }}
+          allDaySlot={false}
+          height={'65vh'}
+          scrollTime={"09:00:00"}
+          initialView='timeGridWeek'
+          editable={false}
+          selectable={true}
+          selectMirror={true}
+          dayMaxEvents={true}
+          weekends={this.state.weekendsVisible}
+          events={this.state.shiftTemplates} // alternatively, use the `events` setting to fetch from a feed
+          select={this.triggerHandleDateSelect}
+          eventContent={this.renderEventContent} // custom render function
+          eventsSet={this.handleEvents} // called after events are initialized/added/changed/removed
+          dateClick={this.handleDateClick}
+          slotEventOverlap={false} // Set to 'false' to add padding between events
+          eventClick={this.handleEventClick}
+        />
+        <div className='demo-app-sidebar'>
           
           {showEmployeeList ? (
             <EmployeeList
@@ -417,7 +458,6 @@ export default class DemoApp extends React.Component {
             />
           ) : (
             <PositionList
-              key={positions.length}
               positions={positions}
               onToggle={this.togglePosition}
               onAddPosition={this.addPosition}
@@ -460,9 +500,6 @@ export default class DemoApp extends React.Component {
     if (this.state.selectedPositionId) {
       try {
         const jwtToken = localStorage.getItem('token');
-        console.log(convertToStandardTime(selectInfo.startStr));
-        console.log(convertToStandardTime(selectInfo.endStr));
-        console.log(getDayOfWeek(selectInfo.startStr));
         const response = await axios.post('http://large.poosd-project.com/api/shift-templates', {
           dayOfWeek: getDayOfWeek(selectInfo.startStr), // convert startStr to day of week
           startTime: convertToStandardTime(selectInfo.startStr),
@@ -488,7 +525,7 @@ export default class DemoApp extends React.Component {
         // calendarApi.addEvent(event);
         this.fetchShiftTemplates();
       } catch (error) {
-        alert(error);
+        
       }
       
       
@@ -497,7 +534,7 @@ export default class DemoApp extends React.Component {
       // const templateId = 'TEMPLATE_ID';
       // const date = formatDate(event.start, { year: 'numeric', month: '2-digit', day: '2-digit' });
     } else {
-      alert('You must select a position first.');
+     
     }
   }
 
@@ -510,7 +547,6 @@ export default class DemoApp extends React.Component {
   // Make this be able to add employees to shift temmplates 
   handleEventDelete = (clickInfo) => {
     if (window.confirm(`Are you sure you want to delete the event "${clickInfo.title}"`)) {
-      console.log(clickInfo.id);
       const eventId = clickInfo.id.split('-')[0]; // Extract original template ID
       const url = `http://large.poosd-project.com/api/shift-templates/${eventId}`;
 
@@ -528,17 +564,16 @@ export default class DemoApp extends React.Component {
         const updatedShiftTemplates = this.state.shiftTemplates.filter(event => !event.id.startsWith(`${eventId}-`));
         this.setState({ shiftTemplates: updatedShiftTemplates });
     
-        alert("Event deleted successfully.");
+        
       })
       .catch(error => {
         console.error('Error:', error);
-        alert("Failed to delete the event: " + error);
+        
       });
     }
   };
   
   handleEventEdit = (clickInfo) => {
-    console.log("The clikc info is: ", clickInfo);
     this.setState({ selectedShiftTemplateId: clickInfo.id.substring(0,24) });
     this.setState({ selectedShiftTemplate: clickInfo});
     this.openEditSTModal(clickInfo._def.extendedProps.positionId.substring(0, 24));
@@ -547,7 +582,7 @@ export default class DemoApp extends React.Component {
   renderEventContent = (eventInfo) => {
     return (
       <div>
-        <b style={{ color: '#47413d' }}>{eventInfo.timeText}</b>
+        {/* <b style={{ color: '#47413d' }}>{eventInfo.timeText}</b>
         <i style={{ color: '#47413d' }}>{eventInfo.event.title}</i>
         <button
           className="event-edit-button"
@@ -564,7 +599,7 @@ export default class DemoApp extends React.Component {
           style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
         >
           🗑️
-        </button>
+        </button> */}
       </div>
     )
   }
@@ -612,7 +647,6 @@ async function getPositionTitle(positionId) {
   // Retrieve the JWT token from local storage
   const jwtToken = localStorage.getItem('token');
 
-  console.log("Position ID is:", positionId);
 
   // Make a GET request using Axios
   return axios.get(url, {
@@ -640,27 +674,25 @@ function getNextColor() {
 }
 
 // Shift templatese now can be shown for 12 week, We can change this number if we want
-async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 12) {
+async function formatShiftTemplatesForCalendar(shiftTemplates, numberOfWeeks = 2) {
   const formattedTemplates = [];
   const positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
 
   for (const template of shiftTemplates) {
-    const positionId = template.positionId; 
-    const title = await getPositionTitle(positionId);
+    const positionId = template.positionId._id; 
+    const title = template.positionId.name;
 
-    for (let week = 0; week < numberOfWeeks; week++) {
-      const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime, week);
-      const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime, week);
+    const startDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.startTime);
+    const endDateTime = getNextFormattedDateForDayOfWeek(template.dayOfWeek, template.endTime);
 
-      formattedTemplates.push({
-        id: `${template._id}-${week}`,
-        title: title,
-        start: startDateTime,
-        end: endDateTime,
-        color: positionColors[positionId] || '#000000', // Default color if not found
-        positionId: positionId
-      });
-    }
+    formattedTemplates.push({
+      id: `${template._id}`,
+      title: title,
+      start: startDateTime,
+      end: endDateTime,
+      color: positionColors[positionId] || '#000000', // Default color if not found
+      positionId: positionId
+    });
   }
 
   return formattedTemplates;

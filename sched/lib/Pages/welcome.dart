@@ -80,225 +80,237 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
+    Color customColor = Color(0xFFB1947B);
     return Scaffold(
       appBar: AppBar(
         title: Text('Let\'s get started!'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: customColor),
+          onPressed: () {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/forgotPassword',
+              ModalRoute.withName('/'),
+            );
+          },
+        ),
         automaticallyImplyLeading: false,
       ),
       body: Center(
         child: _firstPage
-            ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Welcome to Sched!',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'To get started, please verify your email',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 20),
-            !_isVerified
-                ? Padding(
-              padding: EdgeInsets.symmetric(horizontal: 40),
-              child: TextField(
-                controller: _verificationCodeController,
-                maxLength: 6,
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'Enter verification code',
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.blue,
-                      width: 2.0,
-                    ),
+            ? SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Welcome to Sched!',
+                    style: TextStyle(fontSize: 24),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black,
-                      width: 1.0,
-                    ),
+                  SizedBox(height: 20),
+                  Text(
+                    'To get started, please verify your email',
+                    style: TextStyle(fontSize: 24),
                   ),
-                ),
-                onChanged: (value) {
-                  // Handle the input
-                },
-              ),
-            )
-                : Container(),
-            SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFB1947B),
-              ),
-              onPressed: () async {
-                // Verify email with the entered verification code
-                final enteredCode = _verificationCodeController.text;
-                final response = await apiService.verifyEmail(enteredCode);
-
-                if (response.success!) {
-                  // The verification code is correct, proceed to the next page
-                  setState(() {
-                    _firstPage = false;
-                  });
-                } else {
-                  // The verification code is incorrect, show an error message or handle as needed
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Verification Error"),
-                        content: Text("The entered verification code is incorrect. Please try again."),
-                        actions: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFB1947B),
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context); // Close the dialog
-                            },
-                            child: Text("OK"),
+                  SizedBox(height: 20),
+                  !_isVerified
+                      ? Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 40),
+                    child: TextField(
+                      controller: _verificationCodeController,
+                      maxLength: 6,
+                      textAlign: TextAlign.center,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Enter verification code',
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: customColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.black,
+                            width: 1.0,
                           ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              },
-              child: Text('Let\'s Go!'),
-            ),
-          ],
-        )
-            : _secondPage
-            ? Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Next, select your manager.',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 20),
-            _managers.length != 0
-                ? Container(
-              height: .6 * MediaQuery.of(context).size.height,
-              child: ListView.builder(
-                itemCount: _managers.length,
-                itemBuilder: (context, index) {
-                  return Column(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            if (_selectedManagerIndex == index) {
-                              _selectedManagerIndex = null;
-                            } else {
-                              _selectedManagerIndex = index;
-                            }
-                          });
-                        },
-                        child: ListTile(
-                          title: Text(
-                            _managers[index].fullName,
-                            style: TextStyle(
-                              fontWeight: _selectedManagerIndex == index
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  SizedBox(height: 12),
-                                  Text(
-                                    _managers[index].email,
-                                    style: TextStyle(
-                                      fontWeight: _selectedManagerIndex == index
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                  ),
-                                  Text(
-                                    _managers[index].phone,
-                                    style: TextStyle(
-                                      fontWeight: _selectedManagerIndex == index
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          subtitle: Text(
-                            _managers[index].positionTitles.join(', '),
-                            style: TextStyle(
-                              fontWeight: _selectedManagerIndex == index
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                            ),
-                          ), // Display all positions
                         ),
                       ),
-                      if (index < _managers.length - 1)
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 20),
-                          child: Divider(
-                            color: Colors.grey,
-                            thickness: 1,
-                          ),
-                        ),
-                    ],
-                  );
-                },
+                      onChanged: (value) {
+                        // Handle the input
+                      },
+                    ),
+                  )
+                      : Container(),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFB1947B),
+                    ),
+                    onPressed: () async {
+                      // Verify email with the entered verification code
+                      final enteredCode = _verificationCodeController.text;
+                      final response = await apiService.verifyEmail(enteredCode);
+
+                      if (response.success!) {
+                        // The verification code is correct, proceed to the next page
+                        setState(() {
+                          _firstPage = false;
+                        });
+                      } else {
+                        // The verification code is incorrect, show an error message or handle as needed
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Verification Error"),
+                              content: Text("The entered verification code is incorrect. Please try again."),
+                              actions: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFFB1947B),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context); // Close the dialog
+                                  },
+                                  child: Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    child: Text('Let\'s Go!'),
+                  ),
+                ],
               ),
             )
-                : CircularProgressIndicator(),
-            SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFB1947B),
-              ),
-              onPressed: () async {
-                if (_selectedManagerIndex == null) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Uh oh!"),
-                        content: Text("Please select a manager"),
-                        actions: [
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFB1947B),
+            : _secondPage
+            ? SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Next, select your manager.',
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  SizedBox(height: 20),
+                  _managers.length != 0
+                      ? Container(
+                    height: .6 * MediaQuery.of(context).size.height,
+                    child: ListView.builder(
+                      itemCount: _managers.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if (_selectedManagerIndex == index) {
+                                    _selectedManagerIndex = null;
+                                  } else {
+                                    _selectedManagerIndex = index;
+                                  }
+                                });
+                              },
+                              child: ListTile(
+                                title: Text(
+                                  _managers[index].fullName,
+                                  style: TextStyle(
+                                    fontWeight: _selectedManagerIndex == index
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        SizedBox(height: 12),
+                                        Text(
+                                          _managers[index].email,
+                                          style: TextStyle(
+                                            fontWeight: _selectedManagerIndex == index
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                          ),
+                                        ),
+                                        Text(
+                                          _managers[index].phone,
+                                          style: TextStyle(
+                                            fontWeight: _selectedManagerIndex == index
+                                                ? FontWeight.bold
+                                                : FontWeight.normal,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                subtitle: Text(
+                                  _managers[index].positionTitles.join(', '),
+                                  style: TextStyle(
+                                    fontWeight: _selectedManagerIndex == index
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ), // Display all positions
+                              ),
                             ),
-                            onPressed: () {
-                              Navigator.pop(context); // Close the dialog
-                            },
-                            child: Text("OK"),
-                          ),
-                        ],
-                      );
+                            if (index < _managers.length - 1)
+                              Container(
+                                margin: EdgeInsets.symmetric(horizontal: 20),
+                                child: Divider(
+                                  color: Colors.grey,
+                                  thickness: 1,
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  )
+                      : CircularProgressIndicator(),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFB1947B),
+                    ),
+                    onPressed: () async {
+                      if (_selectedManagerIndex == null) {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Uh oh!"),
+                              content: Text("Please select a manager"),
+                              actions: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFFB1947B),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context); // Close the dialog
+                                  },
+                                  child: Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      } else {
+                        if ((await apiService.AssignManager( _managers[_selectedManagerIndex!].employeeId!)).success!) {
+                          _positions = await apiService.GetManagerPositions(_managers[_selectedManagerIndex!].employeeId!);
+                          setState(() {
+                            _secondPage = false;
+                            _selectedManagerIndex = null;
+                          });
+                        }
+                      }
                     },
-                  );
-                } else {
-                  if ((await apiService.AssignManager( _managers[_selectedManagerIndex!].employeeId!)).success!) {
-                    _positions = await apiService.GetManagerPositions(_managers[_selectedManagerIndex!].employeeId!);
-                    setState(() {
-                      _secondPage = false;
-                      _selectedManagerIndex = null;
-                    });
-                  }
-                }
-              },
-              child: Text('Submit'),
-            ),
-          ],
+                    child: Text('Submit'),
+                  ),
+                ],
+              ),
         )
             : _thirdPage
             ? Column(
