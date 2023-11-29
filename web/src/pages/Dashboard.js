@@ -544,14 +544,14 @@ async function formatShiftsForCalendar(shifts) {
   const positionColors = JSON.parse(localStorage.getItem('positionColors')) || {};
 
   for (const shift of shifts) {
-    const positionId = shift.templateId.positionId?._id; 
-    const title = shift.templateId.positionId?.name;
+    const positionId = shift.templateId?.positionId?._id; 
+    const title = shift.templateId?.positionId?.name;
 
-      const startDateTime = `${shift.date.split("T")[0]}T${shift.templateId.startTime}`;
-      const endDateTime = `${shift.date.split("T")[0]}T${shift.templateId.endTime}`;
+      const startDateTime = `${shift.date.split("T")[0]}T${shift.templateId?.startTime}`;
+      const endDateTime = `${shift.date.split("T")[0]}T${shift.templateId?.endTime}`;
 
       formattedShifts.push({
-        id: `${shift.templateId._id}`,
+        id: `${shift.templateId?._id}`,
         title: title,
         name: `${shift.empId.firstName} ${shift.empId.lastName}`,
         start: startDateTime,

@@ -119,6 +119,37 @@ const generateSchedules = async () => {
   }
 };
 
+const deleteSchedule = async () => {
+  try {
+    const managerId = localStorage.getItem('id'); // Assuming manager ID is stored in localStorage
+    const today = new Date();
+    const startDate = getStartOfWeek(new Date(today)); // Start of this week
+    const endDate = getEndOfWeek(new Date(today)); // End of this week
+
+    const jwtToken = localStorage.getItem('token');
+    const response = await axios.post('http://large.poosd-project.com/api/manager/shifts/delete', {
+      managerId,
+      start: startDate,
+      end: endDate
+    }, {
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (response.data) {
+      // Handle the response data
+      console.log('Shifts deleted', response.data);
+      // Maybe navigate to the schedule view or display a success message
+    }
+  } catch (error) {
+    // Handle errors here
+    console.error('Error generating schedule:', error);
+    // Maybe display an error message
+  }
+};
+
   
 
 return (
@@ -147,7 +178,10 @@ return (
             {isMan && !editProfile && (
               <Button
                 sx={{ my: 2, color: 'white', display: 'block' }}
-                onClick={generateSchedules}
+                onClick= {async () => {
+                  await deleteSchedule();
+                  await generateSchedules();
+                }}
               >
                 Generate Schedules
               </Button>
