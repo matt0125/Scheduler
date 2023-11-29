@@ -443,6 +443,49 @@ class APIService {
     );
   }
 
+  Future<Response> requestPasswordReset(String email) async {
+
+    final data = {
+      'email': email,
+    };
+
+    final responseData = await postToEndpoint( data, 'request-password-reset');
+
+    return Response(
+      message: responseData['message'],
+      success: (responseData['message'] == 'Password reset email sent') ? true : false,
+    );
+  }
+
+  Future<Response> resetPassword(String password, String token) async {
+
+    final data = {
+      'resetToken': token,
+      'newPassword': password,
+    };
+
+    final responseData = await postToEndpoint( data, 'reset-password');
+
+    return Response(
+      message: responseData['message'],
+      success: (responseData['message'] == 'Password has been reset successfully') ? true : false,
+    );
+  }
+
+  Future<Response> dayOff(String date, ) async {
+
+    final data = {
+      'date': date,
+    };
+
+    final responseData = await postToEndpoint( data, '/employee/${DataService.readEmpId()}/timeoff');
+
+    return Response(
+      message: responseData['message'],
+      success: (responseData['message'] == 'Password has been reset successfully') ? true : false,
+    );
+  }
+
 }
 
 class Response {

@@ -31,7 +31,7 @@ class FullShift {
       if(endH > 12)
         endH -= 12;
 
-      this.printTime = "${startH}:${startM} ${startAM != endAM ? startAM : ""}- ${endH}:${endM} ${endAM}";
+      this.printTime = "${startH}:${startM.toString().padLeft(2, '0')} ${startAM != endAM ? startAM : ""}- ${endH}:${endM.toString().padLeft(2, '0')} ${endAM}";
 
       this.printPositionTitle = format(this.positionTitle);
     }
